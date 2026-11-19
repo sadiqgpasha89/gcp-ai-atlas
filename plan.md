@@ -157,16 +157,16 @@ Page `#/m`, tabs, browser-local data, import and export.
 
 ## Phase 4: integration, quality and delivery
 
-- [ ] 12.1 **Navigation**: sidebar and home regrouped into Knowledge Base, Playbook, Manager Cockpit; new routes `#/p`, `#/p/<id>`, `#/m`, `#/t`, `#/d/finops`, `#/d/scorecard`.
+- [x] 12.1 **Navigation**: sidebar and home regrouped into Knowledge Base, Playbook, Manager Cockpit; new routes `#/p`, `#/p/<id>`, `#/m`, `#/t`, `#/d/finops`, `#/d/scorecard`.
 - [x] 12.2 **Search** covers guides, templates, tools and cockpit.
 - [x] 12.3 **Validator** extended: guides, templates, architecture `sections`, cross-references (`[[id]]`), new decision guide, meta.
-- [ ] 12.4 **Readiness checklist**: add items that point to the new guides (governance, runbooks, evals, CI/CD, data freshness).
-- [ ] 12.5 **Shaper**: point agent and RAG results at the new architectures where they fit.
-- [ ] 12.6 **Browser smoke test** of every route: no console errors, key elements present, cockpit add/edit/export round trip, FinOps and scorecard calculations match hand-computed values, light and dark, narrow viewport.
-- [ ] 12.7 **README** updated (three layers, new routes, how to add content, accuracy policy).
-- [ ] 12.8 **Stale-name grep** shows nothing outside the alias lists.
-- [ ] 12.9 **Commit per phase, push, open PR** against `main`. Describe what could not be verified.
-- [ ] 12.10 Note in the PR: Pages must be enabled (Settings, Pages, Source: GitHub Actions).
+- [x] 12.4 **Readiness checklist**: add items that point to the new guides (governance, runbooks, evals, CI/CD, data freshness).
+- [x] 12.5 **Shaper**: point agent and RAG results at the new architectures where they fit.
+- [x] 12.6 **Browser smoke test** of every route: no console errors, key elements present, cockpit add/edit/export round trip, FinOps and scorecard calculations match hand-computed values, light and dark, narrow viewport.
+- [x] 12.7 **README** updated (three layers, new routes, how to add content, accuracy policy).
+- [x] 12.8 **Stale-name grep** shows nothing outside the alias lists.
+- [x] 12.9 **Commit per phase, push, open PR** against `main`. Describe what could not be verified.
+- [x] 12.10 Note in the PR: Pages must be enabled (Settings, Pages, Source: GitHub Actions).
 
 ## Out of scope (stated honestly)
 

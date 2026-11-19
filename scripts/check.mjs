@@ -17,6 +17,7 @@ const A = ctx.ATLAS;
 const errs = [];
 const err = (m) => errs.push(m);
 const ids = new Set();
+const readySee = []; // readiness see refs to guides, architectures, templates (checked once those are loaded)
 const cats = new Set(A.categories.map(c => c.id));
 const archIds = new Set();
 
@@ -123,7 +124,8 @@ for (const g of A.readiness) {
       const [k, id] = r.split(':');
       if (k === 'svc' && !ids.has(id)) err(`${p}: see unknown service ${id}`);
       else if (k === 'dec' && !decIds.has(id)) err(`${p}: see unknown decision ${id}`);
-      else if (k !== 'svc' && k !== 'dec') err(`${p}: bad see ref ${r}`);
+      else if (['p', 'a', 't'].includes(k)) readySee.push([p, k, id]);
+      else if (!['svc', 'dec', 'p', 'a', 't'].includes(k)) err(`${p}: bad see ref ${r}`);
     });
   }
 }
@@ -250,6 +252,7 @@ for (const t of A.templates || []) (t.see || []).forEach(r => { const [k, id] = 
 // `see` lists on guides
 for (const g of A.guides || []) (g.see || []).forEach(r => { const [k, id] = r.split(':'); if (!targetOk(k, id)) err(`guide ${g.id}: see ${r} has no target`); });
 
+for (const [p, k, id] of readySee) if (!(k === 'p' ? guideIds : k === 'a' ? archIds : tplIds).has(id)) err(`${p}: see unknown ${k === 'p' ? 'guide' : k === 'a' ? 'architecture' : 'template'} ${id}`);
 // ---- manager cockpit schema ----
 if (A.cockpit) {
   const ck = A.cockpit, TYPES = ['text', 'select', 'number', 'money', 'percent', 'date', 'status'];

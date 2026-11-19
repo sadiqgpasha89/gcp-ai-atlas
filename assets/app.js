@@ -218,6 +218,10 @@
       '<p class="lede">What each service is, how it actually works step by step, where it bites, and how to compose it into larger ML and GenAI systems.</p>' +
       '<div class="btns"><a class="btn primary" href="#/c/genai">Start with GenAI →</a><a class="btn" href="#/a">See full architectures</a><a class="btn" href="#/d">Decision guides</a></div>' +
       '</div>' + heroSVG() + '</section>';
+    h += '<h2>Three layers</h2><p style="max-width:62ch">Learn the services, apply them with a playbook, then track the systems you run.</p><div class="grid">' +
+      '<a class="card" style="--h:215" href="#/c/genai"><div class="mini">Layer 1</div><h3>Knowledge base</h3><p>' + n + ' services, ' + A.architectures.length + ' architectures and ' + A.decisions.length + ' decision guides.</p></a>' +
+      '<a class="card" style="--h:145" href="#/p"><div class="mini">Layer 2</div><h3>Playbook</h3><p>' + (A.guides || []).length + ' operating guides on governance, AgentOps, incidents, evaluation, delivery and data, plus ' + (A.templates || []).length + ' templates and two calculators.</p></a>' +
+      '<a class="card" style="--h:18" href="#/m"><div class="mini">Layer 3</div><h3>Manager cockpit</h3><p>Browser-only trackers for portfolio, delivery, quality, reliability, cost, security, skills and decisions.</p></a></div>';
     h += '<h2>The map</h2><p style="max-width:62ch">Services are grouped by the job they do in an AI/ML system. Each page ends with how to use the service in that setting, and what it pairs with.</p><div class="grid">';
     A.categories.forEach(function (c) {
       h += '<a class="card catcard" style="--h:' + c.hue + '" href="#/c/' + c.id + '">' + miniCube(c.hue) + '<div class="mini">' + c.items.length + ' services</div><h3>' + esc(c.name) + '</h3><p>' + esc(c.short) + '</p></a>';
@@ -231,6 +235,9 @@
       '<a class="card" style="--h:215" href="#/d"><div class="mini">' + A.decisions.length + ' guides</div><h3>Decision guides</h3><p>Options, if/then rules, red flags, review questions and one-way-door markers.</p></a>' +
       '<a class="card" style="--h:145" href="#/d/checklists"><div class="mini">Checklist</div><h3>Readiness checklists</h3><p>Maturity ladder, production readiness and a decision-record template.</p></a>' +
       '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>See which levers move the bill most.</p></a>' +
+      '<a class="card" style="--h:42" href="#/d/finops"><div class="mini">Cost model</div><h3>AI FinOps model</h3><p>Every component of a system, six what-if comparisons, cost per successful task.</p></a>' +
+      '<a class="card" style="--h:18" href="#/d/scorecard"><div class="mini">Release gates</div><h3>Evaluation scorecard</h3><p>Compare candidates on one dataset and see which pass your gates.</p></a>' +
+      '<a class="card" style="--h:145" href="#/t"><div class="mini">' + (A.templates || []).length + ' templates</div><h3>Management templates</h3><p>Problem statement, architecture review, threat model, go/no-go and more.</p></a>' +
       '</div><h2>How to read a service page</h2><div class="lists two" style="max-width:860px">' +
       '<div class="box"><h3>Every page has</h3>' + ul(['**What it is**: the job it does, in plain terms.', '**How it works**: a stepper you can click through or play.', '**Gotchas** and **edge cases**: the things that surprise people in production.', '**In AI/ML systems**: concrete ways to use it.']) + '</div>' +
       '<div class="box"><h3>A note on numbers</h3><p style="margin-top:10px">Limits and prices are given for orientation, and Google Cloud changes them, and renames products often. Where a number matters to your design, confirm it on the linked docs page and on your project\'s Quotas page.</p></div></div></div>';
@@ -394,6 +401,9 @@
     var p = ref.split(':'), id = p[1];
     if (p[0] === 'svc' && byId[id]) return '<a href="#/s/' + id + '">' + esc(byId[id].name) + '</a>';
     if (p[0] === 'dec' && decById[id]) return '<a href="#/d/' + id + '">' + esc(decById[id].title) + '</a>';
+    if (p[0] === 'p' && guideById[id]) return '<a href="#/p/' + id + '">' + esc(guideById[id].title) + '</a>';
+    if (p[0] === 'a' && archById[id]) return '<a href="#/a/' + id + '">' + esc(archById[id].name) + '</a>';
+    if (p[0] === 't' && tplById[id]) return '<a href="#/t/' + id + '">' + esc(tplById[id].title) + '</a>';
     return '';
   }
   function money(n) {
