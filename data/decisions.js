@@ -371,7 +371,7 @@ window.ATLAS.decisions = [
     cols: ['Method', 'Measures', 'Cost', 'Good for', 'Weakness'],
     rows: [
       ['Versioned eval set with reference answers', 'Task accuracy and format', 'Low per run; effort to build', 'Regression tests on every change', 'Needs real, representative cases'],
-      ['Model-based autoraters ([[ap-evals|Gen AI Evaluation]])', 'Quality against a rubric', 'Tokens', 'Scale, open-ended outputs', 'Judge bias; needs calibration to humans'],
+      ['Model-based autoraters ([[ap-evals|Agent Platform Evals]])', 'Quality against a rubric', 'Tokens', 'Scale, open-ended outputs', 'Judge bias; needs calibration to humans'],
       ['Retrieval metrics (recall at k)', 'Whether the right passages surface', 'Low', 'RAG systems ([[rag-engine]])', 'Needs labelled relevant passages'],
       ['Agent simulation and trajectory checks', 'Tool choice, order and multi-step success', 'Medium', 'Agents ([[adk]])', 'Synthetic users reflect your assumptions'],
       ['Live-traffic evaluation and feedback', 'Real behaviour and drift', 'Ongoing', 'Production quality', 'Delayed labels; privacy of data'],

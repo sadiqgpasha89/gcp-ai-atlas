@@ -71,7 +71,7 @@ S({
 S({
   id: 'rag-engine', cat: 'genai', name: 'RAG Engine', doc: 'vertex-ai/generative-ai/docs/rag-engine/rag-overview',
   tag: 'Managed ingestion, chunking, retrieval and grounding for retrieval-augmented generation.',
-  what: 'RAG Engine manages the plumbing between your documents and a model. You create a **corpus**, import files from [[gcs]], Google Drive or other sources, and it parses and chunks them, calls an embedding model, stores vectors, and retrieves relevant chunks at query time. You can plug the retrieval into a [[gemini]] call as a tool, so the model answers with the retrieved passages and citations.\n\nIt supports several vector backends (a managed default, [[vector-search]], and some third-party stores) and retrieval options such as filtering and re-ranking. It is the shortest route from a folder of documents to a cited assistant, and you can replace its parts later as quality or scale needs change.',
+  what: 'RAG Engine manages the plumbing between your documents and a model. You create a **corpus**, import files from [[gcs]], Google Drive or other sources, and it parses and chunks them, calls an embedding model, stores vectors, and retrieves relevant chunks at query time. You can plug the retrieval into a [[gemini]] call as a tool, so the model answers with the retrieved passages and citations.\n\nIt supports several vector backends (a managed default, [[vector-search]], [[agent-retrieval|Agent Retrieval]], and some third-party stores) and retrieval options such as filtering and re-ranking. It is the shortest route from a folder of documents to a cited assistant, and you can replace its parts later as quality or scale needs change.',
   flow: ['Documents', 'Parse + chunk', 'Embed', 'Vector store', 'Retrieve + rank', 'Grounded answer'],
   steps: [
     [0, 'Source files (manuals, policies, tickets) sit in [[gcs]] or a connected source and are imported into a corpus.'],
@@ -85,7 +85,8 @@ S({
     '**Retrieval quality is usually the real problem.** Wrong chunk size, poor parsing of tables, or missing metadata means the right passage never surfaces. Measure recall at k separately from answer quality.',
     '**Access control is yours to enforce.** Without per-user metadata filters, any user can retrieve any chunk. Test with users from different groups.',
     '**Imports are not instant.** New documents are searchable only after the import completes.',
-    '**Changing the embedding model or chunking needs a re-import** into a new corpus.'
+    '**Changing the embedding model or chunking needs a re-import** into a new corpus.',
+    '**Its security controls are narrower than the rest of the platform.** Google documents that VPC Service Controls and CMEK are supported, and that data residency and Access Transparency (AXT) controls are **not**. CMEK also applies only to corpora that use the managed RAG database, and the key is fixed when the corpus is created. For regulated or location-bound data, check the current documentation and see the [[p:compliance-matrix|compliance matrix]] before choosing it.'
   ],
   edges: [
     'PDF tables, scans and images need a layout-aware or OCR step to be retrievable ([[document-ai]]).',
@@ -97,14 +98,14 @@ S({
     'The retrieval tool inside an agent, next to action tools ([[adk]]).',
     'A baseline to beat: if a managed pipeline already meets your recall target, custom retrieval is not needed.'
   ],
-  pairs: ['gemini', 'vector-search', 'ai-search', 'gcs', 'document-ai', 'model-armor'],
+  pairs: ['gemini', 'vector-search', 'agent-retrieval', 'ai-search', 'gcs', 'document-ai', 'model-armor'],
   cost: 'Billed for embedding calls at import, vector storage and serving in the chosen backend, retrieval operations, and then the model tokens for each answer. Large re-imports are a one-off but real cost.'
 });
 
 S({
-  id: 'ai-search', cat: 'genai', name: 'Vertex AI Search (enterprise search)', doc: 'generative-ai-app-builder/docs/introduction',
+  id: 'ai-search', cat: 'genai', name: 'Agent Search', doc: 'generative-ai-app-builder/docs/introduction',
   tag: 'Search and answer over your content as a managed product, with relevance tuning.',
-  what: 'Vertex AI Search (part of the Agent Platform, and the engine under many Gemini Enterprise connectors) is a managed search service. You point it at websites, unstructured documents, structured data or connected SaaS content, and it builds the index, handles ranking and semantic understanding, and returns results or **generated answers with citations**. It has configuration for relevance, facets, boost rules and access control, and variants for media and retail (search and recommendations for commerce).\n\nChoose it over [[rag-engine]] when you want a search product with relevance tooling, connectors and a UI-ready API, rather than assembling retrieval parts yourself.',
+  what: 'Agent Search (formerly Vertex AI Search; part of the Agent Platform, and the engine under many Gemini Enterprise connectors) is a managed search service. You point it at websites, unstructured documents, structured data or connected SaaS content, and it builds the index, handles ranking and semantic understanding, and returns results or **generated answers with citations**. It has configuration for relevance, facets, boost rules and access control, and variants for media and retail (search and recommendations for commerce).\n\nChoose it over [[rag-engine]] when you want a search product with relevance tooling, connectors and a UI-ready API, rather than assembling retrieval parts yourself.',
   flow: ['Connect data', 'Crawl / import', 'Index + understand', 'Query', 'Rank + filter', 'Answer + citations'],
   steps: [
     [0, 'You create a data store from a website, a bucket, a structured source or a SaaS connector.'],
@@ -117,7 +118,7 @@ S({
   gotchas: [
     '**Identity-aware access needs setup.** Without mapping users to document permissions, search can show results users should not see.',
     '**Freshness varies by connector.** A SaaS connector may sync hourly or daily.',
-    '**Product names and tiers have shifted** between Vertex AI Search, Agent Builder and Gemini Enterprise. Check the current packaging and pricing.'
+    '**The name changed but parts of the surface did not.** Google renamed Vertex AI Search to Agent Search, yet the console still shows "Vertex AI Search and AI Applications", and the API is still `discoveryengine.googleapis.com`. Search your own IAM roles, audit logs and Terraform for the old and the new names.'
   ],
   edges: [
     'Generated answers can be disabled per query, which is wise for regulated content.',
@@ -199,7 +200,7 @@ S({
 });
 
 S({
-  id: 'agent-runtime', cat: 'genai', name: 'Agent Runtime (formerly Agent Engine)', doc: 'vertex-ai/generative-ai/docs/agent-engine/overview',
+  id: 'agent-runtime', cat: 'genai', name: 'Agent Runtime (formerly Agent Engine)', doc: 'agent-builder/agent-engine/overview',
   tag: 'Managed hosting for agents with scaling, sessions, sandboxes and long-running support.',
   what: 'Agent Runtime deploys an agent (built with ADK, LangGraph, LangChain, CrewAI or your own code) as a managed service with an API. It handles packaging, scaling (with sub-second cold starts and runs that can last days), identity, logging and tracing, and plugs into **Sessions**, **Memory Bank** ([[agent-memory]]) and **Agent Sandbox** for running model-generated code or browser actions in isolation.\n\nIt is the managed middle ground between [[cloud-run]] (you operate everything) and a fully no-code product. You write agent code; Google runs it. It can also publish the agent over A2A so other agents can call it.',
   flow: ['Package agent', 'Deploy', 'Invoke API', 'Session + memory', 'Sandboxed tools', 'Trace + scale'],

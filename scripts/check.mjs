@@ -51,6 +51,23 @@ for (const s of A.services) {
   (s.pairs || []).forEach(x => { if (!ids.has(x)) err(`${p}: pairs references unknown ${x}`); if (x === s.id) err(`${p}: pairs references itself`); });
 }
 
+// product facts (data/meta.js)
+const STAGES = ['GA', 'Preview', 'Mixed', 'Check'];
+if (!/^\d{4}-\d{2}-\d{2}$/.test(A.metaReviewed || '')) err('metaReviewed must be YYYY-MM-DD');
+for (const id of Object.keys(A.meta || {})) if (!ids.has(id)) err(`meta: unknown service ${id}`);
+for (const s of A.services) {
+  const m = (A.meta || {})[s.id], p = `meta ${s.id}`;
+  if (!m) { err(`${p}: missing`); continue; }
+  if (!STAGES.includes(m.s)) err(`${p}: s must be one of ${STAGES.join(', ')}`);
+  if (!m.alt || m.alt.length < 20) err(`${p}: alt (alternatives and migration) is required`);
+  if (m.price && !/^https:\/\//.test(m.price)) err(`${p}: price must be an https URL`);
+  if (m.was && !Array.isArray(m.was)) err(`${p}: was must be an array`);
+  for (const k of (m.v || [])) if (!['name', 'status', 'limits'].includes(k)) err(`${p}: unknown verified aspect ${k}`);
+  if ((m.v || []).includes('limits') && !m.lim) err(`${p}: marked limits-verified but has no lim`);
+  if ((m.v || []).includes('status') && m.s === 'Check') { /* allowed: verified that status is unclear */ }
+  for (const k of ['reg', 'lim', 'alt']) if (m[k]) checkText(`${p}.${k}`, m[k]);
+}
+
 for (const a of A.architectures) {
   const p = `architecture ${a.id}`;
   if (archIds.has(a.id)) err(`${p}: duplicate id`); archIds.add(a.id);

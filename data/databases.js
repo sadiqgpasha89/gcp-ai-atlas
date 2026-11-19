@@ -97,6 +97,40 @@ S({
   cost: 'Billed for compute capacity (processing units or nodes, or autoscaled), stored data, backups and network egress. It is priced as a premium, always-on service, so it earns its cost when you need global consistency, not for a small single-region app.'
 });
 
+
+S({
+  id: 'spanner-graph', cat: 'databases', name: 'Spanner Graph', doc: 'spanner/docs/graph/overview',
+  tag: 'Property-graph queries (GQL) over Spanner tables, with vector and full-text search for GraphRAG.',
+  what: 'Spanner Graph adds a **property graph** to Spanner. You keep entities and relationships in ordinary tables, declare a graph schema that maps them to nodes and edges, and query them with **GQL** (the ISO graph query language), alone or combined with SQL in one statement. Built-in vector search and full-text search sit on the same data, so one query can find nodes by meaning or by keyword and then traverse the relationships around them.\n\nFor AI it is the storage layer of a **GraphRAG** system: instead of retrieving isolated text chunks, you retrieve a node and the connected context around it (the supplier of this part, the contracts that mention that supplier, the incidents tied to both). It inherits Spanner\'s consistency, IAM integration, CMEK, VPC Service Controls and audit logging, so it suits governed enterprise knowledge.',
+  flow: ['Source documents', 'Extract entities + relations', 'Graph tables + schema', 'Vector / keyword match', 'GQL traversal', 'Ranked graph context'],
+  steps: [
+    [0, 'Documents arrive in [[gcs]]. An event triggers processing, and text is split into segments (a layout-aware parser such as [[document-ai]] helps for PDFs and tables).'],
+    [1, 'A model ([[gemini]]) extracts entities and relationships from each segment, producing candidate nodes and edges.'],
+    [2, 'Nodes and edges are written to Spanner tables; a declarative graph schema maps those tables to a property graph. Embeddings are stored beside the nodes.'],
+    [3, 'At question time the query is embedded and matched to relevant nodes by vector search, optionally mixed with full-text search for exact terms.'],
+    [4, 'A GQL query traverses from those starting nodes to related nodes and edges, combined with SQL for filters such as tenant or date.'],
+    [5, 'The retrieved nodes and edges are ranked against the question and passed to the model as grounded context, with the source segments as citations.']
+  ],
+  gotchas: [
+    '**Extraction errors become graph errors.** An LLM-built graph contains duplicates, wrong relations and missed links. Budget for entity resolution (merging "IBM" and "International Business Machines") and for sampling the graph by hand.',
+    '**Multi-hop traversal can fan out.** Two or three hops across a dense node can return thousands of rows. Limit depth and result size, and rank before you build the prompt.',
+    '**The graph goes stale quietly.** A changed source document must update or delete its nodes and edges, or answers cite relationships that no longer exist.',
+    '**It is not a free upgrade over vector RAG.** Graph building costs model calls and engineering time. Use it when the questions are about relationships and aggregations, not when a single passage holds the answer.'
+  ],
+  edges: [
+    'Graph and relational views of the same tables stay consistent, which avoids dangling edges but also means schema changes are database schema changes.',
+    'Row-level or tenant isolation still has to be designed: filter on a tenant column in every traversal, and test with users from different groups.',
+    'Spanner is provisioned capacity. Size compute for the traversal load, not only for storage.'
+  ],
+  ml: [
+    'GraphRAG for questions that span documents: dependencies, ownership, exposure, "which of our contracts mention this supplier".',
+    'Recommendations and fraud or risk networks where relationships are the signal.',
+    'A knowledge graph that an agent queries as a tool, next to vector retrieval ([[agent-runtime]]).'
+  ],
+  pairs: ['spanner', 'vector-search', 'agent-retrieval', 'rag-engine', 'document-ai', 'gemini', 'agent-runtime', 'gcs'],
+  cost: 'Billed as Spanner: provisioned compute (nodes or processing units), storage and network. Graph building adds model calls for extraction and embeddings per document, and refreshes repeat that cost. Measure extraction cost per thousand documents before committing.'
+});
+
 S({
   id: 'firestore', cat: 'databases', name: 'Firestore', doc: 'firestore/docs',
   tag: 'Serverless document database with real-time sync and built-in vector search.',
@@ -197,7 +231,7 @@ S({
 S({
   id: 'vector-search', cat: 'databases', name: 'Vector Search', doc: 'vertex-ai/docs/vector-search/overview',
   tag: 'Google purpose-built, managed vector index using the ScaNN algorithm, with hybrid search.',
-  what: 'Vector Search (the managed service formerly called Vertex AI Vector Search, and before that Matching Engine) stores embeddings and returns approximate nearest neighbours at very large scale and low latency, built on Google\'s **ScaNN** algorithm. It supports metadata filtering, and **hybrid search** that combines dense vectors with keyword or sparse signals. A newer collection-based API can generate embeddings for you and keep the index in step with your data.\n\nUse it when you need a dedicated, high-scale retrieval tier that is separate from your databases. It is also one of the backends that [[rag-engine]] can use.',
+  what: 'Vector Search (the managed service formerly called Vertex AI Vector Search, and before that Matching Engine) stores embeddings and returns approximate nearest neighbours at very large scale and low latency, built on Google\'s **ScaNN** algorithm. It supports metadata filtering, and **hybrid search** that combines dense vectors with keyword or sparse signals. It is an index-as-a-service: you bring the embeddings, deploy an index, and keep metadata elsewhere (the platform Feature Store, or your own database).\n\nUse it when you need a dedicated, high-scale ANN tier that is separate from your databases and you want control of embedding and ranking. The newer collection-based product that stores the data objects, generates embeddings and does hybrid search for you is a different product with its own API: [[agent-retrieval|Agent Retrieval]] (formerly Vector Search 2.0). Vector Search is also one of the backends that [[rag-engine]] can use.',
   flow: ['Documents + embeddings', 'Index build', 'Deploy index', 'Query embedding', 'ANN + filter', 'Top-k results'],
   steps: [
     [0, 'Text is chunked and embedded by a model such as a Gemini embedding model ([[gemini]]); vectors and metadata are written to storage or streamed in.'],
@@ -223,6 +257,40 @@ S({
     'Recommendation candidate generation with two-tower models ([[ap-training]]).',
     'Semantic search over images or products using multimodal embeddings.'
   ],
-  pairs: ['rag-engine', 'ai-search', 'alloydb', 'gemini', 'psc', 'gcs'],
+  pairs: ['agent-retrieval', 'rag-engine', 'ai-search', 'alloydb', 'gemini', 'psc', 'gcs'],
   cost: 'Billed for index storage and build, and for the machines serving each deployed index (per node-hour), plus streaming updates. The serving nodes dominate, so right-size replicas and undeploy unused indexes.'
+});
+
+S({
+  id: 'agent-retrieval', cat: 'databases', name: 'Agent Retrieval', doc: 'gemini-enterprise-agent-platform/build/vector-search-2/overview',
+  tag: 'Self-tuning managed retrieval engine that stores your data objects, embeds them and runs hybrid search.',
+  what: 'Agent Retrieval (formerly Vector Search 2.0) is a different product from [[vector-search]], not just a newer version of the same index. Vector Search is an approximate-nearest-neighbour **index service**: you create embeddings yourself, deploy an index, and keep your metadata somewhere else. Agent Retrieval is a **storage and retrieval system**: you create a **collection** of JSON **data objects**, and it stores them in a replicated storage engine, can generate the embeddings for you, and serves semantic, keyword and hybrid search from one place.\n\nSearch results from different methods are fused (reciprocal rank fusion) and can be reranked server-side with a semantic ranker. A remote **MCP server** exposes collection inspection and search tools, so an agent can query it directly. [[rag-engine]] can also use it as a managed backend.',
+  flow: ['Define collection', 'Write data objects', 'Auto-embed + index', 'Query (semantic, keyword, hybrid)', 'Fuse + rerank', 'Results to app or agent'],
+  steps: [
+    [0, 'You create a collection and define its schema: the JSON fields, which fields are vectors, and which embedding model (if any) should generate them.'],
+    [1, 'Data objects are written individually or in batch. Each one is validated against the schema before it is stored.'],
+    [2, 'If auto-embedding is configured, the service calls the embedding model for you and builds and tunes the index on its own, so there is no separate index to deploy.'],
+    [3, 'A query arrives as a vector you supply, as text to embed, as keywords, or as a hybrid of these, with filters on the stored fields.'],
+    [4, 'Candidate results from each method are merged by rank fusion, and an optional semantic ranker rescores the merged list against the natural-language query.'],
+    [5, 'Top results come back with their stored fields, so the application or agent does not need a second lookup. Agents can call the same search through the remote MCP server.']
+  ],
+  gotchas: [
+    '**It is a separate product with its own API.** Collections and data objects replace indexes and endpoints. Treat a move from Vector Search as a migration project and read the current migration guidance first.',
+    '**Check the launch stage before you commit.** Google\'s docs present it as a product under the Agent Platform, but launch stages of individual features differ. Confirm in the release notes for the feature you need.',
+    '**Embedding choice is still a long-term decision.** Query and stored vectors must come from the same model. Plan for a re-embed if you change it.',
+    '**Reranking adds a step.** It improves the top results but adds a model call to every query, in latency and, depending on the pricing mode, cost.',
+    '**Permissions are your job.** Stored fields can carry tenant or ACL values, but every query must filter on them. Test with users from different groups.'
+  ],
+  edges: [
+    'For vector fields without an embedding configuration, the client must supply the query vector.',
+    'Because the data lives in the collection, it removes the need for a separate store for metadata, but it also becomes a system of record for those fields. Decide who owns deletes and retention.',
+    'Pricing has two modes (usage-based for smaller workloads, resource-based for tuned performance). Model both against your traffic.'
+  ],
+  ml: [
+    'The retrieval tier for agentic RAG when you want hybrid search, rerank and metadata in one service ([[adk]]).',
+    'A managed backend for [[rag-engine]] when you do not want to run a separate vector index.',
+    'Agent-facing knowledge access through the remote MCP server, governed like any other tool ([[agent-governance]]).'
+  ],
+  pairs: ['vector-search', 'rag-engine', 'ai-search', 'spanner-graph', 'alloydb', 'gemini', 'agent-protocols', 'agent-governance'],
+  cost: 'Adaptable pricing: usage-based for smaller workloads or resource-based for tuned performance. Add the embedding calls (at write and at query time) and reranking. Compare both modes on your own query volume and data size.'
 });

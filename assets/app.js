@@ -16,7 +16,8 @@
     return esc(s)
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, id, label) {
+      .replace(/\[\[(?:([padmt]):)?([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, pre, id, label) {
+        if (pre) return '<a href="#/' + pre + '/' + id + '">' + (label || id) + '</a>';
         var sv = byId[id];
         if (!sv) return label || id;
         return '<a href="#/s/' + id + '">' + (label || sv.name) + '</a>';
@@ -149,6 +150,65 @@
   var pendingSteppers = [];
   function stepperHost(spec) { pendingSteppers.push(spec); return '<div class="stepper" data-sp="' + (pendingSteppers.length - 1) + '"></div>'; }
 
+  /* ---------- generic content blocks (guides, architecture sections) ---------- */
+  function tableHtml(cols, rows, blk) {
+    return '<div class="tablewrap' + (blk ? ' blk' : '') + '"><table><thead><tr>' + cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + fmt(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+  }
+  function boxHtml(b) {
+    return '<div class="box ' + (b.kind || '') + '"><h3>' + esc(b.title) + '</h3>' + ul(b.items) + '</div>';
+  }
+  function slug(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function renderBlocks(blocks) {
+    return blocks.map(function (b) {
+      switch (b.t) {
+        case 'h2': return '<h2 id="' + slug(b.text) + '">' + esc(b.text) + '</h2>';
+        case 'h3': return '<h3 class="bh3">' + esc(b.text) + '</h3>';
+        case 'p': return paras(b.text);
+        case 'ul': return ul(b.items);
+        case 'ol': return '<ol class="olist">' + b.items.map(function (i) { return '<li>' + fmt(i) + '</li>'; }).join('') + '</ol>';
+        case 'table': return tableHtml(b.cols, b.rows, true) + (b.note ? '<p class="fine">' + fmt(b.note) + '</p>' : '');
+        case 'callout': return '<div class="callout"><b>' + esc(b.title) + '</b>' + fmt(b.text) + '</div>';
+        case 'two': return '<div class="lists two" style="margin-top:22px">' + boxHtml(b.left) + boxHtml(b.right) + '</div>';
+        case 'cards': return '<div class="grid">' + b.items.map(function (c) {
+          return '<div class="card plain"><div class="mini">' + esc(c.tag || '') + '</div><h3>' + esc(c.title) + '</h3><p>' + fmt(c.text) + '</p></div>'; }).join('') + '</div>';
+        case 'steps': return '<ol class="phases bigsteps">' + b.items.map(function (i) { return '<li><b>' + esc(i[0]) + '.</b> ' + fmt(i[1]) + '</li>'; }).join('') + '</ol>';
+        case 'runbook':
+          return '<details class="runbook"><summary><span class="rbn">' + esc(b.id) + '</span>' + esc(b.title) + '<small>' + esc(b.trigger) + '</small></summary>' +
+            '<div class="lists two"><div class="box warn"><h3>Symptoms</h3>' + ul(b.symptoms) + '</div><div class="box"><h3>Triage in the first 15 minutes</h3>' + ul(b.triage) + '</div></div>' +
+            '<div class="lists two" style="margin-top:14px"><div class="box ml"><h3>Mitigate</h3>' + ul(b.mitigate) + '</div><div class="box"><h3>Find the root cause</h3>' + ul(b.root) + '</div></div>' +
+            '<div class="callout"><b>Prevent a repeat</b>' + fmt(b.prevent) + '</div></details>';
+        default: return '';
+      }
+    }).join('');
+  }
+  function blocksText(blocks) {
+    return (blocks || []).map(function (b) { return JSON.stringify(b).replace(/"(t|kind|cols|title|text|items|rows|left|right|note|id|trigger|symptoms|triage|mitigate|root|prevent|tag)":/g, ' '); }).join(' ');
+  }
+  function tocHtml(blocks) {
+    var hs = blocks.filter(function (b) { return b.t === 'h2'; });
+    if (hs.length < 3) return '';
+    return '<nav class="toc" aria-label="On this page"><b>On this page</b>' + hs.map(function (h) { return '<a href="#/" data-jump="' + slug(h.text) + '">' + esc(h.text) + '</a>'; }).join('') + '</nav>';
+  }
+
+  /* ---------- product facts ---------- */
+  var STAGE = { GA: ['st-ga', 'Generally available'], Preview: ['st-pre', 'Preview'], Mixed: ['st-mix', 'Features differ'], Check: ['st-chk', 'Not confirmed'] };
+  function stageBadge(m) { var x = STAGE[m.s] || STAGE.Check; return '<span class="stg ' + x[0] + '" title="' + esc(x[1]) + '">' + (m.s === 'Check' ? 'Check' : m.s) + '</span>'; }
+  function factsPanel(s) {
+    var m = s.meta; if (!m) return '';
+    var verified = (m.v || []).length;
+    var h = '<h2>Product facts</h2><dl class="facts">';
+    h += '<div><dt>Current name</dt><dd>' + esc(s.name) + '</dd></div>';
+    h += '<div><dt>Previously called</dt><dd>' + (m.was && m.was.length ? m.was.map(esc).join(', ') : 'No rename recorded') + '</dd></div>';
+    h += '<div><dt>Launch stage</dt><dd>' + stageBadge(m) + ' <span class="fine">' + esc((STAGE[m.s] || STAGE.Check)[1]) + (m.s === 'Mixed' ? ': individual features carry their own stage.' : (m.s === 'Check' ? ': confirm in the docs before you plan on it.' : '.')) + '</span></dd></div>';
+    h += '<div><dt>Regions</dt><dd>' + (m.reg ? fmt(m.reg) : 'Varies by region. See <a href="https://cloud.google.com/about/locations" target="_blank" rel="noopener">Google Cloud locations</a> and the product docs.') + '</dd></div>';
+    h += '<div><dt>Pricing</dt><dd>' + (m.price ? '<a href="' + esc(m.price) + '" target="_blank" rel="noopener">Pricing page ↗</a>' : 'See the pricing link from the product docs.') + '</dd></div>';
+    h += '<div><dt>Quotas and limits</dt><dd>' + (m.lim ? fmt(m.lim) : 'Check the Quotas page in the console for your project and region, and request increases before launch ([[quotas]]).') + '</dd></div>';
+    h += '<div><dt>Alternatives and migration</dt><dd>' + fmt(m.alt) + '</dd></div>';
+    h += '<div><dt>Last reviewed</dt><dd>' + esc(A.metaReviewed) + ' · ' + (verified ? 'checked against Google Cloud documentation: ' + m.v.join(', ') + '.' : '<span class="fine">Not re-checked against the docs in the last review. Confirm name, stage and limits before you rely on them.</span>') + '</dd></div>';
+    return h + '</dl>';
+  }
+
   /* ---------- pages ---------- */
   function pageHome() {
     var n = A.services.length;
@@ -195,11 +255,13 @@
     var c = catById[s.cat], hue = c.hue, i = c.items.indexOf(s);
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a class="chip" style="--h:' + hue + '" href="#/c/' + c.id + '">' + esc(c.name) + '</a>' +
       (s.doc ? '<a href="' + (/^https?:\/\//.test(s.doc) ? '' : 'https://docs.cloud.google.com/') + esc(s.doc) + '" target="_blank" rel="noopener">Google Cloud docs ↗</a>' : '') + '</div>';
-    h += '<h1>' + esc(s.name) + '</h1><p class="lede">' + esc(s.tag) + '</p>';
+    h += '<h1>' + esc(s.name) + (s.meta ? ' ' + stageBadge(s.meta) : '') + '</h1><p class="lede">' + esc(s.tag) + '</p>';
+    if (s.was && s.was.length) h += '<p class="aka">Formerly: ' + s.was.map(esc).join(' · ') + '</p>';
     h += '<h2 style="margin-top:28px">What it is</h2>' + paras(s.what);
     h += '<h2>How it works</h2>' + stepperHost({ flow: s.flow, steps: s.steps, hue: hue });
     h += '<div class="lists two" style="margin-top:34px"><div class="box warn"><h3>Gotchas</h3>' + ul(s.gotchas) + '</div><div class="box"><h3>Edge cases</h3>' + ul(s.edges) + '</div></div>';
     h += '<h2>Using it in AI/ML systems</h2><div class="box ml" style="padding-top:2px">' + ul(s.ml) + '</div>';
+    h += factsPanel(s);
     if (s.pairs && s.pairs.length) {
       h += '<h2>Pairs well with</h2><div class="pairs">' + s.pairs.filter(function (p) { return byId[p]; }).map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
     }
@@ -221,6 +283,8 @@
     h += '<div class="callout"><b>Use it when</b>' + fmt(a.when) + '</div>';
     h += '<h2>Walkthrough</h2><p>Click a step, or press Play. Every box is a link to its service page.</p>' + stepperHost({ flow: a.flow, steps: a.steps, hue: 215 });
     h += '<div class="lists two" style="margin-top:34px"><div class="box"><h3>Why this shape</h3>' + ul(a.why) + '</div><div class="box warn"><h3>How it fails</h3>' + ul(a.fails) + '</div></div>';
+    if (a.sections) h += tocHtml(a.sections) + renderBlocks(a.sections);
+    if (a.src) h += '<h2>Based on</h2><ul class="srcs">' + a.src.map(function (x) { return '<li><a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + ' ↗</a></li>'; }).join('') + '</ul>';
     var used = {}; a.flow.forEach(function (f) { if (f.s) used[f.s] = 1; });
     var ids = Object.keys(used);
     if (ids.length) h += '<h2>Services involved</h2><div class="pairs">' + ids.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
@@ -236,7 +300,7 @@
 
   function doorBadge(d) { var x = DOOR[d.door]; return '<span class="door ' + d.door + '" title="' + esc(x[1]) + '">' + x[0] + '</span>'; }
   function plain(s) {
-    return String(s).replace(/\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, id, label) { return label || (byId[id] ? byId[id].name : id); });
+    return String(s).replace(/\[\[(?:([padmt]):)?([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, pre, id, label) { return label || (!pre && byId[id] ? byId[id].name : id); });
   }
   function copyText(text, btn) {
     var label = btn ? (btn.getAttribute('data-l') || btn.textContent) : '';
@@ -574,6 +638,10 @@
     var cs = $('.side a[aria-current=page]'); if (cs && cs.scrollIntoView) cs.scrollIntoView({ block: 'nearest' });
   }
   window.addEventListener('hashchange', render);
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[data-jump]'); if (!a) return;
+    e.preventDefault(); var t = document.getElementById(a.getAttribute('data-jump')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 
   /* ---------- chrome: nav, theme, search ---------- */
   $('#menuBtn').addEventListener('click', function () {
@@ -588,10 +656,10 @@
 
   var overlay = $('#overlay'), q = $('#q'), resultsEl = $('#results'), sel = 0, hits = [];
   var index = A.services.map(function (s) {
-    return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name,
+    return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name, alias: (s.was || []).join(' ').toLowerCase(),
       hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' ')].join(' ').toLowerCase() };
   }).concat(A.architectures.map(function (a) {
-    return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: (a.name + ' ' + a.short + ' ' + a.why.join(' ')).toLowerCase() };
+    return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: plain(a.name + ' ' + a.short + ' ' + a.why.join(' ') + ' ' + blocksText(a.sections)).toLowerCase() };
   })).concat(A.decisions.map(function (d) {
     return { type: 'Decision', href: '#/d/' + d.id, name: d.title, id: d.id, tag: d.question, cat: 'Decision guide',
       hay: plain([d.title, d.question, d.why, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
@@ -609,6 +677,7 @@
       terms.forEach(function (t) {
         var nm = it.name.toLowerCase(), s = 0;
         if (nm.indexOf(t) === 0) s = 100; else if (nm.indexOf(t) > -1) s = 70; else if (it.id.indexOf(t) > -1) s = 55;
+        else if (it.alias && it.alias.indexOf(t) > -1) s = 65;
         else if (it.tag.toLowerCase().indexOf(t) > -1) s = 30; else if (it.hay.indexOf(t) > -1) s = 10;
         if (!s) ok = false; score += s;
       });
