@@ -16,7 +16,8 @@
     return esc(s)
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, id, label) {
+      .replace(/\[\[(?:([padmt]):)?([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, pre, id, label) {
+        if (pre) return '<a href="#/' + pre + '/' + id + '">' + (label || id) + '</a>';
         var sv = byId[id];
         if (!sv) return label || id;
         return '<a href="#/s/' + id + '">' + (label || sv.name) + '</a>';
@@ -149,6 +150,65 @@
   var pendingSteppers = [];
   function stepperHost(spec) { pendingSteppers.push(spec); return '<div class="stepper" data-sp="' + (pendingSteppers.length - 1) + '"></div>'; }
 
+  /* ---------- generic content blocks (guides, architecture sections) ---------- */
+  function tableHtml(cols, rows, blk) {
+    return '<div class="tablewrap' + (blk ? ' blk' : '') + '"><table><thead><tr>' + cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + fmt(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+  }
+  function boxHtml(b) {
+    return '<div class="box ' + (b.kind || '') + '"><h3>' + esc(b.title) + '</h3>' + ul(b.items) + '</div>';
+  }
+  function slug(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function renderBlocks(blocks) {
+    return blocks.map(function (b) {
+      switch (b.t) {
+        case 'h2': return '<h2 id="' + slug(b.text) + '">' + esc(b.text) + '</h2>';
+        case 'h3': return '<h3 class="bh3">' + esc(b.text) + '</h3>';
+        case 'p': return paras(b.text);
+        case 'ul': return ul(b.items);
+        case 'ol': return '<ol class="olist">' + b.items.map(function (i) { return '<li>' + fmt(i) + '</li>'; }).join('') + '</ol>';
+        case 'table': return tableHtml(b.cols, b.rows, true) + (b.note ? '<p class="fine">' + fmt(b.note) + '</p>' : '');
+        case 'callout': return '<div class="callout"><b>' + esc(b.title) + '</b>' + fmt(b.text) + '</div>';
+        case 'two': return '<div class="lists two" style="margin-top:22px">' + boxHtml(b.left) + boxHtml(b.right) + '</div>';
+        case 'cards': return '<div class="grid">' + b.items.map(function (c) {
+          return '<div class="card plain"><div class="mini">' + esc(c.tag || '') + '</div><h3>' + esc(c.title) + '</h3><p>' + fmt(c.text) + '</p></div>'; }).join('') + '</div>';
+        case 'steps': return '<ol class="phases bigsteps">' + b.items.map(function (i) { return '<li><b>' + esc(i[0]) + '.</b> ' + fmt(i[1]) + '</li>'; }).join('') + '</ol>';
+        case 'runbook':
+          return '<details class="runbook"><summary><span class="rbn">' + esc(b.id) + '</span>' + esc(b.title) + '<small>' + esc(b.trigger) + '</small></summary>' +
+            '<div class="lists two"><div class="box warn"><h3>Symptoms</h3>' + ul(b.symptoms) + '</div><div class="box"><h3>Triage in the first 15 minutes</h3>' + ul(b.triage) + '</div></div>' +
+            '<div class="lists two" style="margin-top:14px"><div class="box ml"><h3>Mitigate</h3>' + ul(b.mitigate) + '</div><div class="box"><h3>Find the root cause</h3>' + ul(b.root) + '</div></div>' +
+            '<div class="callout"><b>Prevent a repeat</b>' + fmt(b.prevent) + '</div></details>';
+        default: return '';
+      }
+    }).join('');
+  }
+  function blocksText(blocks) {
+    return (blocks || []).map(function (b) { return JSON.stringify(b).replace(/"(t|kind|cols|title|text|items|rows|left|right|note|id|trigger|symptoms|triage|mitigate|root|prevent|tag)":/g, ' '); }).join(' ');
+  }
+  function tocHtml(blocks) {
+    var hs = blocks.filter(function (b) { return b.t === 'h2'; });
+    if (hs.length < 3) return '';
+    return '<nav class="toc" aria-label="On this page"><b>On this page</b>' + hs.map(function (h) { return '<a href="#/" data-jump="' + slug(h.text) + '">' + esc(h.text) + '</a>'; }).join('') + '</nav>';
+  }
+
+  /* ---------- product facts ---------- */
+  var STAGE = { GA: ['st-ga', 'Generally available'], Preview: ['st-pre', 'Preview'], Mixed: ['st-mix', 'Features differ'], Check: ['st-chk', 'Not confirmed'] };
+  function stageBadge(m) { var x = STAGE[m.s] || STAGE.Check; return '<span class="stg ' + x[0] + '" title="' + esc(x[1]) + '">' + (m.s === 'Check' ? 'Check' : m.s) + '</span>'; }
+  function factsPanel(s) {
+    var m = s.meta; if (!m) return '';
+    var verified = (m.v || []).length;
+    var h = '<h2>Product facts</h2><dl class="facts">';
+    h += '<div><dt>Current name</dt><dd>' + esc(s.name) + '</dd></div>';
+    h += '<div><dt>Previously called</dt><dd>' + (m.was && m.was.length ? m.was.map(esc).join(', ') : 'No rename recorded') + '</dd></div>';
+    h += '<div><dt>Launch stage</dt><dd>' + stageBadge(m) + ' <span class="fine">' + esc((STAGE[m.s] || STAGE.Check)[1]) + (m.s === 'Mixed' ? ': individual features carry their own stage.' : (m.s === 'Check' ? ': confirm in the docs before you plan on it.' : '.')) + '</span></dd></div>';
+    h += '<div><dt>Regions</dt><dd>' + (m.reg ? fmt(m.reg) : 'Varies by region. See <a href="https://cloud.google.com/about/locations" target="_blank" rel="noopener">Google Cloud locations</a> and the product docs.') + '</dd></div>';
+    h += '<div><dt>Pricing</dt><dd>' + (m.price ? '<a href="' + esc(m.price) + '" target="_blank" rel="noopener">Pricing page ↗</a>' : 'See the pricing link from the product docs.') + '</dd></div>';
+    h += '<div><dt>Quotas and limits</dt><dd>' + (m.lim ? fmt(m.lim) : 'Check the Quotas page in the console for your project and region, and request increases before launch ([[quotas]]).') + '</dd></div>';
+    h += '<div><dt>Alternatives and migration</dt><dd>' + fmt(m.alt) + '</dd></div>';
+    h += '<div><dt>Last reviewed</dt><dd>' + esc(A.metaReviewed) + ' · ' + (verified ? 'checked against Google Cloud documentation: ' + m.v.join(', ') + '.' : '<span class="fine">Not re-checked against the docs in the last review. Confirm name, stage and limits before you rely on them.</span>') + '</dd></div>';
+    return h + '</dl>';
+  }
+
   /* ---------- pages ---------- */
   function pageHome() {
     var n = A.services.length;
@@ -158,6 +218,10 @@
       '<p class="lede">What each service is, how it actually works step by step, where it bites, and how to compose it into larger ML and GenAI systems.</p>' +
       '<div class="btns"><a class="btn primary" href="#/c/genai">Start with GenAI →</a><a class="btn" href="#/a">See full architectures</a><a class="btn" href="#/d">Decision guides</a></div>' +
       '</div>' + heroSVG() + '</section>';
+    h += '<h2>Three layers</h2><p style="max-width:62ch">Learn the services, apply them with a playbook, then track the systems you run.</p><div class="grid">' +
+      '<a class="card" style="--h:215" href="#/c/genai"><div class="mini">Layer 1</div><h3>Knowledge base</h3><p>' + n + ' services, ' + A.architectures.length + ' architectures and ' + A.decisions.length + ' decision guides.</p></a>' +
+      '<a class="card" style="--h:145" href="#/p"><div class="mini">Layer 2</div><h3>Playbook</h3><p>' + (A.guides || []).length + ' operating guides on governance, AgentOps, incidents, evaluation, delivery and data, plus ' + (A.templates || []).length + ' templates and two calculators.</p></a>' +
+      '<a class="card" style="--h:18" href="#/m"><div class="mini">Layer 3</div><h3>Manager cockpit</h3><p>Browser-only trackers for portfolio, delivery, quality, reliability, cost, security, skills and decisions.</p></a></div>';
     h += '<h2>The map</h2><p style="max-width:62ch">Services are grouped by the job they do in an AI/ML system. Each page ends with how to use the service in that setting, and what it pairs with.</p><div class="grid">';
     A.categories.forEach(function (c) {
       h += '<a class="card catcard" style="--h:' + c.hue + '" href="#/c/' + c.id + '">' + miniCube(c.hue) + '<div class="mini">' + c.items.length + ' services</div><h3>' + esc(c.name) + '</h3><p>' + esc(c.short) + '</p></a>';
@@ -171,6 +235,9 @@
       '<a class="card" style="--h:215" href="#/d"><div class="mini">' + A.decisions.length + ' guides</div><h3>Decision guides</h3><p>Options, if/then rules, red flags, review questions and one-way-door markers.</p></a>' +
       '<a class="card" style="--h:145" href="#/d/checklists"><div class="mini">Checklist</div><h3>Readiness checklists</h3><p>Maturity ladder, production readiness and a decision-record template.</p></a>' +
       '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>See which levers move the bill most.</p></a>' +
+      '<a class="card" style="--h:42" href="#/d/finops"><div class="mini">Cost model</div><h3>AI FinOps model</h3><p>Every component of a system, six what-if comparisons, cost per successful task.</p></a>' +
+      '<a class="card" style="--h:18" href="#/d/scorecard"><div class="mini">Release gates</div><h3>Evaluation scorecard</h3><p>Compare candidates on one dataset and see which pass your gates.</p></a>' +
+      '<a class="card" style="--h:145" href="#/t"><div class="mini">' + (A.templates || []).length + ' templates</div><h3>Management templates</h3><p>Problem statement, architecture review, threat model, go/no-go and more.</p></a>' +
       '</div><h2>How to read a service page</h2><div class="lists two" style="max-width:860px">' +
       '<div class="box"><h3>Every page has</h3>' + ul(['**What it is**: the job it does, in plain terms.', '**How it works**: a stepper you can click through or play.', '**Gotchas** and **edge cases**: the things that surprise people in production.', '**In AI/ML systems**: concrete ways to use it.']) + '</div>' +
       '<div class="box"><h3>A note on numbers</h3><p style="margin-top:10px">Limits and prices are given for orientation, and Google Cloud changes them, and renames products often. Where a number matters to your design, confirm it on the linked docs page and on your project\'s Quotas page.</p></div></div></div>';
@@ -195,11 +262,13 @@
     var c = catById[s.cat], hue = c.hue, i = c.items.indexOf(s);
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a class="chip" style="--h:' + hue + '" href="#/c/' + c.id + '">' + esc(c.name) + '</a>' +
       (s.doc ? '<a href="' + (/^https?:\/\//.test(s.doc) ? '' : 'https://docs.cloud.google.com/') + esc(s.doc) + '" target="_blank" rel="noopener">Google Cloud docs ↗</a>' : '') + '</div>';
-    h += '<h1>' + esc(s.name) + '</h1><p class="lede">' + esc(s.tag) + '</p>';
+    h += '<h1>' + esc(s.name) + (s.meta ? ' ' + stageBadge(s.meta) : '') + '</h1><p class="lede">' + esc(s.tag) + '</p>';
+    if (s.was && s.was.length) h += '<p class="aka">Formerly: ' + s.was.map(esc).join(' · ') + '</p>';
     h += '<h2 style="margin-top:28px">What it is</h2>' + paras(s.what);
     h += '<h2>How it works</h2>' + stepperHost({ flow: s.flow, steps: s.steps, hue: hue });
     h += '<div class="lists two" style="margin-top:34px"><div class="box warn"><h3>Gotchas</h3>' + ul(s.gotchas) + '</div><div class="box"><h3>Edge cases</h3>' + ul(s.edges) + '</div></div>';
     h += '<h2>Using it in AI/ML systems</h2><div class="box ml" style="padding-top:2px">' + ul(s.ml) + '</div>';
+    h += factsPanel(s);
     if (s.pairs && s.pairs.length) {
       h += '<h2>Pairs well with</h2><div class="pairs">' + s.pairs.filter(function (p) { return byId[p]; }).map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
     }
@@ -221,9 +290,87 @@
     h += '<div class="callout"><b>Use it when</b>' + fmt(a.when) + '</div>';
     h += '<h2>Walkthrough</h2><p>Click a step, or press Play. Every box is a link to its service page.</p>' + stepperHost({ flow: a.flow, steps: a.steps, hue: 215 });
     h += '<div class="lists two" style="margin-top:34px"><div class="box"><h3>Why this shape</h3>' + ul(a.why) + '</div><div class="box warn"><h3>How it fails</h3>' + ul(a.fails) + '</div></div>';
+    if (a.sections) h += tocHtml(a.sections) + renderBlocks(a.sections);
+    if (a.src) h += '<h2>Based on</h2><ul class="srcs">' + a.src.map(function (x) { return '<li><a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + ' ↗</a></li>'; }).join('') + '</ul>';
     var used = {}; a.flow.forEach(function (f) { if (f.s) used[f.s] = 1; });
     var ids = Object.keys(used);
     if (ids.length) h += '<h2>Services involved</h2><div class="pairs">' + ids.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    return h;
+  }
+
+
+  /* ---------- guides (long-form playbooks) ---------- */
+  var guideById = {}; (A.guides || []).forEach(function (g) { guideById[g.id] = g; });
+  var guideGroupById = {}; (A.guideGroups || []).forEach(function (g) { guideGroupById[g.id] = g; });
+  function guideCard(g) {
+    return '<a class="card" style="--h:' + (guideGroupById[g.group] ? guideGroupById[g.group].hue : 215) + '" href="#/p/' + g.id + '"><div class="mini">' + esc(guideGroupById[g.group] ? guideGroupById[g.group].name : 'Guide') + '</div><h3>' + esc(g.title) + '</h3><p>' + esc(g.short) + '</p></a>';
+  }
+  function pageGuideHub() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Guides</div><h1>Operating guides</h1>' +
+      '<p class="lede">Long-form playbooks for running agentic and ML systems on Google Cloud: governance, operations, evaluation, delivery and data.</p>' +
+      '<p style="max-width:62ch">Service pages say what a product does. These guides say how a team runs a system built from them: who owns what, which numbers to watch, what to do when it breaks, and what to put in the pipeline.</p>';
+    (A.guideGroups || []).forEach(function (gr) {
+      var list = A.guides.filter(function (g) { return g.group === gr.id; });
+      if (!list.length) return;
+      h += '<h2>' + esc(gr.name) + '</h2><p style="max-width:62ch">' + esc(gr.blurb) + '</p><div class="grid">' + list.map(guideCard).join('') + '</div>';
+    });
+    return h;
+  }
+  function pageGuide(id) {
+    var g = guideById[id]; if (!g) return notFound();
+    var gr = guideGroupById[g.group] || { name: 'Guide' };
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/p">Guides</a> / ' + esc(gr.name) + '</div><h1>' + esc(g.title) + '</h1><p class="lede">' + esc(g.short) + '</p>';
+    if (g.when) h += '<div class="callout"><b>Use it when</b>' + fmt(g.when) + '</div>';
+    h += tocHtml(g.blocks) + renderBlocks(g.blocks);
+    if (g.src && g.src.length) h += '<h2>Based on</h2><ul class="srcs">' + g.src.map(function (x) { return '<li><a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + ' ↗</a></li>'; }).join('') + '</ul>';
+    var rel = (g.related || []).filter(function (p) { return byId[p]; });
+    if (rel.length) h += '<h2>Services involved</h2><div class="pairs">' + rel.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    var more = (g.see || []).map(function (r) {
+      var p = r.split(':'), x = p[1];
+      if (p[0] === 'p' && guideById[x]) return '<a href="#/p/' + x + '">' + esc(guideById[x].title) + '</a>';
+      if (p[0] === 'a' && archById[x]) return '<a href="#/a/' + x + '">' + esc(archById[x].name) + '</a>';
+      if (p[0] === 'd' && decById[x]) return '<a href="#/d/' + x + '">' + esc(decById[x].title) + '</a>';
+      if (p[0] === 't') return '<a href="#/t' + (x ? '/' + x : '') + '">Template: ' + esc(x) + '</a>';
+      return '';
+    }).filter(Boolean);
+    if (more.length) h += '<h2>Related guides and architectures</h2><div class="pairs">' + more.join('') + '</div>';
+    return h;
+  }
+
+
+  /* ---------- management templates ---------- */
+  var tplById = {}; (A.templates || []).forEach(function (t) { tplById[t.id] = t; });
+  function seeHtml(see) {
+    return (see || []).map(function (r) {
+      var p = r.split(':'), x = p[1];
+      if (p[0] === 'p' && guideById[x]) return '<a href="#/p/' + x + '">' + esc(guideById[x].title) + '</a>';
+      if (p[0] === 'a' && archById[x]) return '<a href="#/a/' + x + '">' + esc(archById[x].name) + '</a>';
+      if (p[0] === 'd' && decById[x]) return '<a href="#/d/' + x + '">' + esc(decById[x].title) + '</a>';
+      if (p[0] === 'd' && window.ATLAS_TOOLS && window.ATLAS_TOOLS[x]) return '<a href="#/d/' + x + '">' + esc(window.ATLAS_TOOLS[x].title) + '</a>';
+      if (p[0] === 't' && tplById[x]) return '<a href="#/t/' + x + '">Template: ' + esc(tplById[x].title) + '</a>';
+      return '';
+    }).filter(Boolean).join('');
+  }
+  function pageTemplates() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Templates</div><h1>Management templates</h1>' +
+      '<p class="lede">Twelve copy-ready markdown templates for running AI work: from the first problem statement to the post-incident review.</p>' +
+      '<p style="max-width:62ch">Each template says when to use it and who fills it in. Copy it into your wiki, ticket or repository, and fill it in. Nothing is stored here.</p><div class="grid">';
+    A.templates.forEach(function (t) { h += '<a class="card" style="--h:145" href="#/t/' + t.id + '"><div class="mini">Template</div><h3>' + esc(t.title) + '</h3><p>' + esc(t.short) + '</p></a>'; });
+    return h + '</div>';
+  }
+  function pageTemplate(id) {
+    var t = tplById[id]; if (!t) return notFound();
+    var i = A.templates.indexOf(t), prev = A.templates[i - 1], next = A.templates[i + 1];
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/t">Templates</a></div><h1>' + esc(t.title) + '</h1><p class="lede">' + esc(t.short) + '</p>';
+    h += '<div class="lists two"><div class="box"><h3>When to use it</h3><p style="margin-top:10px">' + fmt(t.when) + '</p></div><div class="box ml"><h3>Who fills it in</h3><p style="margin-top:10px">' + fmt(t.who) + '</p></div></div>';
+    h += '<div class="btns" style="margin:22px 0 10px"><button class="btn primary" type="button" data-copy-tpl>Copy template</button><span class="fine">Markdown, ' + t.body.split('\n').length + ' lines</span></div>';
+    h += '<pre class="adr tpl" tabindex="0" aria-label="Template text">' + esc(t.body) + '</pre>';
+    var more = seeHtml(t.see);
+    if (more) h += '<h2>Related</h2><div class="pairs">' + more + '</div>';
+    var rel = (t.related || []).filter(function (p) { return byId[p]; });
+    if (rel.length) h += '<h2>Services involved</h2><div class="pairs">' + rel.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    h += '<div class="pn">' + (prev ? '<a href="#/t/' + prev.id + '"><small>← Previous</small>' + esc(prev.title) + '</a>' : '<span></span>') + (next ? '<a href="#/t/' + next.id + '"><small>Next →</small>' + esc(next.title) + '</a>' : '') + '</div>';
+    afterRender = function () { var b = $('[data-copy-tpl]'); if (b) b.addEventListener('click', function () { copyText(t.body, b); }); };
     return h;
   }
 
@@ -236,7 +383,7 @@
 
   function doorBadge(d) { var x = DOOR[d.door]; return '<span class="door ' + d.door + '" title="' + esc(x[1]) + '">' + x[0] + '</span>'; }
   function plain(s) {
-    return String(s).replace(/\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, id, label) { return label || (byId[id] ? byId[id].name : id); });
+    return String(s).replace(/\[\[(?:([padmt]):)?([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g, function (m, pre, id, label) { return label || (!pre && byId[id] ? byId[id].name : id); });
   }
   function copyText(text, btn) {
     var label = btn ? (btn.getAttribute('data-l') || btn.textContent) : '';
@@ -254,6 +401,9 @@
     var p = ref.split(':'), id = p[1];
     if (p[0] === 'svc' && byId[id]) return '<a href="#/s/' + id + '">' + esc(byId[id].name) + '</a>';
     if (p[0] === 'dec' && decById[id]) return '<a href="#/d/' + id + '">' + esc(decById[id].title) + '</a>';
+    if (p[0] === 'p' && guideById[id]) return '<a href="#/p/' + id + '">' + esc(guideById[id].title) + '</a>';
+    if (p[0] === 'a' && archById[id]) return '<a href="#/a/' + id + '">' + esc(archById[id].name) + '</a>';
+    if (p[0] === 't' && tplById[id]) return '<a href="#/t/' + id + '">' + esc(tplById[id].title) + '</a>';
     return '';
   }
   function money(n) {
@@ -271,7 +421,9 @@
     h += '<h2>Tools</h2><div class="grid">' +
       '<a class="card" style="--h:215" href="#/d/shaper"><div class="mini">Interactive</div><h3>Solution shaper</h3><p>Answer seven questions about your use case and get a starting stack, risks, and the decisions to make next.</p></a>' +
       '<a class="card" style="--h:145" href="#/d/checklists"><div class="mini">Checklist</div><h3>Readiness checklists</h3><p>A prototype-to-scale maturity ladder, a production-readiness checklist, and a decision-record template.</p></a>' +
-      '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>Model unit economics and see which levers (caching, batching, routing) move the bill most.</p></a></div>';
+      '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>Model unit economics and see which levers (caching, batching, routing) move the bill most.</p></a>' +
+      '<a class="card" style="--h:42" href="#/d/finops"><div class="mini">Cost model</div><h3>AI FinOps model</h3><p>Every model call across every agent, retrieval, tools and fixed costs, with six what-if comparisons and cost per successful task.</p></a>' +
+      '<a class="card" style="--h:18" href="#/d/scorecard"><div class="mini">Release gates</div><h3>Evaluation scorecard</h3><p>Compare models, prompts, agents and retrieval strategies on one dataset and see which pass your gates.</p></a></div>';
     A.decisionThemes.forEach(function (t) {
       var list = A.decisions.filter(function (d) { return d.theme === t.id; });
       h += '<h2>' + esc(t.name) + '</h2><p style="max-width:62ch">' + esc(t.blurb) + '</p><div class="grid">';
@@ -335,9 +487,20 @@
     r.stack.forEach(function (s) { L.push('- ' + byId[s.id].name + ': ' + s.role + '. ' + s.why); });
     L.push('', '## Risks to design for'); r.risks.forEach(function (x) { L.push('- ' + x); });
     L.push('', '## Decisions to make next'); r.next.forEach(function (n) { L.push('- ' + decById[n.id].title + ': ' + n.why); });
+    if (r.deeper && r.deeper.length) { L.push('', '## Go deeper'); r.deeper.forEach(function (d) { var t = deeperTarget(d); if (t) L.push('- ' + t[1] + ' (' + t[2].toLowerCase() + '): ' + d.why); }); }
     L.push('', '## Phasing'); r.phases.forEach(function (p, i) { L.push((i + 1) + '. ' + p); });
     L.push('', 'Generated by the Google Cloud AI Atlas. A starting point only: validate with your own evals.');
     return L.join('\n');
+  }
+  function deeperTarget(d) {
+    if (d.k === 'a' && archById[d.id]) return ['#/a/' + d.id, archById[d.id].name, 'Architecture'];
+    if (d.k === 'p' && guideById[d.id]) return ['#/p/' + d.id, guideById[d.id].title, 'Guide'];
+    if (d.k === 'd' && d.id === 'finops') return ['#/d/finops', 'AI FinOps model', 'Tool'];
+    if (d.k === 'd' && d.id === 'scorecard') return ['#/d/scorecard', 'Evaluation scorecard', 'Tool'];
+    return null;
+  }
+  function deeperLinks(list) {
+    return (list || []).map(function (d) { var t = deeperTarget(d); return t ? '<li><a href="' + t[0] + '">' + esc(t[1]) + '</a> <span class="fine">' + t[2] + '</span><br><span>' + esc(d.why) + '</span></li>' : ''; }).join('');
   }
   function mountShaper() {
     var form = $('#shForm'), out = $('#shOut'), a = {}, k;
@@ -355,6 +518,8 @@
       h += '<h3>Decide next</h3><ul class="nextl">' + r.next.map(function (n) {
         var d = decById[n.id]; return '<li><a href="#/d/' + d.id + '">' + esc(d.title) + '</a> ' + doorBadge(d) + '<br><span>' + esc(n.why) + '</span></li>';
       }).join('') + '</ul>';
+      var dl = deeperLinks(r.deeper);
+      if (dl) h += '<h3>Go deeper</h3><ul class="nextl">' + dl + '</ul>';
       h += '<h3>Phasing</h3><ol class="phases">' + r.phases.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ol>';
       h += '<div class="btns" style="margin-top:18px"><button class="btn" type="button" data-copy>Copy as markdown</button><a class="btn" href="#/d/checklists">Readiness checklists</a></div>';
       out.innerHTML = h; out._md = shaperMarkdown(a, r);
@@ -531,12 +696,16 @@
     var curTheme = kind === 'd' && decById[id] ? decById[id].theme : null;
     var h = '<h3>Explore</h3>' + nl('#/', 'Home', false) + nl('#/a', 'Architectures', kind === 'a' && !id) + '<h3>Decisions</h3>' +
       nl('#/d', 'Decision guides', kind === 'd' && !id) + nl('#/d/shaper', 'Solution shaper', kind === 'd' && id === 'shaper') +
-      nl('#/d/checklists', 'Readiness checklists', kind === 'd' && id === 'checklists') + nl('#/d/calculator', 'Cost per task', kind === 'd' && id === 'calculator');
+      nl('#/d/checklists', 'Readiness checklists', kind === 'd' && id === 'checklists') + nl('#/d/calculator', 'Cost per task', kind === 'd' && id === 'calculator') +
+      nl('#/d/finops', 'AI FinOps model', kind === 'd' && id === 'finops') + nl('#/d/scorecard', 'Evaluation scorecard', kind === 'd' && id === 'scorecard');
     A.decisionThemes.forEach(function (t) {
       var list = A.decisions.filter(function (d) { return d.theme === t.id; });
       h += '<details' + (curTheme === t.id ? ' open' : '') + '><summary style="--h:' + THEME_HUE[t.id] + '"><span class="dot"></span><span style="flex:1">' + esc(t.name) + '</span><span class="n">' + list.length + '</span></summary><ul>' +
         list.map(function (d) { return '<li><a href="#/d/' + d.id + '"' + (kind === 'd' && id === d.id ? ' aria-current="page"' : '') + '>' + esc(d.title) + '</a></li>'; }).join('') + '</ul></details>';
     });
+    h += '<h3>Playbook</h3>' + nl('#/p', 'Operating guides', kind === 'p' && !id) + nl('#/t', 'Templates', kind === 't' && !id) +
+      '<h3>Manager cockpit</h3>' + nl('#/m', 'Overview', kind === 'm' && !id) +
+      A.cockpit.tabs.map(function (t) { return nl('#/m/' + t.id, esc(t.title), kind === 'm' && id === t.id); }).join('');
     h += '<h3>Services</h3>';
     A.categories.forEach(function (c) {
       h += '<details' + (cur === c.id ? ' open' : '') + '><summary style="--h:' + c.hue + '"><span class="dot"></span><a href="#/c/' + c.id + '"' + (kind === 'c' && id === c.id ? ' aria-current="page"' : '') + '>' + esc(c.name) + '</a><span class="n">' + c.items.length + '</span></summary><ul>' +
@@ -544,6 +713,8 @@
     });
     $('#side').innerHTML = h;
   }
+
+  var UI = { $: $, $$: $$, esc: esc, fmt: fmt, ul: ul, paras: paras, copyText: copyText, money: money, tableHtml: tableHtml, renderBlocks: renderBlocks };
 
   /* ---------- router ---------- */
   function render() {
@@ -556,10 +727,31 @@
     else if (kind === 'a') { if (id && archById[id]) { html = pageArch(id); title = archById[id].name + ' — Google Cloud for AI/ML Systems'; } else html = pageArchIndex(); }
     else if (kind === 'd') {
       var TOOLS = { shaper: ['Solution shaper', pageShaper], checklists: ['Readiness checklists', pageChecklists], calculator: ['Cost per task', pageCalculator] };
+      Object.keys(window.ATLAS_TOOLS || {}).forEach(function (k) {
+        var T = window.ATLAS_TOOLS[k];
+        TOOLS[k] = [T.title, function () { afterRender = function () { T.mount(UI); }; return T.render(UI); }];
+      });
       if (!id) { html = pageDecisionHub(); title = 'Decision guides — Google Cloud for AI/ML Systems'; }
       else if (TOOLS[id]) { html = TOOLS[id][1](); title = TOOLS[id][0] + ' — Google Cloud for AI/ML Systems'; }
       else if (decById[id]) { html = pageDecision(id); title = decById[id].title + ' — Google Cloud for AI/ML Systems'; }
       else html = notFound();
+    }
+    else if (kind === 'p') {
+      if (!id) { html = pageGuideHub(); title = 'Operating guides — Google Cloud for AI/ML Systems'; }
+      else if (guideById[id]) { html = pageGuide(id); title = guideById[id].title + ' — Google Cloud for AI/ML Systems'; }
+      else html = notFound();
+    }
+    else if (kind === 't') {
+      if (!id) { html = pageTemplates(); title = 'Management templates — Google Cloud for AI/ML Systems'; }
+      else if (tplById[id]) { html = pageTemplate(id); title = tplById[id].title + ' — template — Google Cloud for AI/ML Systems'; }
+      else html = notFound();
+    }
+    else if (kind === 'm') {
+      var CK = window.ATLAS_COCKPIT, ckTab = id && A.cockpit.tabs.filter(function (t) { return t.id === id; })[0];
+      if (!id || ckTab) {
+        html = CK.render(UI, id); afterRender = function () { CK.mount(UI, id); };
+        title = (ckTab ? ckTab.title + ' — ' : '') + 'Manager cockpit — Google Cloud for AI/ML Systems';
+      } else html = notFound();
     }
     else if (!kind) html = pageHome();
     else html = notFound();
@@ -574,6 +766,10 @@
     var cs = $('.side a[aria-current=page]'); if (cs && cs.scrollIntoView) cs.scrollIntoView({ block: 'nearest' });
   }
   window.addEventListener('hashchange', render);
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[data-jump]'); if (!a) return;
+    e.preventDefault(); var t = document.getElementById(a.getAttribute('data-jump')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 
   /* ---------- chrome: nav, theme, search ---------- */
   $('#menuBtn').addEventListener('click', function () {
@@ -588,16 +784,24 @@
 
   var overlay = $('#overlay'), q = $('#q'), resultsEl = $('#results'), sel = 0, hits = [];
   var index = A.services.map(function (s) {
-    return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name,
+    return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name, alias: (s.was || []).join(' ').toLowerCase(),
       hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' ')].join(' ').toLowerCase() };
   }).concat(A.architectures.map(function (a) {
-    return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: (a.name + ' ' + a.short + ' ' + a.why.join(' ')).toLowerCase() };
-  })).concat(A.decisions.map(function (d) {
+    return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: plain(a.name + ' ' + a.short + ' ' + a.why.join(' ') + ' ' + blocksText(a.sections)).toLowerCase() };
+  })).concat((A.guides || []).map(function (g) {
+    return { type: 'Guide', href: '#/p/' + g.id, name: g.title, id: g.id, tag: g.short, cat: 'Guide', hay: plain(g.title + ' ' + g.short + ' ' + (g.when || '') + ' ' + blocksText(g.blocks)).toLowerCase() };
+  })).concat((A.templates || []).map(function (t) {
+    return { type: 'Template', href: '#/t/' + t.id, name: t.title, id: t.id, tag: t.short, cat: 'Template', hay: plain(t.title + ' ' + t.short + ' ' + t.when + ' ' + t.body).toLowerCase() };
+  })).concat(((A.cockpit && A.cockpit.tabs) || []).map(function (t) {
+    return { type: 'Cockpit', href: '#/m/' + t.id, name: t.title, id: 'cockpit-' + t.id, tag: t.blurb, cat: 'Cockpit', hay: ('manager cockpit tracker ' + t.title + ' ' + t.blurb + ' ' + (t.cols || []).map(function (c) { return c.label; }).join(' ')).toLowerCase() };
+  })).concat([{ type: 'Cockpit', href: '#/m', name: 'Manager cockpit', id: 'cockpit', tag: 'Track portfolio, delivery, quality, reliability, cost, security, skills and decisions', cat: 'Cockpit', hay: 'engineering manager dashboard tracker attention portfolio radar capability matrix' }]).concat(A.decisions.map(function (d) {
     return { type: 'Decision', href: '#/d/' + d.id, name: d.title, id: d.id, tag: d.question, cat: 'Decision guide',
       hay: plain([d.title, d.question, d.why, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
   })).concat([
     { type: 'Tool', href: '#/d/shaper', name: 'Solution shaper', id: 'shaper', tag: 'Get a starting stack, risks and next decisions for your use case', cat: 'Tool', hay: 'recommend stack wizard rag agent starting point' },
     { type: 'Tool', href: '#/d/checklists', name: 'Readiness checklists', id: 'checklists', tag: 'Maturity ladder, production readiness and decision record template', cat: 'Tool', hay: 'production readiness launch checklist adr decision record maturity prototype pilot scale' },
+    { type: 'Tool', href: '#/d/scorecard', name: 'Evaluation scorecard', id: 'scorecard', tag: 'Compare candidates on one dataset and apply release gates', cat: 'Tool', hay: 'evals golden set release gate threshold regression compare models prompts agents retrieval pass fail' },
+    { type: 'Tool', href: '#/d/finops', name: 'AI FinOps model', id: 'finops', tag: 'Component cost model and cost per successful task', cat: 'Tool', hay: 'cost tokens embeddings reranking vector retries budget routing cache parallel chunk size agent runtime unit economics' },
     { type: 'Tool', href: '#/d/calculator', name: 'Cost per task calculator', id: 'calculator', tag: 'Unit economics for LLM features and the levers that cut cost', cat: 'Tool', hay: 'price tokens caching batch unit economics budget' }
   ]);
   function openSearch() { overlay.hidden = false; q.value = ''; runSearch(); q.focus(); }
@@ -609,6 +813,7 @@
       terms.forEach(function (t) {
         var nm = it.name.toLowerCase(), s = 0;
         if (nm.indexOf(t) === 0) s = 100; else if (nm.indexOf(t) > -1) s = 70; else if (it.id.indexOf(t) > -1) s = 55;
+        else if (it.alias && it.alias.indexOf(t) > -1) s = 65;
         else if (it.tag.toLowerCase().indexOf(t) > -1) s = 30; else if (it.hay.indexOf(t) > -1) s = 10;
         if (!s) ok = false; score += s;
       });

@@ -52,7 +52,8 @@ window.ATLAS.readiness = [
       { id: 'q3', kind: 'agent', t: 'Tool choice and parameter accuracy are measured separately from final answer quality.', why: 'A right answer from a wrong tool call is luck, and it will not repeat.', see: ['dec:agent-runtime', 'svc:adk'] },
       { id: 'q4', kind: 'both', t: 'For RAG, retrieval quality (recall at k) is measured separately from generation.', why: 'It tells you which half to fix.', see: ['dec:vector-store', 'svc:rag-engine'] },
       { id: 'q5', kind: 'ml', t: 'Offline metrics map to a business metric, and the holdout reflects production data.', why: 'A model can win offline and lose in production.', see: ['svc:ap-pipelines'] },
-      { id: 'q6', kind: 'both', t: 'Known failure modes are documented, with what the user sees when each happens.', why: 'Graceful failure is designed, not discovered.', see: [] }
+      { id: 'q6', kind: 'both', t: 'Known failure modes are documented, with what the user sees when each happens.', why: 'Graceful failure is designed, not discovered.', see: [] },
+      { id: 'q7', kind: 'both', t: 'The evaluation lifecycle is written down: who owns the eval set, when it is refreshed from production failures, and which gates block a release.', why: 'Eval sets that are never refreshed stop predicting production quality.', see: ['p:evaluation-lifecycle', 't:evaluation-report'] },
     ]
   },
   {
@@ -63,7 +64,8 @@ window.ATLAS.readiness = [
       { id: 's4', kind: 'both', t: 'Model Armor or equivalent screening and PII handling are configured and tested on inputs and outputs; logging of sensitive text is a deliberate choice.', why: 'Logs and caches are where sensitive data quietly accumulates.', see: ['svc:model-armor', 'svc:sdp'] },
       { id: 's5', kind: 'both', t: 'Per-user and per-tenant isolation is tested across retrieval, caches and logs.', why: 'A missing filter leaks one customer\'s data to another.', see: ['dec:tenancy'] },
       { id: 's6', kind: 'both', t: 'Encryption keys, private network paths and VPC Service Controls perimeters are in place, where required.', why: 'Prompts and datasets should not cross the public internet or leave your perimeter.', see: ['svc:kms', 'svc:vpc-sc', 'svc:psc'] },
-      { id: 's7', kind: 'both', t: 'Model and vendor terms on data use, retention and residency are reviewed, including global and multi-region endpoints.', why: 'Compliance owners need to approve this before launch, not after.', see: ['svc:gemini'] }
+      { id: 's7', kind: 'both', t: 'Model and vendor terms on data use, retention and residency are reviewed, including global and multi-region endpoints.', why: 'Compliance owners need to approve this before launch, not after.', see: ['svc:gemini'] },
+      { id: 's8', kind: 'agent', t: 'Each agent has its own identity, a named owner, an allow-list of tools and data, and a recorded approval for what it may change.', why: 'Shared identities and unowned agents make incidents impossible to attribute or contain.', see: ['p:agent-governance-guide', 'svc:agent-governance'] },
     ]
   },
   {
@@ -89,9 +91,11 @@ window.ATLAS.readiness = [
       { id: 'o1', kind: 'both', t: 'Dashboards show latency (including time to first token), errors, throttles, tokens, queue age and accelerator utilisation.', why: 'You cannot run what you cannot see.', see: ['svc:cloud-monitoring'] },
       { id: 'o2', kind: 'agent', t: 'Every agent run is traceable step by step (reasoning, tool calls, results) and can be replayed.', why: 'Non-deterministic failures need a record to debug.', see: ['svc:agent-runtime', 'svc:cloud-monitoring'] },
       { id: 'o3', kind: 'both', t: 'Alerts page a named on-call rota, with runbooks for throttling, model outage, bad output and runaway cost.', why: 'Alerts without owners are noise.', see: ['svc:cloud-monitoring'] },
+      { id: 'o7', kind: 'both', t: 'Runbooks exist for model outage, quota exhaustion, bad retrieval, runaway agent loops and data leakage, and the on-call has rehearsed them.', why: 'The first time you read a runbook should not be during the incident.', see: ['p:incident-runbooks', 't:slo-runbook'] },
       { id: 'o4', kind: 'ml', t: 'Drift and data-quality monitoring has a defined retraining trigger and an owner.', why: 'Models decay quietly.', see: ['svc:ap-monitoring'] },
       { id: 'o5', kind: 'both', t: 'Infrastructure is defined as code; environments are reproducible; changes are reviewed.', why: 'Manual setups cannot be audited or rebuilt.', see: ['svc:infra-manager'] },
-      { id: 'o6', kind: 'both', t: 'Model versions are pinned, and a process exists for retirements and upgrades.', why: 'Providers retire models on their schedule, not yours.', see: ['svc:gemini'] }
+      { id: 'o6', kind: 'both', t: 'Model versions are pinned, and a process exists for retirements and upgrades.', why: 'Providers retire models on their schedule, not yours.', see: ['svc:gemini'] },
+      { id: 'o8', kind: 'both', t: 'Prompts, agent definitions, tools and indexes move through CI with evals, staged rollout and rollback, not by manual edits in production.', why: 'Prompt and config edits change behaviour as much as code does.', see: ['a:agent-cicd', 'p:platform-engineering'] },
     ]
   },
   {
@@ -99,7 +103,8 @@ window.ATLAS.readiness = [
       { id: 'd1', kind: 'both', t: 'Data sources are catalogued with owners, and permission to use them for this purpose is confirmed.', why: 'Legal and trust problems start with unexamined data.', see: ['svc:knowledge-catalog'] },
       { id: 'd2', kind: 'both', t: 'Sensitive data is scanned for before it enters a training set or an index.', why: 'It is far cheaper to keep it out than to remove it.', see: ['svc:sdp'] },
       { id: 'd3', kind: 'both', t: 'Retention and deletion are defined for prompts, outputs, embeddings and logs, including full tenant deletion.', why: 'Embeddings and logs are easy to forget when deleting.', see: ['dec:tenancy'] },
-      { id: 'd4', kind: 'ml', t: 'Training data, code and model versions are linked so any production model can be reproduced.', why: 'Audits and incidents both ask for this.', see: ['svc:ap-pipelines'] }
+      { id: 'd4', kind: 'ml', t: 'Training data, code and model versions are linked so any production model can be reproduced.', why: 'Audits and incidents both ask for this.', see: ['svc:ap-pipelines'] },
+      { id: 'd5', kind: 'both', t: 'Index freshness has an objective, a monitor and an owner, and deletions and permission changes reach the index within a stated time.', why: 'Stale or over-permissioned knowledge produces confident wrong answers and leaks.', see: ['p:data-lifecycle'] },
     ]
   },
   {
@@ -196,7 +201,8 @@ window.ATLAS.shaper = {
   defaults: { goal: 'qa', action: 'read', latency: 'chat', data: 'internal', scale: 'pilot', team: 'small', model: 'managed' },
 
   recommend: function (a) {
-    var stack = [], seen = {}, risks = [], next = [], nseen = {}, arch = null, headline = '';
+    var stack = [], seen = {}, risks = [], next = [], nseen = {}, arch = null, headline = '', deeper = [], dseen = {};
+    function more(k, id, why) { if (dseen[k + id]) return; dseen[k + id] = 1; deeper.push({ k: k, id: id, why: why }); }
     function add(id, role, why) { if (seen[id]) return; seen[id] = 1; stack.push({ id: id, role: role, why: why }); }
     function nx(id, why) { if (nseen[id]) return; nseen[id] = 1; next.push({ id: id, why: why }); }
     function risk(t) { if (risks.indexOf(t) < 0) risks.push(t); }
@@ -221,6 +227,12 @@ window.ATLAS.shaper = {
       risk('Retrieval quality, not the model, is usually the problem. Measure recall at k separately.');
       risk('Per-user document access must be enforced with metadata filters, and tested.');
       risk('New documents are searchable only after ingestion completes. Define the freshness you promise.');
+      nx('retrieval-strategy', 'Stay on hybrid retrieval until evals show you need more.');
+      more('a', 'agentic-rag', 'When questions need rewriting, routing or several lookups.');
+      if (a.scale !== 'pilot') more('a', 'graphrag', 'Only if multi-hop relationship questions fail on a vector baseline.');
+      more('p', 'data-lifecycle', 'Ingestion, freshness and permissions decide quality.');
+      more('p', 'evaluation-lifecycle', 'Build the golden set and release gates.');
+      if (a.data === 'regulated') more('p', 'compliance-matrix', 'Check residency, keys and perimeter before you pick a retrieval service.');
     } else if (a.goal === 'agent') {
       headline = a.action === 'read' ? 'Read-only tool-using agent' : (a.action === 'approve' ? 'Agent with human approval' : 'Autonomous agent within limits');
       arch = 'agent-platform';
@@ -246,6 +258,12 @@ window.ATLAS.shaper = {
       nx('agent-runtime', 'Confirm the hosting choice.');
       nx('human-in-loop', 'Set what needs approval and whose identity tools use.');
       risk('Prompt injection through retrieved text and tool output. Treat both as untrusted data.');
+      more('a', 'multi-agent-system', 'If one agent has too many tools or several owners, and for when not to split.');
+      more('p', 'agent-governance-guide', 'Agent identity, registry, gateway and tool policy.');
+      more('p', 'evaluation-lifecycle', 'Trajectory, tool and adversarial evals and release gates.');
+      more('p', 'agentops', 'What to measure and alert on once it is live.');
+      more('p', 'incident-runbooks', 'Runbooks for loops, injection, throttling and bad releases.');
+      more('a', 'agent-cicd', 'Version and release prompts, tools, models and indexes safely.');
       risk('Loops burn tokens. Cap steps, tokens and wall-clock time per session.');
       risk('Vague tool descriptions cause wrong tool choices. Test tool selection on its own.');
     } else if (a.goal === 'docs') {
@@ -374,6 +392,8 @@ window.ATLAS.shaper = {
       'Scale: apply cost levers (caching, batching, routing), revisit hosting, and raise autonomy only where measured accuracy supports it.'
     ];
 
-    return { headline: headline, arch: arch, stack: stack, risks: risks, next: next, phases: phases };
+    if (a.scale !== 'pilot') more('p', 'platform-engineering', 'Pipelines, environments, supply chain and recovery.');
+    more('d', 'finops', 'Model the cost per successful task before you commit to a budget.');
+    return { headline: headline, arch: arch, stack: stack, risks: risks, next: next, phases: phases, deeper: deeper };
   }
 };

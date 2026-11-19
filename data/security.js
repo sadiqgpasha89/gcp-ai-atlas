@@ -285,7 +285,8 @@ S({
   edges: [
     'Delegation (the agent acting on behalf of a user) needs clear rules about which identity appears in downstream audit logs.',
     'Agents built outside Google Cloud can be registered and governed, but with feature differences.',
-    'Policy sprawl: many agent-specific rules are hard to review. Prefer a few templates.'
+    'Policy sprawl: many agent-specific rules are hard to review. Prefer a few templates.',
+    'Rollout order, authentication choices (mTLS, DPoP, OAuth), worked delegation example and a checklist are in [[p:agent-governance-guide|the governance implementation guide]]. Control support per service is in [[p:compliance-matrix|the compliance matrix]].'
   ],
   ml: [
     'Giving every agent a least-privilege identity instead of a shared service account.',

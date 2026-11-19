@@ -231,9 +231,9 @@ S({
 });
 
 S({
-  id: 'ap-evals', cat: 'ml', name: 'Gen AI Evaluation', doc: 'vertex-ai/generative-ai/docs/models/evaluation-overview',
+  id: 'ap-evals', cat: 'ml', name: 'Agent Platform Evals', doc: 'gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation',
   tag: 'Score models and agents against your own test sets, offline and on live traffic.',
-  what: 'The evaluation service scores generative outputs with computed metrics (exact match, ROUGE-style overlap), **model-based autoraters** (a judge model scores quality against a rubric), and **pairwise comparison** of two candidates. For agents it adds trajectory metrics (did it call the right tools in the right order) and, on the Agent Platform, **Agent Simulation** (synthetic users and virtual tools exercise multi-step conversations) and continuous evaluation of live traffic.\n\nIt answers the question that gates every other decision in this atlas: is the change an improvement on **your** task? Without an eval set, every prompt, model or retrieval change is an opinion.',
+  what: 'Agent Platform Evals (formerly the Gen AI evaluation service on Vertex AI; the docs and SDK still use "Gen AI evaluation service" in places) scores generative outputs with computed metrics (exact match, ROUGE-style overlap), **model-based autoraters** (a judge model scores quality against a rubric), and **pairwise comparison** of two candidates. For agents it adds trajectory metrics (did it call the right tools in the right order) and, on the Agent Platform, **Agent Simulation** (synthetic users and virtual tools exercise multi-step conversations) and continuous evaluation of live traffic.\n\nIt answers the question that gates every other decision in this atlas: is the change an improvement on **your** task? Without an eval set, every prompt, model or retrieval change is an opinion.',
   flow: ['Eval dataset', 'Run candidate', 'Score', 'Compare', 'Gate', 'Track over time'],
   steps: [
     [0, 'You assemble a versioned set of real, representative cases with reference answers or rubrics.'],
