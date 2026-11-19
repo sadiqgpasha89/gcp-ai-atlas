@@ -2,7 +2,7 @@ window.ATLAS.architectures = [
   {
     id: 'rag-assistant', name: 'RAG assistant on the Agent Platform',
     short: 'Ground Gemini in your own documents, with citations, per-user access control and screening.',
-    when: 'You need answers grounded in private or fast-changing content, and fine-tuning is the wrong tool. Start here for most enterprise assistants.',
+    when: 'You need answers grounded in private or fast-changing content, and fine-tuning is the wrong tool. Start here for most enterprise assistants. When questions need several lookups or verification, see [[a:agentic-rag|agentic RAG]]; for relationship questions, [[a:graphrag|GraphRAG]]; to choose, [[d:retrieval-strategy|retrieval strategy]].',
     flow: [
       { l: 'Documents', s: 'gcs' },
       { l: 'Parse + chunk + embed', s: 'rag-engine' },
@@ -104,7 +104,7 @@ window.ATLAS.architectures = [
   {
     id: 'agent-platform', name: 'Tool-using agent platform',
     short: 'An agent that reads, decides and acts through narrow, governed tools, with memory and an audit trail.',
-    when: 'The path to the answer varies with what the system finds, and the system must call internal APIs or data. If you can write the steps down, use a workflow instead.',
+    when: 'The path to the answer varies with what the system finds, and the system must call internal APIs or data. If you can write the steps down, use a workflow instead. For several cooperating agents, see [[a:multi-agent-system|the production multi-agent architecture]]; for governance and release practice, see [[p:agent-governance-guide|governance]] and [[a:agent-cicd|CI/CD]].',
     flow: [
       { l: 'User + auth', s: 'identity-platform' },
       { l: 'API front door', s: 'apigee' },

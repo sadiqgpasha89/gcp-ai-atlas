@@ -59,7 +59,7 @@ Status legend: `[ ]` to do, `[x]` done. This file is updated as work completes.
 - [x] 1.4 **Render** a "Product facts" panel on every service page: current name, previous names, status badge, regions, pricing link, quotas, alternatives, last reviewed.
 - [x] 1.5 **Search** indexes `aka` and previous names (searching "Vertex AI Search" finds Agent Search).
 - [x] 1.6 **RAG Engine card**: add a "Service constraints" note (VPC-SC and CMEK supported; data residency and AXT not supported) once verified in 0.2.
-- [ ] 1.7 **Data residency and compliance matrix** across AI, data, retrieval and agent services (becomes guide `compliance-matrix` in Phase 3, linked from the RAG Engine card).
+- [x] 1.7 **Data residency and compliance matrix** across AI, data, retrieval and agent services (becomes guide `compliance-matrix` in Phase 3, linked from the RAG Engine card).
 - [x] 1.8 **Validator**: `meta` required fields, valid status, valid URL shape, `reviewed` date format, every service has meta.
 
 **Acceptance:** searching any old name finds the new card; no stale name remains in the repo (`grep` check); every service page shows the product-facts panel; `check.mjs` passes.
@@ -74,7 +74,7 @@ New architecture `multi-agent-system` using the stepper plus extra sections.
 - [x] 2.4 **Section: guardrails for multi-agent runs**: retry, timeout, fallback, idempotency; loop limits, token budgets, maximum steps.
 - [x] 2.5 **Section: shared versus isolated memory and session state.**
 - [x] 2.6 **Section: per-agent tracing and evaluation** (what to log, what to score).
-- [ ] 2.7 Link from the existing Agent Platform architecture, ADK, A2A and governance cards.
+- [x] 2.7 Link from the existing Agent Platform architecture, ADK, A2A and governance cards.
 
 **Acceptance:** all 10 items in the review's list are present; the four patterns are present; the "when not to use agents" guidance is explicit.
 
@@ -93,50 +93,50 @@ New architecture `agentic-rag`.
 
 ### P1-1 GraphRAG and the retrieval decision guide
 
-- [ ] 4.1 **Architecture `graphrag`**: extraction, graph construction, entity resolution, graph storage and traversal (Spanner Graph), hybrid vector plus graph retrieval, context assembly, grounded generation, graph updates and freshness.
-- [ ] 4.2 **Decision guide `retrieval-strategy`** (architecture theme): vector only, hybrid, agentic RAG, GraphRAG, Agent Retrieval, with if/then rules, red flags, review questions, one-way/two-way door.
-- [ ] 4.3 Wire into `vector-store` guide, shaper, related services.
+- [x] 4.1 **Architecture `graphrag`**: extraction, graph construction, entity resolution, graph storage and traversal (Spanner Graph), hybrid vector plus graph retrieval, context assembly, grounded generation, graph updates and freshness.
+- [x] 4.2 **Decision guide `retrieval-strategy`** (architecture theme): vector only, hybrid, agentic RAG, GraphRAG, Agent Retrieval, with if/then rules, red flags, review questions, one-way/two-way door.
+- [x] 4.3 Wire into `vector-store` guide, shaper, related services.
 
 ### P1-2 Agent governance implementation guide
 
 Guide `agent-governance-guide` (do not duplicate the service card; expand it).
 
-- [ ] 5.1 Identity: **agent identity versus the human user's identity**, delegated access, on-behalf-of flow, with a worked example.
-- [ ] 5.2 Registry: registration, discovery, approved agents and tool endpoints.
-- [ ] 5.3 Gateway: ingress and egress, routing, policy enforcement.
-- [ ] 5.4 Authentication table: OAuth, API keys, workload identity, delegated credentials; transport security (mTLS, DPoP where applicable).
-- [ ] 5.5 Access policy: default-deny, least privilege, boundaries.
-- [ ] 5.6 Tool governance: approved MCP servers, API tools, agent endpoints.
-- [ ] 5.7 Content protection with Model Armor; auditability (identity, tool invocation, traces, policy decisions).
-- [ ] 5.8 Implementation checklist and a rollout order.
+- [x] 5.1 Identity: **agent identity versus the human user's identity**, delegated access, on-behalf-of flow, with a worked example.
+- [x] 5.2 Registry: registration, discovery, approved agents and tool endpoints.
+- [x] 5.3 Gateway: ingress and egress, routing, policy enforcement.
+- [x] 5.4 Authentication table: OAuth, API keys, workload identity, delegated credentials; transport security (mTLS, DPoP where applicable).
+- [x] 5.5 Access policy: default-deny, least privilege, boundaries.
+- [x] 5.6 Tool governance: approved MCP servers, API tools, agent endpoints.
+- [x] 5.7 Content protection with Model Armor; auditability (identity, tool invocation, traces, policy decisions).
+- [x] 5.8 Implementation checklist and a rollout order.
 
 ### P1-3 AgentOps, evaluation lifecycle and incident runbooks
 
-- [ ] 6.1 **Guide `agentops`**: metric dimensions table (business outcome, quality, retrieval, agent execution, latency, reliability, cost, user experience), SLO examples, dashboards, alert design. The three questions: is it healthy, is it good, is it affordable.
-- [ ] 6.2 **Guide `incident-runbooks`**: eight runbooks (model or agent outage; quota exhaustion and 429s; runaway loops and token consumption; prompt injection or malicious tool output; RAG permission leakage; stale or wrongly indexed documents; poor retrieval after a data refresh; failed prompt, model or agent release). Each: symptoms, triage, mitigate, root-cause checks, prevent.
-- [ ] 6.3 **Guide `evaluation-lifecycle`**: offline datasets, golden Q&A, retrieval eval, model eval, trajectory eval, tool selection and arguments, multi-turn, adversarial and security, synthetic user simulation, online evaluation, release-blocking thresholds.
-- [ ] 6.4 **Tool `scorecard`** at `#/d/scorecard`: compare models, prompts, agent configs and retrieval strategies on one dataset; thresholds as release gates; copy as markdown.
+- [x] 6.1 **Guide `agentops`**: metric dimensions table (business outcome, quality, retrieval, agent execution, latency, reliability, cost, user experience), SLO examples, dashboards, alert design. The three questions: is it healthy, is it good, is it affordable.
+- [x] 6.2 **Guide `incident-runbooks`**: eight runbooks (model or agent outage; quota exhaustion and 429s; runaway loops and token consumption; prompt injection or malicious tool output; RAG permission leakage; stale or wrongly indexed documents; poor retrieval after a data refresh; failed prompt, model or agent release). Each: symptoms, triage, mitigate, root-cause checks, prevent.
+- [x] 6.3 **Guide `evaluation-lifecycle`**: offline datasets, golden Q&A, retrieval eval, model eval, trajectory eval, tool selection and arguments, multi-turn, adversarial and security, synthetic user simulation, online evaluation, release-blocking thresholds.
+- [x] 6.4 **Tool `scorecard`** at `#/d/scorecard`: compare models, prompts, agent configs and retrieval strategies on one dataset; thresholds as release gates; copy as markdown.
 
 ### P1-4 RAG and agent CI/CD architecture
 
-- [ ] 7.1 **Architecture `agent-cicd`**: version prompts and agent config, datasets and documents, embeddings and indexes; automated retrieval and answer-quality evals; security and prompt-injection tests; build and deploy pipelines; canary and shadow; rollback of agents, models, prompts and indexes.
-- [ ] 7.2 Section: "what can change in production" table (prompt, tool, model, retrieval, data, orchestration) with how each is versioned, tested and rolled back.
-- [ ] 7.3 **Guide `platform-engineering`**: Terraform, Cloud Build or GitHub Actions, Artifact Registry and supply chain, Cloud Run and GKE patterns, workload identity and secrets, environment promotion, blue/green and canary, automated gates, DR and regional availability.
+- [x] 7.1 **Architecture `agent-cicd`**: version prompts and agent config, datasets and documents, embeddings and indexes; automated retrieval and answer-quality evals; security and prompt-injection tests; build and deploy pipelines; canary and shadow; rollback of agents, models, prompts and indexes.
+- [x] 7.2 Section: "what can change in production" table (prompt, tool, model, retrieval, data, orchestration) with how each is versioned, tested and rolled back.
+- [x] 7.3 **Guide `platform-engineering`**: Terraform, Cloud Build or GitHub Actions, Artifact Registry and supply chain, Cloud Run and GKE patterns, workload identity and secrets, environment promotion, blue/green and canary, automated gates, DR and regional availability.
 
 ## Phase 3 (P2): FinOps, data lifecycle, cockpit, templates
 
 ### P2-1 AI FinOps
 
-- [ ] 8.1 **Tool `finops`** at `#/d/finops`: component cost model (every model call across every agent, input/output/reasoning tokens, embeddings, reranking, vector indexing and queries, Agent Runtime compute, memory and session storage, tool and API calls, retries and failed runs, logging/tracing/eval, storage and egress, dev/test/eval environments).
-- [ ] 8.2 **Comparisons** computed live: one agent versus several; model routing versus one larger model; RAG Engine versus custom retrieval; caching versus repeated retrieval; parallel versus sequential; chunk size and retrieval depth.
-- [ ] 8.3 Headline metric is **cost per successful business task**; show it first.
-- [ ] 8.4 Prices are explicit placeholders, same disclaimer as the existing calculator.
+- [x] 8.1 **Tool `finops`** at `#/d/finops`: component cost model (every model call across every agent, input/output/reasoning tokens, embeddings, reranking, vector indexing and queries, Agent Runtime compute, memory and session storage, tool and API calls, retries and failed runs, logging/tracing/eval, storage and egress, dev/test/eval environments).
+- [x] 8.2 **Comparisons** computed live: one agent versus several; model routing versus one larger model; RAG Engine versus custom retrieval; caching versus repeated retrieval; parallel versus sequential; chunk size and retrieval depth.
+- [x] 8.3 Headline metric is **cost per successful business task**; show it first.
+- [x] 8.4 Prices are explicit placeholders, same disclaimer as the existing calculator.
 
 ### P2-2 Data and knowledge lifecycle
 
-- [ ] 9.1 **Guide `data-lifecycle`**: the ten stages (source discovery and access; ingestion and change detection; parsing and document understanding; chunking and enrichment; metadata and ACL extraction; embedding and indexing; incremental update and deletion; data quality validation; index freshness monitoring; reconciliation and reprocessing).
-- [ ] 9.2 Multimodal data, scanned PDFs, tables, diagrams, structured data, layout understanding; link to Document AI and data services.
-- [ ] 9.3 Quality gates and freshness SLO examples.
+- [x] 9.1 **Guide `data-lifecycle`**: the ten stages (source discovery and access; ingestion and change detection; parsing and document understanding; chunking and enrichment; metadata and ACL extraction; embedding and indexing; incremental update and deletion; data quality validation; index freshness monitoring; reconciliation and reprocessing).
+- [x] 9.2 Multimodal data, scanned PDFs, tables, diagrams, structured data, layout understanding; link to Document AI and data services.
+- [x] 9.3 Quality gates and freshness SLO examples.
 
 ### P2-3 AI Engineering Manager Cockpit
 
@@ -151,8 +151,8 @@ Page `#/m`, tabs, browser-local data, import and export.
 
 ### P2-4 Management templates and team skills matrix
 
-- [ ] 11.1 **Page `#/t`** with 12 copy-ready markdown templates: discovery and problem statement; business value and feasibility; architecture review checklist; model and agent selection record; RAG design review; threat model and risk assessment; evaluation report; production launch Go/No-Go; SLO and incident runbook; post-incident review; cost optimisation review; technical debt and improvement backlog.
-- [ ] 11.2 Each template has: when to use it, who fills it in, the template body, copy button, links to related atlas pages.
+- [x] 11.1 **Page `#/t`** with 12 copy-ready markdown templates: discovery and problem statement; business value and feasibility; architecture review checklist; model and agent selection record; RAG design review; threat model and risk assessment; evaluation report; production launch Go/No-Go; SLO and incident runbook; post-incident review; cost optimisation review; technical debt and improvement backlog.
+- [x] 11.2 Each template has: when to use it, who fills it in, the template body, copy button, links to related atlas pages.
 - [ ] 11.3 **Skills matrix**: delivered in the cockpit (10.2) with a seeded skill list for AI engineering and a gap summary.
 
 ## Phase 4: integration, quality and delivery

@@ -132,6 +132,7 @@ if (typeof A.adrTemplate !== 'string' || A.adrTemplate.length < 200) err('adrTem
 // solution shaper: exhaustively run every answer combination
 const Q = A.shaper.questions;
 let combos = 0;
+const deeperChecks = [];
 const walk = (i, a) => {
   if (i === Q.length) {
     combos++;
@@ -144,11 +145,13 @@ const walk = (i, a) => {
     const seen = new Set();
     r.stack.forEach(x => { if (!ids.has(x.id)) err(`${w}: unknown service ${x.id}`); if (seen.has(x.id)) err(`${w}: duplicate service ${x.id}`); seen.add(x.id); if (!x.role || !x.why) err(`${w}: ${x.id} missing role or why`); });
     r.next.forEach(x => { if (!decIds.has(x.id)) err(`${w}: unknown decision ${x.id}`); });
+    deeperChecks.push([w, r.deeper || []]);
     return;
   }
   for (const o of Q[i].options) walk(i + 1, { ...a, [Q[i].id]: o[0] });
 };
 walk(0, {});
+
 for (const [k, v] of Object.entries(A.shaper.defaults)) if (!Q.find(q => q.id === k)?.options.some(o => o[0] === v)) err(`shaper default ${k}=${v} is not an option`);
 
 for (const c of A.categories) {
@@ -156,7 +159,98 @@ for (const c of A.categories) {
   checkText(`category ${c.id}.lens`, c.lens);
 }
 
+
+// ---- content blocks (guides and architecture sections) ----
+const TOOL_ROUTES = ['shaper', 'checklists', 'calculator', 'finops', 'scorecard'];
+const BLOCK_TYPES = ['h2', 'h3', 'p', 'ul', 'ol', 'table', 'callout', 'two', 'cards', 'steps', 'runbook'];
+const checkBlocks = (where, blocks, minH2 = 0) => {
+  if (!Array.isArray(blocks) || !blocks.length) return err(`${where}: blocks must be a non-empty array`);
+  let h2 = 0;
+  blocks.forEach((b, i) => {
+    const w = `${where}[${i}:${b.t}]`;
+    if (!BLOCK_TYPES.includes(b.t)) return err(`${w}: unknown block type`);
+    switch (b.t) {
+      case 'h2': h2++; // fallthrough
+      case 'h3': case 'p': checkText(w, b.text); break;
+      case 'ul': case 'ol': if (!Array.isArray(b.items) || !b.items.length) err(`${w}: items`); else b.items.forEach((t, j) => checkText(`${w}.items[${j}]`, t)); break;
+      case 'table':
+        if (!Array.isArray(b.cols) || b.cols.length < 2) err(`${w}: cols needs at least 2`);
+        if (!Array.isArray(b.rows) || !b.rows.length) err(`${w}: rows`);
+        (b.rows || []).forEach((r, ri) => {
+          if (r.length !== (b.cols || []).length) err(`${w}: row ${ri} has ${r.length} cells, expected ${(b.cols || []).length}`);
+          r.forEach((c, ci) => checkText(`${w}.rows[${ri}][${ci}]`, c));
+        });
+        if (b.note) checkText(`${w}.note`, b.note);
+        break;
+      case 'callout': checkText(`${w}.title`, b.title); checkText(`${w}.text`, b.text); break;
+      case 'two': for (const side of ['left', 'right']) { const x = b[side]; if (!x || !Array.isArray(x.items) || !x.items.length) err(`${w}.${side}: needs title and items`); else { checkText(`${w}.${side}.title`, x.title); x.items.forEach((t, j) => checkText(`${w}.${side}.items[${j}]`, t)); } } break;
+      case 'cards': if (!Array.isArray(b.items) || !b.items.length) err(`${w}: items`); else b.items.forEach((c, j) => { checkText(`${w}.items[${j}].title`, c.title); checkText(`${w}.items[${j}].text`, c.text); }); break;
+      case 'steps': if (!Array.isArray(b.items) || !b.items.length) err(`${w}: items`); else b.items.forEach((c, j) => { if (!Array.isArray(c) || c.length !== 2) err(`${w}.items[${j}]: must be [label, text]`); else { checkText(`${w}.items[${j}][0]`, c[0]); checkText(`${w}.items[${j}][1]`, c[1]); } }); break;
+      case 'runbook':
+        for (const k of ['id', 'title', 'trigger', 'prevent']) checkText(`${w}.${k}`, b[k]);
+        for (const k of ['symptoms', 'triage', 'mitigate', 'root']) { if (!Array.isArray(b[k]) || b[k].length < 2) err(`${w}.${k}: needs at least 2 entries`); else b[k].forEach((t, j) => checkText(`${w}.${k}[${j}]`, t)); }
+        break;
+    }
+  });
+  if (h2 < minH2) err(`${where}: needs at least ${minH2} h2 sections, has ${h2}`);
+};
+const checkSrc = (where, src) => {
+  if (!Array.isArray(src) || !src.length) return err(`${where}: src (sources) is required`);
+  src.forEach((x, i) => { if (!Array.isArray(x) || x.length !== 2 || !x[0] || !/^https:\/\//.test(x[1])) err(`${where}.src[${i}]: must be [label, https URL]`); });
+};
+for (const a of A.architectures) {
+  if (a.sections) { checkBlocks(`architecture ${a.id}.sections`, a.sections, 2); checkSrc(`architecture ${a.id}`, a.src); }
+}
+
+// ---- guides ----
+const groupIds = new Set((A.guideGroups || []).map(g => g.id));
+const guideIds = new Set();
+for (const g of A.guides || []) {
+  const p = `guide ${g.id}`;
+  if (guideIds.has(g.id)) err(`${p}: duplicate id`); guideIds.add(g.id);
+  if (!/^[a-z0-9-]+$/.test(g.id)) err(`${p}: id must match [a-z0-9-]+`);
+  if (!groupIds.has(g.group)) err(`${p}: unknown group ${g.group}`);
+  for (const k of ['title', 'short', 'when']) checkText(`${p}.${k}`, g[k]);
+  checkBlocks(`${p}.blocks`, g.blocks, 3);
+  checkSrc(p, g.src);
+  (g.related || []).forEach(x => { if (!ids.has(x)) err(`${p}: related references unknown service ${x}`); });
+}
+for (const gr of A.guideGroups || []) if (!(A.guides || []).some(g => g.group === gr.id)) err(`guide group ${gr.id}: has no guides`);
+
+// ---- management templates ----
+const tplIds = new Set();
+for (const t of A.templates || []) {
+  const p = `template ${t.id}`;
+  if (tplIds.has(t.id)) err(`${p}: duplicate id`); tplIds.add(t.id);
+  if (!/^[a-z0-9-]+$/.test(t.id)) err(`${p}: id must match [a-z0-9-]+`);
+  for (const k of ['title', 'short', 'when', 'who']) checkText(`${p}.${k}`, t[k]);
+  if (typeof t.body !== 'string' || t.body.length < 300) err(`${p}: body must be at least 300 characters of markdown`);
+  (t.related || []).forEach(x => { if (!ids.has(x)) err(`${p}: related references unknown service ${x}`); });
+}
+
+// shaper 'go deeper' targets (checked once guides and templates are known)
+for (const [w, list] of deeperChecks) for (const d of list) {
+  const ok = d.k === 'p' ? guideIds.has(d.id) : d.k === 'a' ? archIds.has(d.id) : d.k === 'd' ? TOOL_ROUTES.includes(d.id) || decIds.has(d.id) : false;
+  if (!ok) err(`${w}: deeper link ${d.k}:${d.id} has no target`);
+  if (!d.why) err(`${w}: deeper link ${d.k}:${d.id} needs why`);
+}
+// ---- cross-references with a prefix: [[p:guide|label]] [[a:arch]] [[d:decision]] [[t:template]] ----
+const cockpitIds = new Set(((A.cockpit || {}).tabs || []).map(t => t.id));
+const prefRe = /\[\[([padmt]):([a-z0-9-]+)(?:\|[^\]]+)?\]\]/g;
+const targetOk = (k, id) => k === 'p' ? guideIds.has(id) : k === 'a' ? archIds.has(id) : k === 'd' ? (decIds.has(id) || TOOL_ROUTES.includes(id)) : k === 't' ? (tplIds.has(id) || id === '') : k === 'm' ? (!A.cockpit || cockpitIds.has(id)) : false;
+const walkStrings = (v, where, fn) => {
+  if (typeof v === 'string') return fn(v, where);
+  if (Array.isArray(v)) return v.forEach((x, i) => walkStrings(x, `${where}[${i}]`, fn));
+  if (v && typeof v === 'object' && typeof v !== 'function') for (const [k, x] of Object.entries(v)) walkStrings(x, `${where}.${k}`, fn);
+};
+for (const [name, val] of [['services', A.services.map(s => ({ ...s, meta: undefined }))], ['architectures', A.architectures], ['decisions', A.decisions], ['guides', A.guides || []], ['templates', A.templates || []]]) {
+  walkStrings(val, name, (t, w) => { for (const m of t.matchAll(prefRe)) if (!targetOk(m[1], m[2])) err(`${w}: dangling [[${m[1]}:${m[2]}]]`); });
+}
+for (const t of A.templates || []) (t.see || []).forEach(r => { const [k, id] = r.split(':'); if (!targetOk(k, id)) err(`template ${t.id}: see ${r} has no target`); });
+// `see` lists on guides
+for (const g of A.guides || []) (g.see || []).forEach(r => { const [k, id] = r.split(':'); if (!targetOk(k, id)) err(`guide ${g.id}: see ${r} has no target`); });
+
 const words = A.services.reduce((n, s) => n + JSON.stringify(s).split(/\s+/).length, 0);
-console.log(`${A.categories.length} categories, ${A.services.length} services, ${A.architectures.length} architectures, ${A.decisions.length} decision guides, ${A.readiness.reduce((n, g) => n + g.items.length, 0)} readiness items, ${combos} shaper combinations checked, ~${words} words in services`);
+console.log(`${A.categories.length} categories, ${A.services.length} services, ${A.architectures.length} architectures, ${A.decisions.length} decision guides, ${(A.guides || []).length} guides, ${(A.templates || []).length} templates, ${A.readiness.reduce((n, g) => n + g.items.length, 0)} readiness items, ${combos} shaper combinations checked, ~${words} words in services`);
 if (errs.length) { console.error(`\n${errs.length} problem(s):`); errs.forEach(e => console.error(' - ' + e)); process.exit(1); }
 console.log('data OK');

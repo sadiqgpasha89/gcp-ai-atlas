@@ -188,12 +188,13 @@ S({
   edges: [
     'Tool outputs are text the model reads, so a malicious document or web page can contain instructions. Treat tool output as untrusted data ([[model-armor]]).',
     'Deterministic workflow agents are easier to test than free-form delegation. Prefer them where the path is known.',
-    'Framework versions are moving quickly. Pin versions and read release notes.'
+    'Framework versions are moving quickly. Pin versions and read release notes.',
+    'More agents is not better. Splitting a task adds cost, latency and failure modes; [[a:multi-agent-system|the multi-agent architecture]] says when one agent or a plain workflow is the better answer.'
   ],
   ml: [
     'The reference way to build code-first agents on Google Cloud, with evaluation in CI ([[ap-evals]]).',
     'Wrapping existing APIs and databases as narrow tools ([[agent-protocols]], [[alloydb]]).',
-    'Composing a supervisor with specialist agents, each with its own identity and permissions ([[agent-governance]]).'
+    'Composing a supervisor with specialist agents, each with its own identity and permissions ([[agent-governance]], [[a:multi-agent-system|multi-agent architecture]]).'
   ],
   pairs: ['agent-runtime', 'agent-memory', 'agent-protocols', 'gemini', 'ap-evals', 'agent-governance'],
   cost: 'ADK is free. You pay for model tokens, tool backends, and wherever the agent runs. Multi-step agents make several model calls per task, so measure cost per task rather than per call.'
@@ -320,7 +321,8 @@ S({
   edges: [
     'Remote MCP servers add a network hop and a failure mode. Cache what you can and set timeouts.',
     'A2A hides the other agent\'s internals, so you cannot inspect its reasoning. Evaluate it by its outputs and contracts.',
-    'Tool output is untrusted content: sanitise, and never let it widen permissions.'
+    'Tool output is untrusted content: sanitise, and never let it widen permissions.',
+    'A2A calls between agents should carry the caller\'s identity and a depth limit, and the agents should be registered ([[p:agent-governance-guide|governance guide]], [[a:multi-agent-system|multi-agent architecture]]).'
   ],
   ml: [
     'Giving agents governed access to [[bigquery]], [[alloydb]] and [[spanner]] through managed MCP servers.',

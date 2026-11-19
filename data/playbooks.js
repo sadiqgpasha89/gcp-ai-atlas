@@ -196,7 +196,8 @@ window.ATLAS.shaper = {
   defaults: { goal: 'qa', action: 'read', latency: 'chat', data: 'internal', scale: 'pilot', team: 'small', model: 'managed' },
 
   recommend: function (a) {
-    var stack = [], seen = {}, risks = [], next = [], nseen = {}, arch = null, headline = '';
+    var stack = [], seen = {}, risks = [], next = [], nseen = {}, arch = null, headline = '', deeper = [], dseen = {};
+    function more(k, id, why) { if (dseen[k + id]) return; dseen[k + id] = 1; deeper.push({ k: k, id: id, why: why }); }
     function add(id, role, why) { if (seen[id]) return; seen[id] = 1; stack.push({ id: id, role: role, why: why }); }
     function nx(id, why) { if (nseen[id]) return; nseen[id] = 1; next.push({ id: id, why: why }); }
     function risk(t) { if (risks.indexOf(t) < 0) risks.push(t); }
@@ -221,6 +222,12 @@ window.ATLAS.shaper = {
       risk('Retrieval quality, not the model, is usually the problem. Measure recall at k separately.');
       risk('Per-user document access must be enforced with metadata filters, and tested.');
       risk('New documents are searchable only after ingestion completes. Define the freshness you promise.');
+      nx('retrieval-strategy', 'Stay on hybrid retrieval until evals show you need more.');
+      more('a', 'agentic-rag', 'When questions need rewriting, routing or several lookups.');
+      if (a.scale !== 'pilot') more('a', 'graphrag', 'Only if multi-hop relationship questions fail on a vector baseline.');
+      more('p', 'data-lifecycle', 'Ingestion, freshness and permissions decide quality.');
+      more('p', 'evaluation-lifecycle', 'Build the golden set and release gates.');
+      if (a.data === 'regulated') more('p', 'compliance-matrix', 'Check residency, keys and perimeter before you pick a retrieval service.');
     } else if (a.goal === 'agent') {
       headline = a.action === 'read' ? 'Read-only tool-using agent' : (a.action === 'approve' ? 'Agent with human approval' : 'Autonomous agent within limits');
       arch = 'agent-platform';
@@ -246,6 +253,12 @@ window.ATLAS.shaper = {
       nx('agent-runtime', 'Confirm the hosting choice.');
       nx('human-in-loop', 'Set what needs approval and whose identity tools use.');
       risk('Prompt injection through retrieved text and tool output. Treat both as untrusted data.');
+      more('a', 'multi-agent-system', 'If one agent has too many tools or several owners, and for when not to split.');
+      more('p', 'agent-governance-guide', 'Agent identity, registry, gateway and tool policy.');
+      more('p', 'evaluation-lifecycle', 'Trajectory, tool and adversarial evals and release gates.');
+      more('p', 'agentops', 'What to measure and alert on once it is live.');
+      more('p', 'incident-runbooks', 'Runbooks for loops, injection, throttling and bad releases.');
+      more('a', 'agent-cicd', 'Version and release prompts, tools, models and indexes safely.');
       risk('Loops burn tokens. Cap steps, tokens and wall-clock time per session.');
       risk('Vague tool descriptions cause wrong tool choices. Test tool selection on its own.');
     } else if (a.goal === 'docs') {
@@ -374,6 +387,8 @@ window.ATLAS.shaper = {
       'Scale: apply cost levers (caching, batching, routing), revisit hosting, and raise autonomy only where measured accuracy supports it.'
     ];
 
-    return { headline: headline, arch: arch, stack: stack, risks: risks, next: next, phases: phases };
+    if (a.scale !== 'pilot') more('p', 'platform-engineering', 'Pipelines, environments, supply chain and recovery.');
+    more('d', 'finops', 'Model the cost per successful task before you commit to a budget.');
+    return { headline: headline, arch: arch, stack: stack, risks: risks, next: next, phases: phases, deeper: deeper };
   }
 };

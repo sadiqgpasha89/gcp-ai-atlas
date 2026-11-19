@@ -333,3 +333,30 @@ details.runbook[open]>summary{border-bottom:1px solid var(--line);margin-bottom:
 .tablewrap.blk td:first-child{white-space:normal;min-width:130px}
 .tablewrap.blk table{min-width:640px}
 ul.srcs{padding-left:20px}
+
+/* evaluation scorecard and FinOps tools */
+.sc{display:grid;gap:22px;margin-top:22px}
+.scglobals,.fogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px 16px}
+.sci table,.fom table{min-width:640px}
+.sci input,.fom input{width:100%;min-width:70px;border:1px solid var(--line2);border-radius:8px;background:var(--bg);color:var(--ink);font:14px var(--mono);padding:6px 8px}
+.sci input.cname,.fom input[type=text]{font:600 13px var(--sans);min-width:130px}
+.sci th small,.fom th small{display:block;font-weight:400;color:var(--muted)}
+.sci th[scope=row]{text-align:left;white-space:normal;min-width:150px}
+.rm{background:none;border:0;color:var(--muted);font:12px var(--sans);text-decoration:underline;cursor:pointer;padding:2px 0}
+.rm:hover{color:var(--warn)}
+.verdicts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:8px 0 6px}
+.vd{border:1px solid var(--line2);border-left:5px solid var(--muted);border-radius:12px;padding:10px 14px;background:var(--bg)}
+.vd.ok{border-left-color:var(--ok)}.vd.no{border-left-color:var(--warn)}
+.vd small{display:block;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vd b{display:block}
+.vd .vtag{display:inline-block;font-weight:700;margin:4px 8px 0 0}
+.vd.ok .vtag{color:var(--ok)}.vd.no .vtag{color:var(--warn)}
+.vd ul{margin:6px 0 0;padding-left:18px;font-size:13px}
+.calcout td.pass{color:var(--ok);font-weight:600}.calcout td.fail{color:var(--warn);font-weight:600}
+.fo{display:block;margin-top:20px}
+.fokpi{position:sticky;top:var(--top);z-index:5;background:var(--bg);padding:8px 0 10px;border-bottom:1px solid var(--line)}
+.kpi.hero{border-color:var(--accent);background:var(--accent-soft)}
+.fob table{min-width:0;font-size:13px}.fob td:first-child{white-space:normal}
+.fob tr.grp th{background:var(--line);text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.fob td.cur{outline:2px solid var(--accent);outline-offset:-2px}
+.tpl{max-height:560px}

@@ -291,6 +291,82 @@
     return h;
   }
 
+
+  /* ---------- guides (long-form playbooks) ---------- */
+  var guideById = {}; (A.guides || []).forEach(function (g) { guideById[g.id] = g; });
+  var guideGroupById = {}; (A.guideGroups || []).forEach(function (g) { guideGroupById[g.id] = g; });
+  function guideCard(g) {
+    return '<a class="card" style="--h:' + (guideGroupById[g.group] ? guideGroupById[g.group].hue : 215) + '" href="#/p/' + g.id + '"><div class="mini">' + esc(guideGroupById[g.group] ? guideGroupById[g.group].name : 'Guide') + '</div><h3>' + esc(g.title) + '</h3><p>' + esc(g.short) + '</p></a>';
+  }
+  function pageGuideHub() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Guides</div><h1>Operating guides</h1>' +
+      '<p class="lede">Long-form playbooks for running agentic and ML systems on Google Cloud: governance, operations, evaluation, delivery and data.</p>' +
+      '<p style="max-width:62ch">Service pages say what a product does. These guides say how a team runs a system built from them: who owns what, which numbers to watch, what to do when it breaks, and what to put in the pipeline.</p>';
+    (A.guideGroups || []).forEach(function (gr) {
+      var list = A.guides.filter(function (g) { return g.group === gr.id; });
+      if (!list.length) return;
+      h += '<h2>' + esc(gr.name) + '</h2><p style="max-width:62ch">' + esc(gr.blurb) + '</p><div class="grid">' + list.map(guideCard).join('') + '</div>';
+    });
+    return h;
+  }
+  function pageGuide(id) {
+    var g = guideById[id]; if (!g) return notFound();
+    var gr = guideGroupById[g.group] || { name: 'Guide' };
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/p">Guides</a> / ' + esc(gr.name) + '</div><h1>' + esc(g.title) + '</h1><p class="lede">' + esc(g.short) + '</p>';
+    if (g.when) h += '<div class="callout"><b>Use it when</b>' + fmt(g.when) + '</div>';
+    h += tocHtml(g.blocks) + renderBlocks(g.blocks);
+    if (g.src && g.src.length) h += '<h2>Based on</h2><ul class="srcs">' + g.src.map(function (x) { return '<li><a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + ' ↗</a></li>'; }).join('') + '</ul>';
+    var rel = (g.related || []).filter(function (p) { return byId[p]; });
+    if (rel.length) h += '<h2>Services involved</h2><div class="pairs">' + rel.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    var more = (g.see || []).map(function (r) {
+      var p = r.split(':'), x = p[1];
+      if (p[0] === 'p' && guideById[x]) return '<a href="#/p/' + x + '">' + esc(guideById[x].title) + '</a>';
+      if (p[0] === 'a' && archById[x]) return '<a href="#/a/' + x + '">' + esc(archById[x].name) + '</a>';
+      if (p[0] === 'd' && decById[x]) return '<a href="#/d/' + x + '">' + esc(decById[x].title) + '</a>';
+      if (p[0] === 't') return '<a href="#/t' + (x ? '/' + x : '') + '">Template: ' + esc(x) + '</a>';
+      return '';
+    }).filter(Boolean);
+    if (more.length) h += '<h2>Related guides and architectures</h2><div class="pairs">' + more.join('') + '</div>';
+    return h;
+  }
+
+
+  /* ---------- management templates ---------- */
+  var tplById = {}; (A.templates || []).forEach(function (t) { tplById[t.id] = t; });
+  function seeHtml(see) {
+    return (see || []).map(function (r) {
+      var p = r.split(':'), x = p[1];
+      if (p[0] === 'p' && guideById[x]) return '<a href="#/p/' + x + '">' + esc(guideById[x].title) + '</a>';
+      if (p[0] === 'a' && archById[x]) return '<a href="#/a/' + x + '">' + esc(archById[x].name) + '</a>';
+      if (p[0] === 'd' && decById[x]) return '<a href="#/d/' + x + '">' + esc(decById[x].title) + '</a>';
+      if (p[0] === 'd' && window.ATLAS_TOOLS && window.ATLAS_TOOLS[x]) return '<a href="#/d/' + x + '">' + esc(window.ATLAS_TOOLS[x].title) + '</a>';
+      if (p[0] === 't' && tplById[x]) return '<a href="#/t/' + x + '">Template: ' + esc(tplById[x].title) + '</a>';
+      return '';
+    }).filter(Boolean).join('');
+  }
+  function pageTemplates() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Templates</div><h1>Management templates</h1>' +
+      '<p class="lede">Twelve copy-ready markdown templates for running AI work: from the first problem statement to the post-incident review.</p>' +
+      '<p style="max-width:62ch">Each template says when to use it and who fills it in. Copy it into your wiki, ticket or repository, and fill it in. Nothing is stored here.</p><div class="grid">';
+    A.templates.forEach(function (t) { h += '<a class="card" style="--h:145" href="#/t/' + t.id + '"><div class="mini">Template</div><h3>' + esc(t.title) + '</h3><p>' + esc(t.short) + '</p></a>'; });
+    return h + '</div>';
+  }
+  function pageTemplate(id) {
+    var t = tplById[id]; if (!t) return notFound();
+    var i = A.templates.indexOf(t), prev = A.templates[i - 1], next = A.templates[i + 1];
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/t">Templates</a></div><h1>' + esc(t.title) + '</h1><p class="lede">' + esc(t.short) + '</p>';
+    h += '<div class="lists two"><div class="box"><h3>When to use it</h3><p style="margin-top:10px">' + fmt(t.when) + '</p></div><div class="box ml"><h3>Who fills it in</h3><p style="margin-top:10px">' + fmt(t.who) + '</p></div></div>';
+    h += '<div class="btns" style="margin:22px 0 10px"><button class="btn primary" type="button" data-copy-tpl>Copy template</button><span class="fine">Markdown, ' + t.body.split('\n').length + ' lines</span></div>';
+    h += '<pre class="adr tpl" tabindex="0" aria-label="Template text">' + esc(t.body) + '</pre>';
+    var more = seeHtml(t.see);
+    if (more) h += '<h2>Related</h2><div class="pairs">' + more + '</div>';
+    var rel = (t.related || []).filter(function (p) { return byId[p]; });
+    if (rel.length) h += '<h2>Services involved</h2><div class="pairs">' + rel.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    h += '<div class="pn">' + (prev ? '<a href="#/t/' + prev.id + '"><small>← Previous</small>' + esc(prev.title) + '</a>' : '<span></span>') + (next ? '<a href="#/t/' + next.id + '"><small>Next →</small>' + esc(next.title) + '</a>' : '') + '</div>';
+    afterRender = function () { var b = $('[data-copy-tpl]'); if (b) b.addEventListener('click', function () { copyText(t.body, b); }); };
+    return h;
+  }
+
   /* ---------- decisions & leader tools ---------- */
   var decById = {}; A.decisions.forEach(function (d) { decById[d.id] = d; });
   var themeById = {}; A.decisionThemes.forEach(function (t) { themeById[t.id] = t; });
@@ -335,7 +411,9 @@
     h += '<h2>Tools</h2><div class="grid">' +
       '<a class="card" style="--h:215" href="#/d/shaper"><div class="mini">Interactive</div><h3>Solution shaper</h3><p>Answer seven questions about your use case and get a starting stack, risks, and the decisions to make next.</p></a>' +
       '<a class="card" style="--h:145" href="#/d/checklists"><div class="mini">Checklist</div><h3>Readiness checklists</h3><p>A prototype-to-scale maturity ladder, a production-readiness checklist, and a decision-record template.</p></a>' +
-      '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>Model unit economics and see which levers (caching, batching, routing) move the bill most.</p></a></div>';
+      '<a class="card" style="--h:42" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>Model unit economics and see which levers (caching, batching, routing) move the bill most.</p></a>' +
+      '<a class="card" style="--h:42" href="#/d/finops"><div class="mini">Cost model</div><h3>AI FinOps model</h3><p>Every model call across every agent, retrieval, tools and fixed costs, with six what-if comparisons and cost per successful task.</p></a>' +
+      '<a class="card" style="--h:18" href="#/d/scorecard"><div class="mini">Release gates</div><h3>Evaluation scorecard</h3><p>Compare models, prompts, agents and retrieval strategies on one dataset and see which pass your gates.</p></a></div>';
     A.decisionThemes.forEach(function (t) {
       var list = A.decisions.filter(function (d) { return d.theme === t.id; });
       h += '<h2>' + esc(t.name) + '</h2><p style="max-width:62ch">' + esc(t.blurb) + '</p><div class="grid">';
@@ -399,9 +477,20 @@
     r.stack.forEach(function (s) { L.push('- ' + byId[s.id].name + ': ' + s.role + '. ' + s.why); });
     L.push('', '## Risks to design for'); r.risks.forEach(function (x) { L.push('- ' + x); });
     L.push('', '## Decisions to make next'); r.next.forEach(function (n) { L.push('- ' + decById[n.id].title + ': ' + n.why); });
+    if (r.deeper && r.deeper.length) { L.push('', '## Go deeper'); r.deeper.forEach(function (d) { var t = deeperTarget(d); if (t) L.push('- ' + t[1] + ' (' + t[2].toLowerCase() + '): ' + d.why); }); }
     L.push('', '## Phasing'); r.phases.forEach(function (p, i) { L.push((i + 1) + '. ' + p); });
     L.push('', 'Generated by the Google Cloud AI Atlas. A starting point only: validate with your own evals.');
     return L.join('\n');
+  }
+  function deeperTarget(d) {
+    if (d.k === 'a' && archById[d.id]) return ['#/a/' + d.id, archById[d.id].name, 'Architecture'];
+    if (d.k === 'p' && guideById[d.id]) return ['#/p/' + d.id, guideById[d.id].title, 'Guide'];
+    if (d.k === 'd' && d.id === 'finops') return ['#/d/finops', 'AI FinOps model', 'Tool'];
+    if (d.k === 'd' && d.id === 'scorecard') return ['#/d/scorecard', 'Evaluation scorecard', 'Tool'];
+    return null;
+  }
+  function deeperLinks(list) {
+    return (list || []).map(function (d) { var t = deeperTarget(d); return t ? '<li><a href="' + t[0] + '">' + esc(t[1]) + '</a> <span class="fine">' + t[2] + '</span><br><span>' + esc(d.why) + '</span></li>' : ''; }).join('');
   }
   function mountShaper() {
     var form = $('#shForm'), out = $('#shOut'), a = {}, k;
@@ -419,6 +508,8 @@
       h += '<h3>Decide next</h3><ul class="nextl">' + r.next.map(function (n) {
         var d = decById[n.id]; return '<li><a href="#/d/' + d.id + '">' + esc(d.title) + '</a> ' + doorBadge(d) + '<br><span>' + esc(n.why) + '</span></li>';
       }).join('') + '</ul>';
+      var dl = deeperLinks(r.deeper);
+      if (dl) h += '<h3>Go deeper</h3><ul class="nextl">' + dl + '</ul>';
       h += '<h3>Phasing</h3><ol class="phases">' + r.phases.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ol>';
       h += '<div class="btns" style="margin-top:18px"><button class="btn" type="button" data-copy>Copy as markdown</button><a class="btn" href="#/d/checklists">Readiness checklists</a></div>';
       out.innerHTML = h; out._md = shaperMarkdown(a, r);
@@ -595,7 +686,8 @@
     var curTheme = kind === 'd' && decById[id] ? decById[id].theme : null;
     var h = '<h3>Explore</h3>' + nl('#/', 'Home', false) + nl('#/a', 'Architectures', kind === 'a' && !id) + '<h3>Decisions</h3>' +
       nl('#/d', 'Decision guides', kind === 'd' && !id) + nl('#/d/shaper', 'Solution shaper', kind === 'd' && id === 'shaper') +
-      nl('#/d/checklists', 'Readiness checklists', kind === 'd' && id === 'checklists') + nl('#/d/calculator', 'Cost per task', kind === 'd' && id === 'calculator');
+      nl('#/d/checklists', 'Readiness checklists', kind === 'd' && id === 'checklists') + nl('#/d/calculator', 'Cost per task', kind === 'd' && id === 'calculator') +
+      nl('#/d/finops', 'AI FinOps model', kind === 'd' && id === 'finops') + nl('#/d/scorecard', 'Evaluation scorecard', kind === 'd' && id === 'scorecard');
     A.decisionThemes.forEach(function (t) {
       var list = A.decisions.filter(function (d) { return d.theme === t.id; });
       h += '<details' + (curTheme === t.id ? ' open' : '') + '><summary style="--h:' + THEME_HUE[t.id] + '"><span class="dot"></span><span style="flex:1">' + esc(t.name) + '</span><span class="n">' + list.length + '</span></summary><ul>' +
@@ -609,6 +701,8 @@
     $('#side').innerHTML = h;
   }
 
+  var UI = { $: $, $$: $$, esc: esc, fmt: fmt, ul: ul, paras: paras, copyText: copyText, money: money, tableHtml: tableHtml, renderBlocks: renderBlocks };
+
   /* ---------- router ---------- */
   function render() {
     $$('.stepper').forEach(function (el) { if (el._stop) el._stop(); });
@@ -620,9 +714,23 @@
     else if (kind === 'a') { if (id && archById[id]) { html = pageArch(id); title = archById[id].name + ' — Google Cloud for AI/ML Systems'; } else html = pageArchIndex(); }
     else if (kind === 'd') {
       var TOOLS = { shaper: ['Solution shaper', pageShaper], checklists: ['Readiness checklists', pageChecklists], calculator: ['Cost per task', pageCalculator] };
+      Object.keys(window.ATLAS_TOOLS || {}).forEach(function (k) {
+        var T = window.ATLAS_TOOLS[k];
+        TOOLS[k] = [T.title, function () { afterRender = function () { T.mount(UI); }; return T.render(UI); }];
+      });
       if (!id) { html = pageDecisionHub(); title = 'Decision guides — Google Cloud for AI/ML Systems'; }
       else if (TOOLS[id]) { html = TOOLS[id][1](); title = TOOLS[id][0] + ' — Google Cloud for AI/ML Systems'; }
       else if (decById[id]) { html = pageDecision(id); title = decById[id].title + ' — Google Cloud for AI/ML Systems'; }
+      else html = notFound();
+    }
+    else if (kind === 'p') {
+      if (!id) { html = pageGuideHub(); title = 'Operating guides — Google Cloud for AI/ML Systems'; }
+      else if (guideById[id]) { html = pageGuide(id); title = guideById[id].title + ' — Google Cloud for AI/ML Systems'; }
+      else html = notFound();
+    }
+    else if (kind === 't') {
+      if (!id) { html = pageTemplates(); title = 'Management templates — Google Cloud for AI/ML Systems'; }
+      else if (tplById[id]) { html = pageTemplate(id); title = tplById[id].title + ' — template — Google Cloud for AI/ML Systems'; }
       else html = notFound();
     }
     else if (!kind) html = pageHome();
@@ -660,12 +768,18 @@
       hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' ')].join(' ').toLowerCase() };
   }).concat(A.architectures.map(function (a) {
     return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: plain(a.name + ' ' + a.short + ' ' + a.why.join(' ') + ' ' + blocksText(a.sections)).toLowerCase() };
+  })).concat((A.guides || []).map(function (g) {
+    return { type: 'Guide', href: '#/p/' + g.id, name: g.title, id: g.id, tag: g.short, cat: 'Guide', hay: plain(g.title + ' ' + g.short + ' ' + (g.when || '') + ' ' + blocksText(g.blocks)).toLowerCase() };
+  })).concat((A.templates || []).map(function (t) {
+    return { type: 'Template', href: '#/t/' + t.id, name: t.title, id: t.id, tag: t.short, cat: 'Template', hay: plain(t.title + ' ' + t.short + ' ' + t.when + ' ' + t.body).toLowerCase() };
   })).concat(A.decisions.map(function (d) {
     return { type: 'Decision', href: '#/d/' + d.id, name: d.title, id: d.id, tag: d.question, cat: 'Decision guide',
       hay: plain([d.title, d.question, d.why, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
   })).concat([
     { type: 'Tool', href: '#/d/shaper', name: 'Solution shaper', id: 'shaper', tag: 'Get a starting stack, risks and next decisions for your use case', cat: 'Tool', hay: 'recommend stack wizard rag agent starting point' },
     { type: 'Tool', href: '#/d/checklists', name: 'Readiness checklists', id: 'checklists', tag: 'Maturity ladder, production readiness and decision record template', cat: 'Tool', hay: 'production readiness launch checklist adr decision record maturity prototype pilot scale' },
+    { type: 'Tool', href: '#/d/scorecard', name: 'Evaluation scorecard', id: 'scorecard', tag: 'Compare candidates on one dataset and apply release gates', cat: 'Tool', hay: 'evals golden set release gate threshold regression compare models prompts agents retrieval pass fail' },
+    { type: 'Tool', href: '#/d/finops', name: 'AI FinOps model', id: 'finops', tag: 'Component cost model and cost per successful task', cat: 'Tool', hay: 'cost tokens embeddings reranking vector retries budget routing cache parallel chunk size agent runtime unit economics' },
     { type: 'Tool', href: '#/d/calculator', name: 'Cost per task calculator', id: 'calculator', tag: 'Unit economics for LLM features and the levers that cut cost', cat: 'Tool', hay: 'price tokens caching batch unit economics budget' }
   ]);
   function openSearch() { overlay.hidden = false; q.value = ''; runSearch(); q.focus(); }

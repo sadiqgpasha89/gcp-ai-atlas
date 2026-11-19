@@ -219,8 +219,48 @@ window.ATLAS.decisions = [
       'How do we re-index if we change the embedding model?',
       'How does a deletion request reach the index, the caches and the logs?'
     ],
-    revisit: 'When data size grows tenfold, when filtering becomes more selective, or when the embedding model changes.',
+    revisit: 'When data size grows tenfold, when filtering becomes more selective, or when the embedding model changes. Choosing between vector, hybrid, agentic and graph retrieval is a separate decision: [[d:retrieval-strategy|which retrieval strategy]].',
     related: ['rag-engine', 'vector-search', 'alloydb', 'cloud-sql', 'spanner']
+  },
+  {
+    id: 'retrieval-strategy', theme: 'architecture', title: 'Which retrieval strategy?',
+    question: 'Is vector search enough, or do we need hybrid search, an agentic loop, a graph, or a managed retrieval service?',
+    door: 'two-way', doorNote: 'Cheap to move up the ladder if retrieval sits behind one interface and you keep an eval set. Costly once a graph or an agentic loop is wired into the product and the data pipeline.',
+    why: 'These are not interchangeable products. They answer different shapes of question, and each step up adds latency, tokens and a data pipeline to own. Most teams that jump to a graph or an agentic loop have not yet measured what plain hybrid retrieval with a reranker would do on their questions.\n\nThe cheapest correct system is the one that stops at the lowest rung that passes your evals. [[d:vector-store|Which vector store]] is a separate, later question.',
+    cols: ['Strategy', 'Answers well', 'Adds', 'Operations', 'Do not choose when'],
+    rows: [
+      ['**Vector only** ([[rag-engine|RAG Engine]] or a vector index)', 'Find the passage that is semantically close to the question', 'Nothing: the baseline', 'Low', 'Queries contain exact identifiers, codes or names that must match literally'],
+      ['**Hybrid** (vector plus keyword, with reranking and metadata filters), for example [[ai-search|Agent Search]] or a database with both', 'Mixed natural-language and exact-term queries; permissioned corpora', 'A keyword index, a fusion step and a reranker (small latency cost)', 'Low to medium', 'You have not tried it: it is the first upgrade to make'],
+      ['**Agentic RAG** ([[a:agentic-rag|architecture]])', 'Questions that need rewriting, routing across sources, several lookups or verification before answering', 'A planner and loop: more model calls, more latency, a step budget to enforce', 'Medium: traces, limits, loop failures', 'The question set is simple lookups, or latency is tight (interactive in one to two seconds)'],
+      ['**GraphRAG** ([[a:graphrag|architecture]], [[spanner-graph|Spanner Graph]])', 'Multi-hop relationships and aggregation across entities', 'Entity extraction, resolution, a graph schema and its upkeep', 'High: a data pipeline and a graph to keep correct', 'Most questions are "find the passage"; you cannot name the node and edge types'],
+      ['**Agent Retrieval** ([[agent-retrieval]])', 'A managed retrieval layer for agents over your data, with its own collections and API', 'A newer service and API to adopt', 'Low to medium', 'You need a stable, long-proven service today, or the controls you must have are unconfirmed ([[p:compliance-matrix|compliance matrix]])'],
+      ['**SQL or API tool** ([[bigquery]], [[alloydb]])', 'Exact lookups, filters and aggregates over structured data', 'A tool with a schema and a read-only identity', 'Low', 'The data is unstructured text']
+    ],
+    rules: [
+      ['Questions are mostly "what does the document say about X"', 'Hybrid retrieval with metadata filters and a reranker. Stop there unless evals say otherwise.'],
+      ['Users ask for exact codes, ticket numbers, part numbers or names', 'Hybrid, with the keyword side weighted up, or a structured lookup tool.'],
+      ['One question needs several lookups, or the right source varies by question', 'Agentic RAG with a step and token budget. Measure the added latency and cost per task.'],
+      ['The answer is a relationship across documents ("what depends on", "who is connected to")', 'GraphRAG, after a vector baseline fails the multi-hop slice of your eval set.'],
+      ['The data is rows and columns', 'A SQL or API tool, not chunks.'],
+      ['A hard residency or key-management requirement applies', 'Pick only from services whose controls you have confirmed, then choose the strategy ([[p:compliance-matrix|matrix]]).']
+    ],
+    redflags: [
+      'A graph or an agentic loop is chosen without a measured vector baseline on the same questions.',
+      'The graph schema is "everything"; nobody can list the questions it must answer.',
+      'Agentic retrieval has no step, token or time budget.',
+      'Entity resolution and graph freshness have no owner.',
+      'Permissions are applied after retrieval instead of inside it, and the strategy adds more places for content to leak (edges, caches, summaries).',
+      'A managed service is chosen without checking residency, key and perimeter support.'
+    ],
+    ask: [
+      'What fraction of our questions are passage lookups, multi-hop, aggregate or structured? What does the baseline score on each slice?',
+      'What is the latency and cost per task of the more complex option on the same eval set?',
+      'Who owns the pipeline that keeps this index or graph correct and fresh?',
+      'How do we enforce permissions at every hop and in every cache?',
+      'If this strategy underperforms, can we go back to the previous rung without a rewrite?'
+    ],
+    revisit: 'When the mix of questions changes, when a baseline slice stays below its target after tuning, when latency or cost per task drifts, or when Google changes what the managed retrieval services offer.',
+    related: ['rag-engine', 'ai-search', 'agent-retrieval', 'vector-search', 'spanner-graph', 'alloydb', 'bigquery']
   },
   {
     id: 'inference-pattern', theme: 'architecture', title: 'Synchronous, streaming, asynchronous or batch?',
