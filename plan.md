@@ -142,24 +142,24 @@ Guide `agent-governance-guide` (do not duplicate the service card; expand it).
 
 Page `#/m`, tabs, browser-local data, import and export.
 
-- [ ] 10.1 **Engine**: schema-driven editable tables (text, select, number, date, percent, status); add, edit, delete rows; localStorage; export and import JSON and CSV; load sample data; clear.
-- [ ] 10.2 **Tabs** (ten): AI portfolio, Architecture review, Project health, Quality, Reliability, Cost, Security and compliance, Team capability matrix, Technology radar, Decision log.
-- [ ] 10.3 **Derived KPIs** per tab (for example: portfolio by stage and total value at risk; quality metrics below threshold; SLO attainment and error-budget burn; forecast versus actual variance and unit cost; open controls by severity; skill gaps by person and by skill).
-- [ ] 10.4 **Technology radar** seeded from the atlas service catalogue (adopt, trial, assess, hold) with status from `meta.js`.
-- [ ] 10.5 Clear statement on the page: data stays in the browser; how to feed it from Cloud Monitoring, BigQuery billing export and eval runs (CSV import).
-- [ ] 10.6 Accessible tables (labels, keyboard, focus), responsive layout.
+- [x] 10.1 **Engine**: schema-driven editable tables (text, select, number, date, percent, status); add, edit, delete rows; localStorage; export and import JSON and CSV; load sample data; clear.
+- [x] 10.2 **Tabs** (ten): AI portfolio, Architecture review, Project health, Quality, Reliability, Cost, Security and compliance, Team capability matrix, Technology radar, Decision log.
+- [x] 10.3 **Derived KPIs** per tab (for example: portfolio by stage and total value at risk; quality metrics below threshold; SLO attainment and error-budget burn; forecast versus actual variance and unit cost; open controls by severity; skill gaps by person and by skill).
+- [x] 10.4 **Technology radar** seeded from the atlas service catalogue (adopt, trial, assess, hold) with status from `meta.js`.
+- [x] 10.5 Clear statement on the page: data stays in the browser; how to feed it from Cloud Monitoring, BigQuery billing export and eval runs (CSV import).
+- [x] 10.6 Accessible tables (labels, keyboard, focus), responsive layout.
 
 ### P2-4 Management templates and team skills matrix
 
 - [x] 11.1 **Page `#/t`** with 12 copy-ready markdown templates: discovery and problem statement; business value and feasibility; architecture review checklist; model and agent selection record; RAG design review; threat model and risk assessment; evaluation report; production launch Go/No-Go; SLO and incident runbook; post-incident review; cost optimisation review; technical debt and improvement backlog.
 - [x] 11.2 Each template has: when to use it, who fills it in, the template body, copy button, links to related atlas pages.
-- [ ] 11.3 **Skills matrix**: delivered in the cockpit (10.2) with a seeded skill list for AI engineering and a gap summary.
+- [x] 11.3 **Skills matrix**: delivered in the cockpit (10.2) with a seeded skill list for AI engineering and a gap summary.
 
 ## Phase 4: integration, quality and delivery
 
 - [ ] 12.1 **Navigation**: sidebar and home regrouped into Knowledge Base, Playbook, Manager Cockpit; new routes `#/p`, `#/p/<id>`, `#/m`, `#/t`, `#/d/finops`, `#/d/scorecard`.
-- [ ] 12.2 **Search** covers guides, templates, tools and cockpit.
-- [ ] 12.3 **Validator** extended: guides, templates, architecture `sections`, cross-references (`[[id]]`), new decision guide, meta.
+- [x] 12.2 **Search** covers guides, templates, tools and cockpit.
+- [x] 12.3 **Validator** extended: guides, templates, architecture `sections`, cross-references (`[[id]]`), new decision guide, meta.
 - [ ] 12.4 **Readiness checklist**: add items that point to the new guides (governance, runbooks, evals, CI/CD, data freshness).
 - [ ] 12.5 **Shaper**: point agent and RAG results at the new architectures where they fit.
 - [ ] 12.6 **Browser smoke test** of every route: no console errors, key elements present, cockpit add/edit/export round trip, FinOps and scorecard calculations match hand-computed values, light and dark, narrow viewport.

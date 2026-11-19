@@ -250,6 +250,41 @@ for (const t of A.templates || []) (t.see || []).forEach(r => { const [k, id] = 
 // `see` lists on guides
 for (const g of A.guides || []) (g.see || []).forEach(r => { const [k, id] = r.split(':'); if (!targetOk(k, id)) err(`guide ${g.id}: see ${r} has no target`); });
 
+// ---- manager cockpit schema ----
+if (A.cockpit) {
+  const ck = A.cockpit, TYPES = ['text', 'select', 'number', 'money', 'percent', 'date', 'status'];
+  if (!ck.storageKey) err('cockpit: storageKey missing');
+  const skillIds = new Set((ck.skillList || []).map(x => x[0]));
+  if (skillIds.size !== (ck.skillList || []).length || !skillIds.size) err('cockpit: skillList needs unique [id,label] pairs');
+  const seen = new Set();
+  for (const t of ck.tabs || []) {
+    const p = `cockpit tab ${t.id}`;
+    if (!t.id || seen.has(t.id)) err(`${p}: missing or duplicate id`); seen.add(t.id);
+    if (!t.title || !t.blurb) err(`${p}: needs title and blurb`);
+    if (t.special === 'skills') {
+      for (const pe of t.samplePeople || []) for (const [k, v] of Object.entries(pe.levels || {})) { if (!skillIds.has(k)) err(`${p}: sample person ${pe.name} has unknown skill ${k}`); if (!(v >= 0 && v <= 4)) err(`${p}: level ${v} out of range`); }
+      for (const [k, v] of Object.entries(t.sampleTargets || {})) { if (!skillIds.has(k)) err(`${p}: unknown target skill ${k}`); if (!(v >= 0 && v <= 4)) err(`${p}: target ${v} out of range`); }
+      continue;
+    }
+    if (!Array.isArray(t.cols) || !t.cols.length) { err(`${p}: needs cols`); continue; }
+    const keys = new Set();
+    for (const c of t.cols) {
+      if (!c.k || !c.label || !TYPES.includes(c.type)) err(`${p}: bad column ${JSON.stringify(c)}`);
+      if (keys.has(c.k)) err(`${p}: duplicate column ${c.k}`); keys.add(c.k);
+      if (c.type === 'select' && !(c.opts || []).length) err(`${p}: select column ${c.k} needs opts`);
+    }
+    for (const [i, r] of (t.sample || []).entries()) for (const [k, v] of Object.entries(r)) {
+      const c = t.cols.find(x => x.k === k);
+      if (!c) { err(`${p}: sample row ${i} has unknown field ${k}`); continue; }
+      if (c.type === 'select' && v !== '' && !c.opts.includes(v)) err(`${p}: sample row ${i} ${k}="${v}" not in options`);
+      if (c.type === 'status' && !['Green', 'Amber', 'Red'].includes(v)) err(`${p}: sample row ${i} ${k}="${v}" is not a status`);
+      if (['number', 'money', 'percent'].includes(c.type) && typeof v !== 'number') err(`${p}: sample row ${i} ${k} must be a number`);
+      if (c.type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(v)) err(`${p}: sample row ${i} ${k}="${v}" is not YYYY-MM-DD`);
+    }
+  }
+  for (const need of ['portfolio', 'arch', 'project', 'quality', 'reliability', 'cost', 'security', 'skills', 'radar', 'decisions']) if (!seen.has(need)) err(`cockpit: missing tab ${need}`);
+}
+
 const words = A.services.reduce((n, s) => n + JSON.stringify(s).split(/\s+/).length, 0);
 console.log(`${A.categories.length} categories, ${A.services.length} services, ${A.architectures.length} architectures, ${A.decisions.length} decision guides, ${(A.guides || []).length} guides, ${(A.templates || []).length} templates, ${A.readiness.reduce((n, g) => n + g.items.length, 0)} readiness items, ${combos} shaper combinations checked, ~${words} words in services`);
 if (errs.length) { console.error(`\n${errs.length} problem(s):`); errs.forEach(e => console.error(' - ' + e)); process.exit(1); }

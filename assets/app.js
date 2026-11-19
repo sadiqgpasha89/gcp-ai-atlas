@@ -693,6 +693,9 @@
       h += '<details' + (curTheme === t.id ? ' open' : '') + '><summary style="--h:' + THEME_HUE[t.id] + '"><span class="dot"></span><span style="flex:1">' + esc(t.name) + '</span><span class="n">' + list.length + '</span></summary><ul>' +
         list.map(function (d) { return '<li><a href="#/d/' + d.id + '"' + (kind === 'd' && id === d.id ? ' aria-current="page"' : '') + '>' + esc(d.title) + '</a></li>'; }).join('') + '</ul></details>';
     });
+    h += '<h3>Playbook</h3>' + nl('#/p', 'Operating guides', kind === 'p' && !id) + nl('#/t', 'Templates', kind === 't' && !id) +
+      '<h3>Manager cockpit</h3>' + nl('#/m', 'Overview', kind === 'm' && !id) +
+      A.cockpit.tabs.map(function (t) { return nl('#/m/' + t.id, esc(t.title), kind === 'm' && id === t.id); }).join('');
     h += '<h3>Services</h3>';
     A.categories.forEach(function (c) {
       h += '<details' + (cur === c.id ? ' open' : '') + '><summary style="--h:' + c.hue + '"><span class="dot"></span><a href="#/c/' + c.id + '"' + (kind === 'c' && id === c.id ? ' aria-current="page"' : '') + '>' + esc(c.name) + '</a><span class="n">' + c.items.length + '</span></summary><ul>' +
@@ -733,6 +736,13 @@
       else if (tplById[id]) { html = pageTemplate(id); title = tplById[id].title + ' — template — Google Cloud for AI/ML Systems'; }
       else html = notFound();
     }
+    else if (kind === 'm') {
+      var CK = window.ATLAS_COCKPIT, ckTab = id && A.cockpit.tabs.filter(function (t) { return t.id === id; })[0];
+      if (!id || ckTab) {
+        html = CK.render(UI, id); afterRender = function () { CK.mount(UI, id); };
+        title = (ckTab ? ckTab.title + ' — ' : '') + 'Manager cockpit — Google Cloud for AI/ML Systems';
+      } else html = notFound();
+    }
     else if (!kind) html = pageHome();
     else html = notFound();
     var main = $('#main'); main.innerHTML = html;
@@ -772,7 +782,9 @@
     return { type: 'Guide', href: '#/p/' + g.id, name: g.title, id: g.id, tag: g.short, cat: 'Guide', hay: plain(g.title + ' ' + g.short + ' ' + (g.when || '') + ' ' + blocksText(g.blocks)).toLowerCase() };
   })).concat((A.templates || []).map(function (t) {
     return { type: 'Template', href: '#/t/' + t.id, name: t.title, id: t.id, tag: t.short, cat: 'Template', hay: plain(t.title + ' ' + t.short + ' ' + t.when + ' ' + t.body).toLowerCase() };
-  })).concat(A.decisions.map(function (d) {
+  })).concat(((A.cockpit && A.cockpit.tabs) || []).map(function (t) {
+    return { type: 'Cockpit', href: '#/m/' + t.id, name: t.title, id: 'cockpit-' + t.id, tag: t.blurb, cat: 'Cockpit', hay: ('manager cockpit tracker ' + t.title + ' ' + t.blurb + ' ' + (t.cols || []).map(function (c) { return c.label; }).join(' ')).toLowerCase() };
+  })).concat([{ type: 'Cockpit', href: '#/m', name: 'Manager cockpit', id: 'cockpit', tag: 'Track portfolio, delivery, quality, reliability, cost, security, skills and decisions', cat: 'Cockpit', hay: 'engineering manager dashboard tracker attention portfolio radar capability matrix' }]).concat(A.decisions.map(function (d) {
     return { type: 'Decision', href: '#/d/' + d.id, name: d.title, id: d.id, tag: d.question, cat: 'Decision guide',
       hay: plain([d.title, d.question, d.why, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
   })).concat([
