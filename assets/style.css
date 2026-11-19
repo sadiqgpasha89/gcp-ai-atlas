@@ -404,3 +404,64 @@ svg.radar .ql{font:600 11px var(--sans);fill:var(--ink)}
 .radarkey span{display:inline-flex;align-items:center;gap:5px;margin-right:12px}
 .radarkey span::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c)}
 .tablewrap.ck{position:relative}
+
+/* ----- role tabs (engineering managers / principal engineers) ----- */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line2);margin:18px 0 0}
+.tab{appearance:none;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 16px;font:700 14px var(--sans,inherit);color:var(--muted);cursor:pointer;border-radius:8px 8px 0 0}
+.tab:hover{color:var(--ink);background:var(--paper)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tab i{font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;font-style:normal;margin-left:6px;padding:2px 7px;border-radius:99px;background:var(--accent);color:var(--paper)}
+.tabpanel{padding-top:20px}
+.tabpanel[hidden]{display:none}
+.tabpanel:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+.rolelede{max-width:62ch;margin:0 0 18px;color:var(--muted)}
+.lead{display:inline-block;font:700 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:99px;border:1.5px solid var(--line2);color:var(--muted);white-space:nowrap}
+.lead.mine,.lead.em,.lead.pe{color:var(--accent);border-color:var(--accent)}
+.lead.both{color:var(--ink)}
+.lead-note{margin:0 0 4px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.quick td{white-space:normal;vertical-align:top}
+.quick td:first-child{min-width:200px}
+.cnt{font:700 12px var(--mono);color:var(--muted);margin-left:6px}
+.callout.lens{margin-top:0}
+
+/* ----- operations dashboard & widgets ----- */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin:20px 0}
+.dash-card{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;box-shadow:4px 4px 0 var(--line);display:flex;flex-direction:column;gap:8px}
+.dash-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dash-card h4{margin:0;font-size:15px;font-weight:700;font-family:var(--sans)}
+.dash-metric{font:700 30px/1.1 var(--serif);color:var(--ink);margin:4px 0 2px}
+.dash-sub{font-size:13px;color:var(--muted);line-height:1.4}
+.dash-target{font:600 11px var(--mono);color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);padding:3px 8px;border-radius:6px;width:fit-content;margin-top:2px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+.status-pill.ok{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.status-pill.warn{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.kql-box{background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;margin-top:10px;font:12px/1.55 var(--mono);overflow-x:auto;white-space:pre-wrap;position:relative}
+.btn-sm{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--sans);border:1px solid var(--line2);background:var(--paper);color:var(--ink);padding:5px 11px;border-radius:8px;cursor:pointer;transition:border-color .15s,color .15s}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ----- labs & roadmaps ----- */
+.roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+.roadmap-card{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;box-shadow:4px 4px 0 var(--line)}
+.roadmap-card h3{margin:8px 0 4px;font-size:18px}
+.lab-card{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:4px 4px 0 var(--line)}
+.lab-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.lab-level{font:700 11px var(--mono);padding:2px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.lab-time{font:600 11px var(--mono);color:var(--muted)}
+.lab-steps{margin:12px 0;padding-left:22px}
+.lab-steps li{margin:8px 0;line-height:1.5}
+
+/* ----- toolkit matrices & RACI ----- */
+.matrix-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+.matrix-table th{background:color-mix(in srgb,var(--bg) 60%,var(--paper));font:600 11px var(--mono);padding:10px 12px;border:1px solid var(--line2);text-align:left}
+.matrix-table td{padding:10px 12px;border:1px solid var(--line2);vertical-align:top}
+.raci-badge{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:5px;font:700 11px var(--mono)}
+.raci-r{background:hsl(212 75% 88%);color:hsl(212 75% 25%)}
+.raci-a{background:hsl(25 80% 88%);color:hsl(25 80% 25%)}
+.raci-c{background:hsl(150 60% 88%);color:hsl(150 60% 25%)}
+.raci-i{background:hsl(270 60% 90%);color:hsl(270 60% 25%)}
+[data-theme=dark] .raci-r{background:hsl(212 50% 25%);color:hsl(212 75% 85%)}
+[data-theme=dark] .raci-a{background:hsl(25 50% 25%);color:hsl(25 80% 85%)}
+[data-theme=dark] .raci-c{background:hsl(150 40% 22%);color:hsl(150 60% 85%)}
+[data-theme=dark] .raci-i{background:hsl(270 40% 25%);color:hsl(270 60% 85%)}
