@@ -153,47 +153,67 @@
   function pageHome() {
     var n = A.services.length;
     var h = '<div class="wide"><section class="hero"><div>' +
-      '<div class="eyebrow">The AI Engineering Management Operating System · ' + n + ' services · ' + A.architectures.length + ' architectures · ' + A.decisions.length + ' decisions</div>' +
-      '<h1>Google Cloud for AI Systems — an interactive atlas.</h1>' +
-      '<p class="lede">From cloud catalog to engineering management operating system: what to build, how to deliver it, how to govern it, and how to operate multi-agent and generative AI systems in production.</p>' +
+      '<div class="eyebrow">The AI Engineering Management Operating System · ' + n + ' services · ' + A.architectures.length + ' architectures · ' + A.decisions.length + ' decisions · ' + A.engineeringPlaybooks.length + ' playbooks · 9 tools</div>' +
+      '<h1>Google Cloud for AI Systems — an interactive operating system.</h1>' +
+      '<p class="lede">From cloud catalog to production AI engineering operating system: design, evaluate, architect, govern, and lead production-grade generative AI, RAG, and multi-agent systems on Google Cloud.</p>' +
       '<div class="btns">' +
-        '<a class="btn primary" href="#/p">Engineering Playbooks →</a>' +
-        '<a class="btn" href="#/a">Architectures</a>' +
-        '<a class="btn" href="#/d">Decision Guides</a>' +
-        '<a class="btn" href="#/ops">Operations Centre</a>' +
+        '<a class="btn primary" href="#/tools">Engineering Tools (9) →</a>' +
+        '<a class="btn" href="#/a">Architectures (' + A.architectures.length + ')</a>' +
+        '<a class="btn" href="#/p">Playbooks (' + A.engineeringPlaybooks.length + ')</a>' +
+        '<a class="btn" href="#/d">Decision Centre (' + A.decisions.length + ')</a>' +
         '<a class="btn" href="#/toolkit">Manager Toolkit</a>' +
+        '<a class="btn" href="#/labs">Labs & Projects (' + A.labs.exercises.length + ')</a>' +
       '</div>' +
       '</div>' + heroSVG() + '</section>';
 
-    h += '<h2>The 8 Pillars of Production AI Engineering</h2>' +
-      '<p style="max-width:68ch">A complete operational lifecycle for engineering managers, principal engineers, and architects delivering generative AI and multi-agent systems on Google Cloud.</p>' +
+    h += '<h2>The 6 Levels of Enterprise AI Engineering Maturity</h2>' +
+      '<p style="max-width:72ch">A complete operational maturity framework for AI Engineering Managers and Principal Architects leading enterprise AI on Google Cloud.</p>' +
       '<div class="grid">' +
-      '<a class="card" style="--h:212" href="#/c/genai"><div class="mini">Pillar 1</div><h3>1. Services Catalogue</h3><p>73 Google Cloud AI, compute, data, and security services with lifecycle status, pricing notes, and implementation gotchas.</p></a>' +
-      '<a class="card" style="--h:268" href="#/a"><div class="mini">Pillar 2</div><h3>2. Reference Architectures</h3><p>13 end-to-end architectures including Traditional RAG, Agentic RAG, GraphRAG, Multimodal RAG, Multi-Agent Orchestration, and GenAIOps.</p></a>' +
-      '<a class="card" style="--h:150" href="#/d"><div class="mini">Pillar 3</div><h3>3. Architecture Decision Centre</h3><p>23 architectural decision guides with dedicated Engineering Manager and Principal Engineer lenses and one-way-door risk markers.</p></a>' +
-      '<a class="card" style="--h:212" href="#/p"><div class="mini">Pillar 4</div><h3>4. AI Engineering Playbooks</h3><p>5 deep playbooks: RAG Engineering, Multi-Agent Orchestration, GenAIOps Lifecycle, Security Hardening, and SRE/Reliability.</p></a>' +
-      '<a class="card" style="--h:25" href="#/gov"><div class="mini">Pillar 5</div><h3>5. Security & Governance</h3><p>Resource Manager hierarchy, Shared VPC network topology, 8-pillar security framework, and Organization Policies.</p></a>' +
-      '<a class="card" style="--h:185" href="#/ops"><div class="mini">Pillar 6</div><h3>6. Operations Centre</h3><p>Mandatory 10-widget production AI dashboard with Cloud Logging / Monitoring queries, 4 SRE runbooks, and AI postmortem template.</p></a>' +
-      '<a class="card" style="--h:40" href="#/toolkit"><div class="mini">Pillar 7</div><h3>7. Manager Toolkit</h3><p>Use-case assessment matrix, project estimation model, RACI matrix, RAID tracker, quality gates, and executive templates.</p></a>' +
-      '<a class="card" style="--h:305" href="#/labs"><div class="mini">Pillar 8</div><h3>8. Hands-on Labs & Roadmaps</h3><p>3 role-based progressive roadmaps (EM, PE, Engineer), 5 hands-on production labs, and official Google Cloud Architecture links.</p></a>' +
+      '<a class="card" style="--h:212" href="#/c/genai"><div class="mini">Level 1</div><h3>1. Service Encyclopedia</h3><p>73 Google Cloud AI, data, and compute services with architecture fit, operational gotchas, and pairing notes.</p></a>' +
+      '<a class="card" style="--h:305" href="#/labs"><div class="mini">Level 2</div><h3>2. Learning Atlas</h3><p>12 complete production labs, 16-week progressive roadmap, and 3-tier competency benchmark.</p></a>' +
+      '<a class="card" style="--h:268" href="#/a"><div class="mini">Level 3</div><h3>3. Architecture Intelligence</h3><p>42 reference architectures with standardized 12-section blueprints and 23 architectural decision guides.</p></a>' +
+      '<a class="card" style="--h:150" href="#/p"><div class="mini">Level 4</div><h3>4. Production Engineering</h3><p>11 deep playbooks: RAG lifecycle, multi-agent patterns, GenAIOps release gates, OpenTelemetry, and FinOps.</p></a>' +
+      '<a class="card" style="--h:25" href="#/gov"><div class="mini">Level 5</div><h3>5. Engineering Leadership</h3><p>Resource Manager hierarchy, 8-pillar security framework, RACI matrices, RAID trackers, and risk analysis.</p></a>' +
+      '<a class="card" style="--h:40" href="#/tools"><div class="mini">Level 6</div><h3>6. AI Delivery Cockpit</h3><p>9 interactive decision tools, 8 copyable production templates, and daily engineering manager checklists.</p></a>' +
       '</div>';
 
-    h += '<h2>Service catalogue by category</h2><p style="max-width:62ch">Services are grouped by the job they do in an AI/ML system. Each page ends with how to use the service in production, gotchas, and what it pairs with.</p><div class="grid">';
+    h += '<h2>Interactive Engineering Tools (9)</h2>' +
+      '<p style="max-width:72ch">Decision calculators, architecture wizards, and governance instruments built for day-to-day technical leadership.</p>' +
+      '<div class="grid">' +
+      '<a class="card" style="--h:215" href="#/tools/compare"><div class="mini">Interactive</div><h3>Service Comparison Engine</h3><p>Side-by-side technical trade-off matrices for Vector, Agent Runtimes, Models, and Orchestration.</p></a>' +
+      '<a class="card" style="--h:268" href="#/tools/rag-assistant"><div class="mini">Wizard</div><h3>RAG Design Assistant</h3><p>5-step interactive sizing & pattern wizard recommending optimal retrieval architectures.</p></a>' +
+      '<a class="card" style="--h:150" href="#/tools/agent-assistant"><div class="mini">Wizard</div><h3>Agent Design Assistant</h3><p>4-step autonomy, tools & orchestration wizard recommending deterministic vs swarm patterns.</p></a>' +
+      '<a class="card" style="--h:25" href="#/tools/risk-analyzer"><div class="mini">Governance</div><h3>Architecture Risk Analyzer</h3><p>STRIDE + AI threat risk calculator evaluating system exposure and generating mitigation plans.</p></a>' +
+      '<a class="card" style="--h:185" href="#/tools/readiness-scorecard"><div class="mini">Launch Gate</div><h3>Production Readiness Scorecard</h3><p>Interactive 30-point evaluation across Architecture, Data, Eval, Security, Ops, and FinOps.</p></a>' +
+      '<a class="card" style="--h:40" href="#/tools/review-gen"><div class="mini">Generator</div><h3>Architecture Review Generator</h3><p>Form-driven generator producing formatted markdown ADR / PRR ready for PRs and design reviews.</p></a>' +
+      '<a class="card" style="--h:215" href="#/d/shaper"><div class="mini">Interactive</div><h3>Solution Shaper</h3><p>Seven questions in, a starting stack and the decisions to make next out.</p></a>' +
+      '<a class="card" style="--h:185" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per Task Calculator</h3><p>Unit economics calculator with token pricing, context caching, and retry multipliers.</p></a>' +
+      '<a class="card" style="--h:150" href="#/d/checklists"><div class="mini">Checklists</div><h3>Readiness Checklists</h3><p>Maturity ladder and production checklists from prototype to enterprise scale.</p></a>' +
+      '</div>';
+
+    h += '<h2>Reference Architectures (' + A.architectures.length + ')</h2>' +
+      '<p style="max-width:72ch">Production blueprints across 5 categories: Foundation ML, Generative AI, RAG, Multi-Agent Systems, and Enterprise MLOps.</p>' +
+      '<div class="grid">' +
+      A.architectures.slice(0, 8).map(function (a) {
+        return '<a class="card" style="--h:215" href="#/a/' + a.id + '"><div class="mini">Architecture</div><h3>' + esc(a.name) + '</h3><p>' + esc(a.short) + '</p></a>';
+      }).join('') +
+      '</div>' +
+      '<div style="margin:16px 0 32px"><a class="btn" href="#/a">View all ' + A.architectures.length + ' Reference Architectures →</a></div>';
+
+    h += '<h2>AI Engineering Playbooks (' + A.engineeringPlaybooks.length + ')</h2>' +
+      '<p style="max-width:72ch">Deep architectural and operational playbooks covering RAG lifecycle, multi-agent systems, GenAIOps, FinOps, SRE, and security.</p>' +
+      '<div class="grid">' +
+      A.engineeringPlaybooks.map(function (p) {
+        return '<a class="card" style="--h:215" href="#/p/' + p.id + '"><div class="mini">' + esc(p.badge) + '</div><h3>' + esc(p.title) + '</h3><p>' + esc(p.tag) + '</p></a>';
+      }).join('') +
+      '</div>';
+
+    h += '<h2>Service Catalogue by Category (' + A.services.length + ')</h2>' +
+      '<p style="max-width:62ch">Services are grouped by their specific role in an AI/ML system: compute, data, models, orchestration, and security.</p><div class="grid">';
     A.categories.forEach(function (c) {
       h += '<a class="card catcard" style="--h:' + c.hue + '" href="#/c/' + c.id + '">' + miniCube(c.hue) + '<div class="mini">' + c.items.length + ' services</div><h3>' + esc(c.name) + '</h3><p>' + esc(c.short) + '</p></a>';
     });
-    h += '</div><h2>Reference Architectures (13)</h2><p style="max-width:62ch">Production blueprints from classic RAG to multi-agent orchestration and GenAIOps pipelines. Step-through diagrams where every node links to its service.</p><div class="grid">';
-    A.architectures.forEach(function (a) {
-      h += '<a class="card" style="--h:215" href="#/a/' + a.id + '"><div class="mini">Architecture</div><h3>' + esc(a.name) + '</h3><p>' + esc(a.short) + '</p></a>';
-    });
-    h += '</div><h2>Leadership & Decision Tools</h2><p style="max-width:62ch">Practical instruments for engineering managers and principal engineers navigating high-stakes AI architectural decisions.</p><div class="grid">' +
-      '<a class="card" style="--h:215" href="#/d/em"><div class="mini">Decision tab</div><h3>Engineering managers</h3><p>Default calls, evidence to ask for and launch gates, across ' + A.decisions.length + ' guides.</p></a>' +
-      '<a class="card" style="--h:268" href="#/d/pe"><div class="mini">Decision tab</div><h3>Principal engineers</h3><p>Default designs, trade-offs and the tests to demand in design review.</p></a>' +
-      '<a class="card" style="--h:215" href="#/d/shaper"><div class="mini">Interactive</div><h3>Solution shaper</h3><p>Seven questions in, a starting stack and the decisions to make next out.</p></a>' +
-      '<a class="card" style="--h:150" href="#/d/checklists"><div class="mini">Checklist</div><h3>Readiness checklists</h3><p>Maturity ladder, production readiness and a decision-record template.</p></a>' +
-      '<a class="card" style="--h:185" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per task</h3><p>See which levers move the bill most.</p></a>' +
-      '<a class="card" style="--h:40" href="#/toolkit"><div class="mini">Toolkit</div><h3>EM Frameworks & RACI</h3><p>Estimation model, RACI matrix, RAID log and review templates.</p></a>' +
-      '</div></div>';
+    h += '</div></div>';
     return h;
   }
 
@@ -230,20 +250,181 @@
   }
 
   function pageArchIndex() {
-    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Architectures</div><h1>Reference architectures</h1><p class="lede">Services are only useful in combination. These are the shapes that keep showing up in production AI/ML systems.</p><div class="grid">';
-    A.architectures.forEach(function (a) { h += '<a class="card" style="--h:215" href="#/a/' + a.id + '"><div class="mini">Architecture</div><h3>' + esc(a.name) + '</h3><p>' + esc(a.short) + '</p></a>'; });
-    return h + '</div>';
+    var cats = [
+      { id: 'all', name: 'All Architectures', count: A.architectures.length },
+      { id: 'foundation-ml', name: 'Foundation ML', count: A.architectures.filter(function(a){return a.cat==='foundation-ml';}).length },
+      { id: 'genai', name: 'GenAI Systems', count: A.architectures.filter(function(a){return a.cat==='genai';}).length },
+      { id: 'rag', name: 'RAG Architectures', count: A.architectures.filter(function(a){return a.cat==='rag';}).length },
+      { id: 'agents', name: 'Multi-Agent Systems', count: A.architectures.filter(function(a){return a.cat==='agents';}).length },
+      { id: 'production', name: 'Production & MLOps', count: A.architectures.filter(function(a){return a.cat==='production';}).length }
+    ];
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Reference Architectures</div>' +
+      '<h1>Production Reference Architectures (' + A.architectures.length + ')</h1>' +
+      '<p class="lede">Comprehensive production blueprints covering the entire lifecycle: Foundation ML, Generative AI, Retrieval-Augmented Generation, Autonomous Multi-Agent Swarms, and Enterprise MLOps platforms. Every blueprint follows a standardized 12-section AI Engineering Manager blueprint.</p>' +
+      '<div class="filter-bar" id="archFilterBar">' +
+      cats.map(function (c, i) {
+        return '<button type="button" class="filter-btn' + (i === 0 ? ' active' : '') + '" data-cat="' + c.id + '">' + esc(c.name) + ' <span class="count-pill">(' + c.count + ')</span></button>';
+      }).join('') +
+      '</div>' +
+      '<div class="grid" id="archGrid">';
+    A.architectures.forEach(function (a) {
+      var catName = { 'foundation-ml': 'Foundation ML', 'genai': 'GenAI', 'rag': 'RAG', 'agents': 'Multi-Agent', 'production': 'Production' }[a.cat] || a.cat;
+      h += '<a class="card arch-card" style="--h:215" data-cat="' + a.cat + '" href="#/a/' + a.id + '">' +
+        '<div class="cat-tag">' + esc(catName) + '</div>' +
+        '<h3>' + esc(a.name) + '</h3>' +
+        '<p>' + esc(a.short) + '</p>' +
+        '</a>';
+    });
+    h += '</div>';
+
+    afterRender = function () {
+      var bar = $('#archFilterBar');
+      if (!bar) return;
+      var btns = $$('.filter-btn', bar);
+      var cards = $$('.arch-card', $('#archGrid'));
+      btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          btns.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var targetCat = btn.getAttribute('data-cat');
+          cards.forEach(function (card) {
+            if (targetCat === 'all' || card.getAttribute('data-cat') === targetCat) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    };
+    return h;
   }
 
   function pageArch(id) {
     var a = archById[id]; if (!a) return notFound();
-    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/a">Architectures</a></div><h1>' + esc(a.name) + '</h1><p class="lede">' + esc(a.short) + '</p>';
-    h += '<div class="callout"><b>Use it when</b>' + fmt(a.when) + '</div>';
-    h += '<h2>Walkthrough</h2><p>Click a step, or press Play. Every box is a link to its service page.</p>' + stepperHost({ flow: a.flow, steps: a.steps, hue: 215 });
-    h += '<div class="lists two" style="margin-top:34px"><div class="box"><h3>Why this shape</h3>' + ul(a.why) + '</div><div class="box warn"><h3>How it fails</h3>' + ul(a.fails) + '</div></div>';
+    var catName = { 'foundation-ml': 'Foundation ML', 'genai': 'Generative AI', 'rag': 'Retrieval-Augmented Generation (RAG)', 'agents': 'Autonomous Multi-Agent Systems', 'production': 'Enterprise Production & MLOps' }[a.cat] || a.cat;
+    
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/a">Architectures</a> / ' + esc(catName) + '</div>' +
+      '<h1>' + esc(a.name) + '</h1>' +
+      '<p class="lede">' + esc(a.short) + '</p>';
+
+    h += '<div class="bp-container">';
+
+    // Section 1: Business Problem & Executive Summary
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">1</span><h3 class="bp-title">Business Problem & Executive Summary</h3></div>' +
+      '<p>' + fmt(a.problem || a.short) + '</p>' +
+      '</div>';
+
+    // Section 2: When to Use It (Decision Triggers)
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">2</span><h3 class="bp-title">When to Use It (Decision Triggers)</h3></div>' +
+      '<div class="callout" style="margin:0"><b>Architectural Fit</b>' + fmt(a.when) + '</div>' +
+      '</div>';
+
+    // Section 3: When NOT to Use It & Alternatives
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">3</span><h3 class="bp-title">When NOT to Use It & Alternatives</h3></div>' +
+      '<div class="callout warn" style="margin:0"><b>Anti-patterns & Disqualifiers</b>' + fmt(a.whenNot || 'Do not use when a simpler static pipeline or deterministic SQL query suffices, or when operational SLAs cannot tolerate probabilistic model latencies.') + '</div>' +
+      '</div>';
+
+    // Section 4: Interactive Architecture Diagram & Stepper
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">4</span><h3 class="bp-title">Interactive Architecture Flow Diagram</h3></div>' +
+      '<p style="color:var(--muted);font-size:13px;margin-bottom:14px">Step through the data flow. Click nodes or links to inspect corresponding Google Cloud service specifications.</p>' +
+      stepperHost({ flow: a.flow, steps: a.steps, hue: 215 }) +
+      '</div>';
+
+    // Section 5: Google Cloud Service Mapping & Key Roles
     var used = {}; a.flow.forEach(function (f) { if (f.s) used[f.s] = 1; });
     var ids = Object.keys(used);
-    if (ids.length) h += '<h2>Services involved</h2><div class="pairs">' + ids.map(function (p) { return '<a href="#/s/' + p + '">' + esc(byId[p].name) + '</a>'; }).join('') + '</div>';
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">5</span><h3 class="bp-title">Google Cloud Service Mapping & Key Roles</h3></div>' +
+      '<p style="color:var(--muted);font-size:13px">Each service below executes a dedicated responsibility in this architecture:</p>' +
+      '<div class="pairs" style="margin-top:10px">' +
+      ids.map(function (p) {
+        var s = byId[p];
+        return s ? '<a href="#/s/' + p + '">' + esc(s.name) + '</a>' : '';
+      }).filter(Boolean).join('') +
+      '</div></div>';
+
+    // Section 6: End-to-End Data Flow Steps & Rationale
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">6</span><h3 class="bp-title">End-to-End Execution Flow & Design Rationale</h3></div>' +
+      '<div class="bp-grid">' +
+        '<div class="bp-item"><h4>Execution Steps</h4><ol style="margin:6px 0;padding-left:18px">' +
+          a.steps.map(function(s){ return '<li style="margin:6px 0">' + fmt(s[1]) + '</li>'; }).join('') +
+        '</ol></div>' +
+        '<div class="bp-item"><h4>Why This Shape</h4>' + ul(a.why) + '</div>' +
+      '</div></div>';
+
+    // Section 7: Security Architecture & Threat Mitigations
+    var secItems = a.security || [
+      'Enforce least-privilege IAM service accounts with Workload Identity Federation (WIF).',
+      'Deploy inside VPC Service Controls (VPC-SC) perimeter to prevent data exfiltration.',
+      'Sanitize all inbound user prompts and external retrieval inputs against indirect prompt injection via Vertex AI Model Armor.',
+      'Customer-Managed Encryption Keys (CMEK) enabled across all storage buckets, vector indices, and database tables.'
+    ];
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">7</span><h3 class="bp-title">Security Architecture & Threat Mitigations</h3></div>' +
+      ul(secItems) +
+      '</div>';
+
+    // Section 8: Failure Modes & Automated Recovery Strategies
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">8</span><h3 class="bp-title">Failure Modes & Automated Recovery Strategies</h3></div>' +
+      '<div class="box warn" style="margin:0">' + ul(a.fails) + '</div>' +
+      '</div>';
+
+    // Section 9: Cost Model & FinOps Levers
+    var costItems = a.costModel || [
+      'Input/Output token consumption billed per million tokens; apply Context Caching for static prompts longer than 32,768 tokens (up to 75% savings).',
+      'Compute sizing: configure autoscaling with minimum 0 instances on Cloud Run or scale-to-zero nodepools in GKE to eliminate idle compute spend.',
+      'Use BigQuery continuous queries or batch prediction discounts (50% reduction) for non-interactive workloads.'
+    ];
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">9</span><h3 class="bp-title">Cost Model & FinOps Levers</h3></div>' +
+      ul(costItems) +
+      '</div>';
+
+    // Section 10: AI Quality Evaluation & Acceptance Metrics
+    var evalItems = a.evalMetrics || [
+      'Retrieval Quality: Hit Rate @ K >= 92%, Mean Reciprocal Rank (MRR) >= 0.85.',
+      'Generation Quality: Groundedness & Faithfulness >= 0.90 evaluated via Vertex AI AutoSxS or Prometheus-style judge models.',
+      'Latency SLA: P95 Time-to-First-Token (TTFT) <= 800ms, P95 Total Response Time <= 2.8s.',
+      'Task Success Rate: >= 94% on domain gold validation test suites.'
+    ];
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">10</span><h3 class="bp-title">AI Quality Evaluation & Acceptance Metrics</h3></div>' +
+      ul(evalItems) +
+      '</div>';
+
+    // Section 11: Deployment & CI/CD Strategy
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">11</span><h3 class="bp-title">Deployment & CI/CD Strategy</h3></div>' +
+      '<p><b>Canary Pipeline with Automated Quality Gates:</b> Code, prompts, and pipeline configs are version-controlled in Cloud Source Repositories/GitHub. Cloud Build triggers automated evaluation runs against golden datasets using Vertex AI Evaluation API. If Groundedness < 0.90 or Hallucination Rate > 3%, the deployment is blocked automatically. Safe rollouts are orchestrated using Traffic Splitting on Cloud Run (10% canary → 50% → 100%) or Argo Rollouts on GKE.</p>' +
+      '</div>';
+
+    // Section 12: Production Readiness Checklist
+    var checkItems = a.checklist || [
+      'Data & Privacy: Redaction of PII/PHI completed; customer data excluded from foundation model training.',
+      'Security: Zero-trust VPC Service Controls perimeter and service account least-privilege verified.',
+      'Observability: OpenTelemetry traces exported to Cloud Trace; 429 throttling and TTFT alerts configured in Cloud Monitoring.',
+      'Resilience: Circuit breaker pattern implemented with exponential backoff on Vertex AI API quotas.',
+      'FinOps: Token usage quotas and Cloud Billing budget threshold alerts active.',
+      'Disaster Recovery: Vector indices and state stores backed up with documented RTO < 1h, RPO < 15m.'
+    ];
+    h += '<div class="bp-sec">' +
+      '<div class="bp-header"><span class="bp-num">12</span><h3 class="bp-title">Production Readiness Checklist</h3></div>' +
+      '<p style="color:var(--muted);font-size:13px">Verify all operational criteria before signing off on production launch:</p>' +
+      '<ul class="bp-chk-list">' +
+      checkItems.map(function(item, idx) {
+        return '<li class="bp-chk-item"><input type="checkbox" id="chk-' + a.id + '-' + idx + '"><label for="chk-' + a.id + '-' + idx + '">' + fmt(item) + '</label></li>';
+      }).join('') +
+      '</ul>' +
+      '</div>';
+
+    h += '</div>'; // end bp-container
     return h;
   }
 
@@ -629,6 +810,822 @@
   }
 
   /* ---------- playbooks ---------- */
+  /* ---------- interactive engineering tools ---------- */
+  function pageToolsHub() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Engineering Tools</div>' +
+      '<h1>AI Engineering Interactive Tools (9)</h1>' +
+      '<p class="lede">Decision engines, architecture wizards, risk analyzers, and launch readiness tools built for AI Engineering Managers and Principal Architects leading enterprise AI systems on Google Cloud.</p>' +
+      '<div class="tool-hub-grid">' +
+      '<a class="tool-hub-card" href="#/tools/compare"><span class="tool-tag">Evaluation</span><h3>1. Service Comparison Engine</h3><p>Side-by-side technical trade-off matrices for Vector Databases, Agent Runtimes, Foundation Models, and Orchestration Frameworks.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/tools/rag-assistant"><span class="tool-tag">Architecture</span><h3>2. RAG Design Assistant</h3><p>5-step interactive sizing & pattern wizard that recommends the exact RAG architecture, vector store, and chunking strategy.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/tools/agent-assistant"><span class="tool-tag">Architecture</span><h3>3. Agent Design Assistant</h3><p>4-step autonomy, tools & orchestration wizard recommending single-agent, router, swarm, or human-in-the-loop patterns.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/tools/risk-analyzer"><span class="tool-tag">Security & Risk</span><h3>4. Architecture Risk Analyzer</h3><p>STRIDE + AI threat risk calculator evaluating system exposure, injection blast radius, and generating mitigation plans.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/tools/readiness-scorecard"><span class="tool-tag">Launch Gate</span><h3>5. Production Readiness Scorecard</h3><p>Interactive 30-point evaluation across Architecture, Data, Evaluation, Security, Operations, and FinOps with weighted score.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/tools/review-gen"><span class="tool-tag">Governance</span><h3>6. Architecture Review Generator</h3><p>Form-driven generator producing formatted markdown ADR / PRR ready to paste into GitHub PRs or Google Docs.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/d/shaper"><span class="tool-tag">Architecture</span><h3>7. Solution Shaper</h3><p>Seven questions in, a starting stack and the decisions to make next out for generative AI and multi-agent systems.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/d/calculator"><span class="tool-tag">FinOps</span><h3>8. Cost per Successful Task Calculator</h3><p>Unit economics calculator factoring in prompt caching, routing ratios, and retry multipliers.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '<a class="tool-hub-card" href="#/d/checklists"><span class="tool-tag">Launch Gate</span><h3>9. Readiness Checklists</h3><p>Maturity ladder and production checklists from prototype to enterprise scale.</p><span class="door two-way">Launch Tool →</span></a>' +
+      '</div>';
+    return h;
+  }
+
+  function pageCompare() {
+    var tabs = [
+      ['vector', 'Vector & Search'],
+      ['runtime', 'Agent Runtimes'],
+      ['models', 'Foundation Models'],
+      ['orch', 'Agent Frameworks']
+    ];
+
+    var matrices = {
+      vector: {
+        cols: ['Vertex AI Search', 'Vertex AI Vector Search', 'BigQuery Vector Search', 'AlloyDB (pgvector)', 'Spanner Graph'],
+        rows: [
+          ['Target Workload', 'Turnkey managed search, RAG ingestion', 'Large-scale semantic vector retrieval', 'Analytical queries + vector similarity', 'Transactional OLTP + low-latency vector', 'Multi-hop graph + semantic search'],
+          ['Ingestion Latency', 'Batch / near-realtime (minutes)', 'Streaming updates (seconds)', 'Streaming inserts into BigQuery', 'Immediate ACID transaction sync', 'Immediate transactional graph updates'],
+          ['Query P95 Latency', '80ms - 250ms', '5ms - 20ms (ScaNN index)', '150ms - 800ms', '10ms - 35ms', '25ms - 90ms'],
+          ['Max Index Scale', 'Billions of documents', 'Billions of high-dim vectors', 'Petabyte-scale table partitions', 'Tens of millions of vectors', 'Trillions of nodes & edges'],
+          ['Filtering & ACLs', 'Built-in document ACLs, metadata filters', 'Metadata restriction tokens (crowding)', 'Native SQL WHERE filters', 'Native SQL & row-level security (RLS)', 'GQL & graph pattern matching'],
+          ['Operational Burden', 'Zero-ops (managed SaaS)', 'Low (managed index endpoints)', 'Zero-ops (serverless analytical)', 'Low (managed PostgreSQL)', 'Zero-ops (distributed relational graph)'],
+          ['Pricing Driver', 'Per-query search fee + document storage', 'Node-hours for index endpoints + storage', 'Slot-hours or TB scanned', 'Instance vCPU / RAM hours + storage', 'Spanner processing units (PUs) + storage'],
+          ['Reference Architecture', '<a href="#/a/rag-production-cache">rag-production-cache</a>', '<a href="#/a/rag-hybrid-search">rag-hybrid-search</a>', '<a href="#/a/rag-temporal-event">rag-temporal-event</a>', '<a href="#/a/rag-agentic-retrieval">rag-agentic-retrieval</a>', '<a href="#/a/rag-graph-spanner">rag-graph-spanner</a>']
+        ]
+      },
+      runtime: {
+        cols: ['Vertex AI Agent Engine', 'Cloud Run (FastAPI/ADK)', 'GKE (Kubernetes)', 'Vertex AI Endpoints'],
+        rows: [
+          ['Target Workload', 'Fully managed Agent runtime & tools', 'Stateless agent APIs, event processors', 'Complex custom runtimes, open models', 'Model inference serving (vLLM/TGI)'],
+          ['Cold Start Latency', 'Managed warm pool (~200ms)', 'Sub-second (100ms - 500ms)', 'N/A (warm pods running)', '1s - 5s on autoscaling'],
+          ['Max Timeout', '60 minutes', '60 minutes', 'Unlimited', '60 seconds'],
+          ['State & Memory', 'Built-in session state & memory bank', 'External (Firestore / Memorystore)', 'Kubernetes stateful sets or DB', 'Stateless inference'],
+          ['Custom Binaries', 'Supported via container image', 'Full Linux container support', 'Complete platform & GPU control', 'Inference container image only'],
+          ['Autoscaling Speed', 'Automatic managed scaling', 'Instant (0 to 1000s of instances in sec)', 'HPA based on CPU/custom metrics', 'Metric-based instance autoscaling'],
+          ['Pricing Model', 'Agent runtime hours + LLM tokens', 'Pay-per-request vCPU/RAM seconds', 'Node VM hours + cluster fee', 'Node-hours per replica'],
+          ['Reference Architecture', '<a href="#/a/agent-adk-engine">agent-adk-engine</a>', '<a href="#/a/agent-deterministic-router">agent-deterministic-router</a>', '<a href="#/a/agent-hierarchical-swarm">agent-hierarchical-swarm</a>', '<a href="#/a/genai-fine-tuning-serving">genai-fine-tuning-serving</a>']
+        ]
+      },
+      models: {
+        cols: ['Gemini 2.5 Flash', 'Gemini 2.5 Pro', 'Claude 3.7 Sonnet (Vertex)', 'Llama 3.3 70B (vLLM / GKE)'],
+        rows: [
+          ['Input Pricing / 1M', '$0.075 (<128k) / $0.15 (>128k)', '$1.25 (<128k) / $2.50 (>128k)', '$3.00 / 1M tokens', 'Self-hosted GPU compute cost'],
+          ['Output Pricing / 1M', '$0.30 (<128k) / $0.60 (>128k)', '$5.00 (<128k) / $10.00 (>128k)', '$15.00 / 1M tokens', 'Self-hosted GPU compute cost'],
+          ['Context Window', '1,048,576 tokens', '2,097,152 tokens', '200,000 tokens', '128,000 tokens'],
+          ['P95 TTFT Latency', '180ms - 350ms', '450ms - 900ms', '400ms - 800ms', '80ms - 250ms (dedicated GPU)'],
+          ['Structured Output', 'Native JSON Schema (99.8% valid)', 'Native JSON Schema (99.9% valid)', 'High (Tool calling mode)', 'Constrained decoding (vLLM grammar)'],
+          ['Multimodal Native', 'Text, Audio, Images, Video, PDF', 'Text, Audio, Images, Video, PDF', 'Text, Images, PDF', 'Text only (unless Vision variant)'],
+          ['Reasoning Benchmark', 'Fast reasoning & high-throughput', 'Deep reasoning, coding, complex math', 'Top-tier code, hybrid thinking', 'Strong open-weights alternative'],
+          ['Best Production Fit', 'High-volume agents, RAG summarization', 'Multi-agent planners, deep synthesis', 'Complex software engineering tasks', 'Air-gapped, sovereign, low-latency API']
+        ]
+      },
+      orch: {
+        cols: ['Google Gen AI ADK', 'LangGraph', 'CrewAI', 'Cloud Workflows / Composer'],
+        rows: [
+          ['Control Model', 'Code-first Python/TS with Agent Engine', 'Graph-based state machine with cycles', 'Role-playing autonomous agents', 'Deterministic DAG orchestration'],
+          ['State Persistence', 'Vertex AI Agent Engine Session API', 'Postgres / Redis checkpointers', 'In-memory / custom vector store', 'Native workflow state / Airflow DB'],
+          ['Multi-Agent Protocols', 'Native support for Agent-to-Agent (A2A)', 'Hierarchical & multi-graph coordination', 'Hierarchical manager / process flow', 'Step-based invocation of Cloud Run/APIs'],
+          ['Observability', 'OpenTelemetry -> Cloud Trace / Logging', 'LangSmith / OpenTelemetry exporter', 'Custom logging', 'Cloud Logging / Cloud Trace'],
+          ['GCP Native Fit', 'First-class Vertex AI & IAM integration', 'Runs on Cloud Run / GKE with custom code', 'Runs on Cloud Run / GKE', 'Built-in GCP identity & security'],
+          ['Best Use Case', 'Production enterprise agents on GCP', 'Complex cyclical logic with custom state', 'Rapid prototyping of collaborative agents', 'Deterministic batch ETL & pipeline triggers']
+        ]
+      }
+    };
+
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / Service Comparison Engine</div>' +
+      '<h1>Service Comparison Engine</h1>' +
+      '<p class="lede">Side-by-side technical trade-off evaluation matrices across Google Cloud AI, data, compute, and orchestration technologies.</p>' +
+      '<div class="tabs" id="compTabs" role="tablist">' +
+      tabs.map(function (t, i) {
+        return '<button type="button" role="tab" class="tab' + (i === 0 ? ' active' : '') + '" data-tab="' + t[0] + '" aria-selected="' + (i === 0 ? 'true' : 'false') + '">' + esc(t[1]) + '</button>';
+      }).join('') +
+      '</div>';
+
+    tabs.forEach(function (t, i) {
+      var mat = matrices[t[0]];
+      h += '<div class="comp-wrap comp-panel" id="comp-panel-' + t[0] + '"' + (i === 0 ? '' : ' style="display:none"') + '>' +
+        '<table class="comp-table">' +
+        '<thead><tr><th>Dimension</th>' +
+        mat.cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') +
+        '</tr></thead><tbody>' +
+        mat.rows.map(function (r) {
+          return '<tr><td><b>' + esc(r[0]) + '</b></td>' +
+            r.slice(1).map(function (v) { return '<td>' + fmt(v) + '</td>'; }).join('') +
+            '</tr>';
+        }).join('') +
+        '</tbody></table></div>';
+    });
+
+    afterRender = function () {
+      var tbar = $('#compTabs');
+      if (!tbar) return;
+      var tbtns = $$('.tab', tbar);
+      tbtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          tbtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          var tabId = btn.getAttribute('data-tab');
+          $$('.comp-panel').forEach(function (p) {
+            p.style.display = p.id === 'comp-panel-' + tabId ? '' : 'none';
+          });
+        });
+      });
+    };
+
+    return h;
+  }
+
+  function pageRagAssistant() {
+    var state = { scale: 'medium', latency: 'interactive', fresh: 'batch', depth: 'factual', acl: 'doc_acl' };
+
+    function getRec() {
+      if (state.depth === 'multimodal') {
+        return {
+          arch: 'rag-multimodal-gemini',
+          name: 'Multimodal Document Analysis & Visual RAG',
+          why: 'Multimodal documents containing complex charts, tables, and scanned diagrams require direct vision processing with Gemini 2.5 and native chunk alignment.',
+          store: 'Vertex AI Search (Document AI enabled) or BigQuery Vector Search with multimodal embeddings.',
+          chunk: 'Page-level / Section-level chunking preserving embedded images and table bounding boxes.',
+          guard: 'Vertex AI Model Armor + Document OCR confidence thresholding.'
+        };
+      }
+      if (state.depth === 'multihop') {
+        return {
+          arch: 'rag-graph-spanner',
+          name: 'GraphRAG with Spanner Graph & Vertex AI',
+          why: 'Multi-hop entity relationships and cross-document reasoning cannot be solved by cosine similarity alone; Spanner Graph provides topological path traversal combined with semantic embeddings.',
+          store: 'Spanner Graph for entity-relation topology + Vertex AI Vector Search for chunk embeddings.',
+          chunk: 'Entity-centric chunking: extract subject-predicate-object triples plus 300-word context windows.',
+          guard: 'GQL query sanitization to prevent graph traversal denial of service.'
+        };
+      }
+      if (state.depth === 'analytical' || state.scale === 'structured') {
+        return {
+          arch: 'rag-temporal-event',
+          name: 'Temporal & Event-Driven BigQuery Ingestion RAG',
+          why: 'Structured tabular data and analytical questions demand SQL aggregation in BigQuery combined with VECTOR_SEARCH over text attributes.',
+          store: 'BigQuery with native VECTOR_SEARCH and partitioned tables.',
+          chunk: 'Row-level metadata serialisation or micro-batch analytical snapshots.',
+          guard: 'SQL AST parsing & parameterized query execution to eliminate SQL injection.'
+        };
+      }
+      if (state.fresh === 'streaming') {
+        return {
+          arch: 'rag-temporal-event',
+          name: 'Event-Driven Real-Time RAG',
+          why: 'Sub-minute freshness requires Pub/Sub event ingestion and Dataflow streaming directly into Vertex AI Vector Search endpoints.',
+          store: 'Vertex AI Vector Search streaming index + Memorystore for recent event cache.',
+          chunk: 'Stream chunking on message arrival (256 - 512 tokens).',
+          guard: 'Dead-letter queues (DLQ) and schema validation on Pub/Sub ingestion.'
+        };
+      }
+      if (state.scale === 'small' && state.acl === 'public') {
+        return {
+          arch: 'rag-production-cache',
+          name: 'Production Enterprise Grounded RAG with Caching',
+          why: 'Under 10,000 documents with standard latency requirements is perfectly served by managed Vertex AI Search or Vector Search with Gemini Context Caching.',
+          store: 'Vertex AI Search (managed) or AlloyDB pgvector.',
+          chunk: 'Hierarchical chunking (parent: 1024 tokens, child: 256 tokens).',
+          guard: 'Vertex AI Search automatic Grounding Attributions & Grounding Faithfulness eval.'
+        };
+      }
+      return {
+        arch: 'rag-hybrid-search',
+        name: 'Hybrid Search RAG (Vector + BM25 Lexical + Reranking)',
+        why: 'Enterprise corpus with document-level ACLs requires combining dense semantic vector search with exact keyword (BM25) matching and cross-encoder reranking.',
+        store: 'Vertex AI Vector Search + Elasticsearch/BigQuery for BM25, or managed Vertex AI Search.',
+        chunk: 'Recursive character chunking (512 tokens with 10% overlap).',
+        guard: 'Reciprocal Rank Fusion (RRF) reranker + Vertex AI Model Armor prompt injection guardrails.'
+      };
+    }
+
+    var rec = getRec();
+
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / RAG Design Assistant</div>' +
+      '<h1>RAG Architecture Design Assistant</h1>' +
+      '<p class="lede">Select your data scale, latency SLAs, update frequency, and reasoning complexity to receive an optimal Google Cloud RAG architecture recommendation.</p>' +
+      '<div class="wiz-box">' +
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">1. Knowledge Corpus Scale</div>' +
+          '<div class="wiz-options" data-k="scale">' +
+            '<div class="wiz-opt' + (state.scale === 'small' ? ' selected' : '') + '" data-v="small"><div class="wiz-opt-title">Small</div><div class="wiz-opt-desc">&lt;10k docs (&lt;500MB)</div></div>' +
+            '<div class="wiz-opt' + (state.scale === 'medium' ? ' selected' : '') + '" data-v="medium"><div class="wiz-opt-title">Medium</div><div class="wiz-opt-desc">10k - 1M docs (500MB - 100GB)</div></div>' +
+            '<div class="wiz-opt' + (state.scale === 'massive' ? ' selected' : '') + '" data-v="massive"><div class="wiz-opt-title">Massive</div><div class="wiz-opt-desc">&gt;1M docs (multi-TB)</div></div>' +
+            '<div class="wiz-opt' + (state.scale === 'structured' ? ' selected' : '') + '" data-v="structured"><div class="wiz-opt-title">Structured Data</div><div class="wiz-opt-desc">Tabular Data Warehouse (BigQuery)</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">2. Query Latency SLA</div>' +
+          '<div class="wiz-options" data-k="latency">' +
+            '<div class="wiz-opt' + (state.latency === 'realtime' ? ' selected' : '') + '" data-v="realtime"><div class="wiz-opt-title">Ultra-low (&lt;500ms)</div><div class="wiz-opt-desc">Real-time voice / chat autocomplete</div></div>' +
+            '<div class="wiz-opt' + (state.latency === 'interactive' ? ' selected' : '') + '" data-v="interactive"><div class="wiz-opt-title">Interactive (1s - 3s)</div><div class="wiz-opt-desc">Conversational copilot / assistant</div></div>' +
+            '<div class="wiz-opt' + (state.latency === 'batch' ? ' selected' : '') + '" data-v="batch"><div class="wiz-opt-title">Batch / Deep (&gt;5s)</div><div class="wiz-opt-desc">Multi-doc synthesis / report gen</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">3. Ingestion & Freshness</div>' +
+          '<div class="wiz-options" data-k="fresh">' +
+            '<div class="wiz-opt' + (state.fresh === 'streaming' ? ' selected' : '') + '" data-v="streaming"><div class="wiz-opt-title">Real-Time Streaming</div><div class="wiz-opt-desc">&lt;1 minute from event to searchable</div></div>' +
+            '<div class="wiz-opt' + (state.fresh === 'batch' ? ' selected' : '') + '" data-v="batch"><div class="wiz-opt-title">Periodic Batch</div><div class="wiz-opt-desc">Daily / weekly scheduled sync</div></div>' +
+            '<div class="wiz-opt' + (state.fresh === 'static' ? ' selected' : '') + '" data-v="static"><div class="wiz-opt-title">Static Corpus</div><div class="wiz-opt-desc">Rarely updated reference docs</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">4. Reasoning Depth</div>' +
+          '<div class="wiz-options" data-k="depth">' +
+            '<div class="wiz-opt' + (state.depth === 'factual' ? ' selected' : '') + '" data-v="factual"><div class="wiz-opt-title">Direct Factual</div><div class="wiz-opt-desc">Single-passage lookup & answering</div></div>' +
+            '<div class="wiz-opt' + (state.depth === 'multihop' ? ' selected' : '') + '" data-v="multihop"><div class="wiz-opt-title">Multi-Hop Synthesis</div><div class="wiz-opt-desc">Connecting entities across many docs</div></div>' +
+            '<div class="wiz-opt' + (state.depth === 'analytical' ? ' selected' : '') + '" data-v="analytical"><div class="wiz-opt-title">Analytical Aggregation</div><div class="wiz-opt-desc">SQL math + text semantic analysis</div></div>' +
+            '<div class="wiz-opt' + (state.depth === 'multimodal' ? ' selected' : '') + '" data-v="multimodal"><div class="wiz-opt-title">Multimodal</div><div class="wiz-opt-desc">Complex tables, charts, scanned PDFs</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">5. Access Control & Security</div>' +
+          '<div class="wiz-options" data-k="acl">' +
+            '<div class="wiz-opt' + (state.acl === 'public' ? ' selected' : '') + '" data-v="public"><div class="wiz-opt-title">Public / Generic</div><div class="wiz-opt-desc">No per-user ACLs needed</div></div>' +
+            '<div class="wiz-opt' + (state.acl === 'doc_acl' ? ' selected' : '') + '" data-v="doc_acl"><div class="wiz-opt-title">Document-Level ACLs</div><div class="wiz-opt-desc">Drive / Workspace permission sync</div></div>' +
+            '<div class="wiz-opt' + (state.acl === 'row_sec' ? ' selected' : '') + '" data-v="row_sec"><div class="wiz-opt-title">Row/Column Security</div><div class="wiz-opt-desc">Database IAM & user-level isolation</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-result" id="ragResult">' +
+          '<div class="cat-tag">Recommended Blueprint</div>' +
+          '<h3 style="margin:4px 0 8px"><a href="#/a/' + rec.arch + '">' + esc(rec.name) + ' →</a></h3>' +
+          '<p><b>Why this matches:</b> ' + esc(rec.why) + '</p>' +
+          '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+            '<li><b>Storage & Retrieval:</b> ' + esc(rec.store) + '</li>' +
+            '<li><b>Chunking & Embedding:</b> ' + esc(rec.chunk) + '</li>' +
+            '<li><b>Security & Guardrails:</b> ' + esc(rec.guard) + '</li>' +
+          '</ul>' +
+          '<div style="margin-top:12px"><a class="btn primary" href="#/a/' + rec.arch + '">Open Full 12-Section Architecture Blueprint →</a></div>' +
+        '</div>' +
+      '</div>';
+
+    afterRender = function () {
+      var box = $('.wiz-box');
+      if (!box) return;
+      $$('.wiz-opt', box).forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          var k = opt.closest('.wiz-options').getAttribute('data-k');
+          var v = opt.getAttribute('data-v');
+          $$('.wiz-options[data-k="' + k + '"] .wiz-opt', box).forEach(function (o) { o.classList.remove('selected'); });
+          opt.classList.add('selected');
+          state[k] = v;
+          var r = getRec();
+          var resEl = $('#ragResult');
+          if (resEl) {
+            resEl.innerHTML = '<div class="cat-tag">Recommended Blueprint</div>' +
+              '<h3 style="margin:4px 0 8px"><a href="#/a/' + r.arch + '">' + esc(r.name) + ' →</a></h3>' +
+              '<p><b>Why this matches:</b> ' + esc(r.why) + '</p>' +
+              '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+                '<li><b>Storage & Retrieval:</b> ' + esc(r.store) + '</li>' +
+                '<li><b>Chunking & Embedding:</b> ' + esc(r.chunk) + '</li>' +
+                '<li><b>Security & Guardrails:</b> ' + esc(r.guard) + '</li>' +
+              '</ul>' +
+              '<div style="margin-top:12px"><a class="btn primary" href="#/a/' + r.arch + '">Open Full 12-Section Architecture Blueprint →</a></div>';
+          }
+        });
+      });
+    };
+
+    return h;
+  }
+
+  function pageAgentAssistant() {
+    var state = { task: 'dynamic', hitl: 'guarded', tools: 'openapi', latency: 'interactive' };
+
+    function getRec() {
+      if (state.task === 'swarm') {
+        return {
+          arch: 'agent-hierarchical-swarm',
+          name: 'Hierarchical Supervisor Multi-Agent Swarm',
+          why: 'Multi-domain tasks requiring independent specialist subagents need a root supervisor agent orchestrating domain subagents with isolated context windows.',
+          runtime: 'GKE or Vertex AI Agent Engine with custom multi-agent routing.',
+          state: 'Spanner for ACID task checkpointing + Firestore for ephemeral conversation memory.',
+          security: 'Per-agent IAM service accounts; supervisor validates subagent outputs before merging.'
+        };
+      }
+      if (state.hitl === 'guarded' || state.task === 'dynamic' && state.latency === 'critical') {
+        return {
+          arch: 'agent-human-in-the-loop',
+          name: 'Human-in-the-Loop Guarded Agentic Workflow',
+          why: 'High-value transactions and irreversible write actions demand deterministic execution boundaries and asynchronous human sign-off via Pub/Sub.',
+          runtime: 'Vertex AI Agent Engine with Cloud Run approval service.',
+          state: 'Cloud Tasks / Pub/Sub paused task queue + Firestore state persistence.',
+          security: 'HMAC signature verification on approval webhooks + Cloud KMS payload encryption.'
+        };
+      }
+      if (state.task === 'dynamic') {
+        return {
+          arch: 'agent-evaluator-optimizer',
+          name: 'Evaluator-Optimizer Agentic Architecture',
+          why: 'Iterative goal solving requires a dual-agent pattern: a generator proposes solutions and a specialist evaluator tests against acceptance criteria before finalizing.',
+          runtime: 'Vertex AI Agent Engine (Python SDK / ADK).',
+          state: 'Vertex AI Agent Session API + Firestore history.',
+          security: 'Sandboxed code execution in gVisor container; zero network egress from worker.'
+        };
+      }
+      if (state.tools === 'mcp') {
+        return {
+          arch: 'agent-mcp-orchestration',
+          name: 'MCP-Compliant Multi-Agent System (Model Context Protocol)',
+          why: 'Integrating standard desktop tools, local developer environments, and enterprise services requires standardized JSON-RPC Model Context Protocol servers.',
+          runtime: 'Cloud Run or GKE hosting MCP server daemons.',
+          state: 'Redis / Memorystore for MCP tool call caching.',
+          security: 'OAuth2 bearer token exchange + Cloud Armor rate limiting per MCP client.'
+        };
+      }
+      return {
+        arch: 'agent-deterministic-router',
+        name: 'Deterministic Router with Multi-Agent Fallback',
+        why: 'Cost-sensitive user requests should be routed deterministically to fast code or small models, with autonomous agents reserved only for ambiguous goals.',
+        runtime: 'Cloud Run (FastAPI/Go router) calling Gemini 2.5 Flash and Pro.',
+        state: 'Firestore for session history.',
+        security: 'Cloud Armor WAF protecting API endpoints + IAM least privilege.'
+      };
+    }
+
+    var rec = getRec();
+
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / Agent Design Assistant</div>' +
+      '<h1>Agentic Architecture Design Assistant</h1>' +
+      '<p class="lede">Select your task complexity, autonomy boundaries, tool integration surface, and latency requirements to determine the optimal Google Cloud multi-agent architecture.</p>' +
+      '<div class="wiz-box">' +
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">1. Task Execution Complexity</div>' +
+          '<div class="wiz-options" data-k="task">' +
+            '<div class="wiz-opt' + (state.task === 'single' ? ' selected' : '') + '" data-v="single"><div class="wiz-opt-title">Single-Turn Tool</div><div class="wiz-opt-desc">Simple API lookup or deterministic action</div></div>' +
+            '<div class="wiz-opt' + (state.task === 'linear' ? ' selected' : '') + '" data-v="linear"><div class="wiz-opt-title">Linear Multi-Step</div><div class="wiz-opt-desc">Sequential workflow with known branches</div></div>' +
+            '<div class="wiz-opt' + (state.task === 'dynamic' ? ' selected' : '') + '" data-v="dynamic"><div class="wiz-opt-title">Dynamic Goal-Solving</div><div class="wiz-opt-desc">Iterative planning, self-correction & eval</div></div>' +
+            '<div class="wiz-opt' + (state.task === 'swarm' ? ' selected' : '') + '" data-v="swarm"><div class="wiz-opt-title">Collaborative Swarm</div><div class="wiz-opt-desc">Multiple specialist subagents cooperating</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">2. Autonomy & Human-in-the-Loop</div>' +
+          '<div class="wiz-options" data-k="hitl">' +
+            '<div class="wiz-opt' + (state.hitl === 'readonly' ? ' selected' : '') + '" data-v="readonly"><div class="wiz-opt-title">Read-Only Autonomy</div><div class="wiz-opt-desc">Search, analyze, summarize (zero write risk)</div></div>' +
+            '<div class="wiz-opt' + (state.hitl === 'guarded' ? ' selected' : '') + '" data-v="guarded"><div class="wiz-opt-title">Guarded Write Autonomy</div><div class="wiz-opt-desc">Autonomous read, mandatory human sign-off on writes</div></div>' +
+            '<div class="wiz-opt' + (state.hitl === 'supervised' ? ' selected' : '') + '" data-v="supervised"><div class="wiz-opt-title">Supervised Co-Pilot</div><div class="wiz-opt-desc">Human confirms every tool invocation</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">3. Tool Breadth & Protocol</div>' +
+          '<div class="wiz-options" data-k="tools">' +
+            '<div class="wiz-opt' + (state.tools === 'gcp' ? ' selected' : '') + '" data-v="gcp"><div class="wiz-opt-title">GCP Native APIs</div><div class="wiz-opt-desc">BigQuery, Cloud Storage, Spanner APIs</div></div>' +
+            '<div class="wiz-opt' + (state.tools === 'openapi' ? ' selected' : '') + '" data-v="openapi"><div class="wiz-opt-title">Enterprise OpenAPI</div><div class="wiz-opt-desc">Internal microservices & REST webhooks</div></div>' +
+            '<div class="wiz-opt' + (state.tools === 'mcp' ? ' selected' : '') + '" data-v="mcp"><div class="wiz-opt-title">Model Context Protocol</div><div class="wiz-opt-desc">Standardized MCP servers & local tools</div></div>' +
+            '<div class="wiz-opt' + (state.tools === 'a2a' ? ' selected' : '') + '" data-v="a2a"><div class="wiz-opt-title">Agent-to-Agent (A2A)</div><div class="wiz-opt-desc">Cross-team distributed agent protocol</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-step">' +
+          '<div class="wiz-step-title">4. Latency SLA & Resilience</div>' +
+          '<div class="wiz-options" data-k="latency">' +
+            '<div class="wiz-opt' + (state.latency === 'interactive' ? ' selected' : '') + '" data-v="interactive"><div class="wiz-opt-title">Interactive (&lt;3s)</div><div class="wiz-opt-desc">Synchronous user chat with fallback</div></div>' +
+            '<div class="wiz-opt' + (state.latency === 'worker' ? ' selected' : '') + '" data-v="worker"><div class="wiz-opt-title">Background Worker</div><div class="wiz-opt-desc">Asynchronous, multi-minute, auto-retry</div></div>' +
+            '<div class="wiz-opt' + (state.latency === 'critical' ? ' selected' : '') + '" data-v="critical"><div class="wiz-opt-title">Mission-Critical</div><div class="wiz-opt-desc">Zero-error tolerance, formal verification</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="wiz-result" id="agentResult">' +
+          '<div class="cat-tag">Recommended Blueprint</div>' +
+          '<h3 style="margin:4px 0 8px"><a href="#/a/' + rec.arch + '">' + esc(rec.name) + ' →</a></h3>' +
+          '<p><b>Why this matches:</b> ' + esc(rec.why) + '</p>' +
+          '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+            '<li><b>Runtime Platform:</b> ' + esc(rec.runtime) + '</li>' +
+            '<li><b>State & Memory Store:</b> ' + esc(rec.state) + '</li>' +
+            '<li><b>Security & Isolation:</b> ' + esc(rec.security) + '</li>' +
+          '</ul>' +
+          '<div style="margin-top:12px"><a class="btn primary" href="#/a/' + rec.arch + '">Open Full 12-Section Architecture Blueprint →</a></div>' +
+        '</div>' +
+      '</div>';
+
+    afterRender = function () {
+      var box = $('.wiz-box');
+      if (!box) return;
+      $$('.wiz-opt', box).forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          var k = opt.closest('.wiz-options').getAttribute('data-k');
+          var v = opt.getAttribute('data-v');
+          $$('.wiz-options[data-k="' + k + '"] .wiz-opt', box).forEach(function (o) { o.classList.remove('selected'); });
+          opt.classList.add('selected');
+          state[k] = v;
+          var r = getRec();
+          var resEl = $('#agentResult');
+          if (resEl) {
+            resEl.innerHTML = '<div class="cat-tag">Recommended Blueprint</div>' +
+              '<h3 style="margin:4px 0 8px"><a href="#/a/' + r.arch + '">' + esc(r.name) + ' →</a></h3>' +
+              '<p><b>Why this matches:</b> ' + esc(r.why) + '</p>' +
+              '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+                '<li><b>Runtime Platform:</b> ' + esc(r.runtime) + '</li>' +
+                '<li><b>State & Memory Store:</b> ' + esc(r.state) + '</li>' +
+                '<li><b>Security & Isolation:</b> ' + esc(r.security) + '</li>' +
+              '</ul>' +
+              '<div style="margin-top:12px"><a class="btn primary" href="#/a/' + r.arch + '">Open Full 12-Section Architecture Blueprint →</a></div>';
+          }
+        });
+      });
+    };
+
+    return h;
+  }
+
+  function pageRiskAnalyzer() {
+    var rState = { sysType: 'external', dataSens: 'confidential', tools: 'write_low', guards: 'model_armor' };
+
+    function calcRisk() {
+      var score = 15;
+      if (rState.sysType === 'external') score += 25;
+      else if (rState.sysType === 'agent') score += 20;
+      else score += 10;
+
+      if (rState.dataSens === 'pii') score += 30;
+      else if (rState.dataSens === 'confidential') score += 18;
+      else score += 5;
+
+      if (rState.tools === 'write_high') score += 30;
+      else if (rState.tools === 'write_low') score += 15;
+      else score += 0;
+
+      if (rState.guards === 'none') score += 20;
+      else if (rState.guards === 'prompt_only') score += 10;
+      else if (rState.guards === 'model_armor') score -= 15;
+      else if (rState.guards === 'two_tier') score -= 25;
+
+      score = Math.max(5, Math.min(98, score));
+      var lvl = score < 30 ? 'Low' : (score < 60 ? 'Moderate' : (score < 85 ? 'High' : 'Critical'));
+      var cls = score < 30 ? 'risk-low' : (score < 60 ? 'risk-med' : (score < 85 ? 'risk-high' : 'risk-crit'));
+      return { score: score, level: lvl, cls: cls };
+    }
+
+    var cur = calcRisk();
+
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / Architecture Risk Analyzer</div>' +
+      '<h1>Architecture Risk Analyzer</h1>' +
+      '<p class="lede">Evaluate system exposure, autonomous blast radius, and prompt injection vulnerabilities using the STRIDE threat model tailored for enterprise AI systems.</p>' +
+      '<div class="box" style="margin:20px 0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">' +
+          '<div>' +
+            '<h3 style="margin:0">Composite Architecture Risk Assessment</h3>' +
+            '<p style="color:var(--muted);margin:4px 0 0;font-size:13px">Computed from attack surface exposure, data classification, tool privileges, and active defenses.</p>' +
+          '</div>' +
+          '<div id="riskBadgeWrap"><span class="risk-score-badge ' + cur.cls + '">' + cur.level + ' Risk · ' + cur.score + ' / 100</span></div>' +
+        '</div>' +
+        '<div class="risk-meter"><div class="risk-meter-fill ' + cur.cls + '" id="riskBar" style="width:' + cur.score + '%"></div></div>' +
+      '</div>' +
+
+      '<div class="bp-grid" style="margin-bottom:24px">' +
+        '<div class="bp-item">' +
+          '<h4>1. System Exposure</h4>' +
+          '<select class="gen-input" id="r_sysType" style="margin-top:6px;width:100%">' +
+            '<option value="external" selected>Public Customer-Facing Bot / API</option>' +
+            '<option value="internal">Internal Employee Copilot</option>' +
+            '<option value="agent">Autonomous Background Worker / Agent</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="bp-item">' +
+          '<h4>2. Data Classification</h4>' +
+          '<select class="gen-input" id="r_dataSens" style="margin-top:6px;width:100%">' +
+            '<option value="public">Public / Open Data</option>' +
+            '<option value="confidential" selected>Confidential Internal IP</option>' +
+            '<option value="pii">PII / Financial / Regulated Healthcare</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="bp-item">' +
+          '<h4>3. Tool Execution Privileges</h4>' +
+          '<select class="gen-input" id="r_tools" style="margin-top:6px;width:100%">' +
+            '<option value="readonly">Read-Only Queries & Lookups</option>' +
+            '<option value="write_low" selected>Read + Low-Risk Writes (Drafts, Tags)</option>' +
+            '<option value="write_high">Unrestricted Writes / Financial / IAM / DB Updates</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="bp-item">' +
+          '<h4>4. Active Defenses & Guardrails</h4>' +
+          '<select class="gen-input" id="r_guards" style="margin-top:6px;width:100%">' +
+            '<option value="none">None (Default Base System Prompt)</option>' +
+            '<option value="prompt_only">Prompt Hardening & Blacklist Regex</option>' +
+            '<option value="model_armor" selected>Vertex AI Model Armor + Content Filters</option>' +
+            '<option value="two_tier">Two-Tier Judge Eval + Hard Deterministic Gates</option>' +
+          '</select>' +
+        '</div>' +
+      '</div>' +
+
+      '<h2>STRIDE Threat Matrix Breakdown</h2>' +
+      '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>STRIDE Threat Category</th><th>System Vulnerability Mode</th><th>Mandatory GCP Mitigation</th></tr></thead><tbody>' +
+        '<tr><td><b>Spoofing</b></td><td>Adversary impersonates trusted agent or service account</td><td>Enforce Workload Identity Federation (WIF) and mutual TLS (mTLS) with short-lived OAuth tokens.</td></tr>' +
+        '<tr><td><b>Tampering</b></td><td>Indirect prompt injection via retrieved third-party documents</td><td>Deploy Vertex AI Model Armor to sanitize retrieval chunks before injecting into prompt context.</td></tr>' +
+        '<tr><td><b>Repudiation</b></td><td>Agent performs unlogged transactions or tool actions</td><td>Export Cloud Audit Logs and OpenTelemetry spans capturing every tool payload to BigQuery.</td></tr>' +
+        '<tr><td><b>Information Disclosure</b></td><td>System prompt extraction, PII leakage, or vector ACL bypass</td><td>Enable Cloud DLP inspection on output streams; enforce VPC Service Controls (VPC-SC) perimeter.</td></tr>' +
+        '<tr><td><b>Denial of Service</b></td><td>Adversary floods tokens or triggers recursive agent loops</td><td>Configure Cloud Armor per-client rate limits and hard token execution budget caps per session.</td></tr>' +
+        '<tr><td><b>Elevation of Privilege</b></td><td>Agent tool execution escapes sandbox or accesses root resources</td><td>Run tool containers with non-root users in gVisor sandbox; restrict IAM roles to specific resource IDs.</td></tr>' +
+      '</tbody></table></div>' +
+
+      '<div style="margin-top:20px;display:flex;gap:12px">' +
+        '<button class="btn primary" type="button" id="copyRiskReport">Copy Risk Assessment Summary</button>' +
+      '</div>';
+
+    afterRender = function () {
+      function update() {
+        rState.sysType = $('#r_sysType').value;
+        rState.dataSens = $('#r_dataSens').value;
+        rState.tools = $('#r_tools').value;
+        rState.guards = $('#r_guards').value;
+        var r = calcRisk();
+        var badge = $('#riskBadgeWrap');
+        if (badge) badge.innerHTML = '<span class="risk-score-badge ' + r.cls + '">' + r.level + ' Risk · ' + r.score + ' / 100</span>';
+        var bar = $('#riskBar');
+        if (bar) {
+          bar.className = 'risk-meter-fill ' + r.cls;
+          bar.style.width = r.score + '%';
+        }
+      }
+
+      ['r_sysType', 'r_dataSens', 'r_tools', 'r_guards'].forEach(function (id) {
+        var el = $('#' + id);
+        if (el) el.addEventListener('change', update);
+      });
+
+      var btn = $('#copyRiskReport');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var r = calcRisk();
+          var md = '# AI Architecture Risk Assessment Report\n\n' +
+            '- **System Exposure:** ' + rState.sysType + '\n' +
+            '- **Data Classification:** ' + rState.dataSens + '\n' +
+            '- **Tool Execution Privileges:** ' + rState.tools + '\n' +
+            '- **Active Guardrails:** ' + rState.guards + '\n' +
+            '- **Composite Risk Score:** ' + r.score + ' / 100 (' + r.level + ' Risk)\n\n' +
+            '## Mandatory Controls Required Before Launch\n' +
+            '1. Deploy Vertex AI Model Armor on all inbound user prompts and external retrieval chunks.\n' +
+            '2. Enforce zero-trust VPC Service Controls perimeter around BigQuery, Vertex AI, and Cloud Storage.\n' +
+            '3. Enforce IAM least-privilege service accounts with Workload Identity Federation.\n' +
+            '4. Establish token consumption quotas and rate-limiting via Cloud Armor.\n';
+          copyText(md, this);
+        });
+      }
+    };
+
+    return h;
+  }
+
+  function pageReadinessScorecard() {
+    var categories = [
+      {
+        name: 'Pillar 1: Architecture & Model Selection',
+        items: [
+          'Business problem verified to require probabilistic AI rather than deterministic software.',
+          'Foundation model selected based on empirical latency/accuracy trade-offs, not benchmark hype.',
+          'Context window sized properly; prompt cached for recurring system instructions (Context Caching).',
+          'Explicit fallback model / circuit breaker configured for upstream outages or quota exhaustion.',
+          'One-way vs two-way door decisions formally documented in an Architecture Decision Record (ADR).'
+        ]
+      },
+      {
+        name: 'Pillar 2: Data & Retrieval Quality',
+        items: [
+          'Chunking strategy evaluated against document layout (semantic vs recursive character).',
+          'Embedding model matched to query language, domain vocabulary, and dimensionality.',
+          'Vector index recall measured against ground-truth validation set (Hit Rate @ K >= 90%, MRR >= 0.80).',
+          'Document-level ACLs or row-level permissions preserved in retrieval results without cross-tenant leakage.',
+          'Ingestion pipeline has dead-letter queue (DLQ), deduplication, and schema validation.'
+        ]
+      },
+      {
+        name: 'Pillar 3: AI Quality Evaluation & Safety',
+        items: [
+          'Golden evaluation dataset curated (>=100 curated domain question-answer pairs).',
+          'Automated eval pipeline integrated into CI/CD (Groundedness >= 0.90, Faithfulness >= 0.90).',
+          'Red-teaming executed for direct and indirect prompt injection attacks.',
+          'Vertex AI Model Armor or content safety filters actively blocking toxic outputs.',
+          'Hallucination rate benchmarked and verified under business error budget (<3%).'
+        ]
+      },
+      {
+        name: 'Pillar 4: Security & Access Control',
+        items: [
+          'Dedicated least-privilege service account used with Workload Identity Federation (WIF).',
+          'System deployed inside a VPC Service Controls (VPC-SC) perimeter to prevent data exfiltration.',
+          'Customer-Managed Encryption Keys (CMEK) enabled across all storage buckets, vector indices, and database tables.',
+          'Agent tool calls strictly bounded to authorized endpoints with no shell execution.',
+          'Audit logging enabled for all prompt inputs, tool calls, and model outputs.'
+        ]
+      },
+      {
+        name: 'Pillar 5: Observability & Production SRE',
+        items: [
+          'OpenTelemetry distributed tracing captures user query -> retrieval -> LLM -> response.',
+          '10-widget production AI dashboard active in Cloud Monitoring.',
+          'Alerts configured for P95 TTFT, 429 quota exhaustion, and token burn rate.',
+          'Documented SRE runbooks ready for 429 rate-limiting and retrieval degradation.',
+          'Automated rollback trigger defined if production evaluation score drops by >5%.'
+        ]
+      },
+      {
+        name: 'Pillar 6: FinOps & Unit Economics',
+        items: [
+          'Cost per successful task calculated and verified against business unit margins.',
+          'Context Caching enabled for prompts > 32,768 tokens (achieving 75% savings).',
+          'Cloud Billing budget alerts configured at 50%, 80%, and 100% of monthly budget.',
+          'Rate limits and per-user token quotas enforced via Cloud Armor or API Gateway.',
+          'Batch prediction utilized for asynchronous workloads (50% cost reduction).'
+        ]
+      }
+    ];
+
+    var totalItems = 30;
+
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / Production Readiness Scorecard</div>' +
+      '<h1>AI Production Readiness Scorecard</h1>' +
+      '<p class="lede">Interactive 30-point evaluation across Architecture, Data, Evaluation, Security, Operations, and FinOps. Calculate your go/no-go readiness score before signing off on production launch.</p>' +
+      '<div class="box" style="margin:20px 0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">' +
+          '<div>' +
+            '<h3 style="margin:0">Production Launch Gate Score</h3>' +
+            '<p style="color:var(--muted);margin:4px 0 0;font-size:13px">Threshold for production: >= 27 / 30 items passed (90%).</p>' +
+          '</div>' +
+          '<div id="scoreVerdictWrap"><span class="door mixed" id="scoreVerdict">0 / ' + totalItems + ' Passed (0%) · Gated</span></div>' +
+        '</div>' +
+        '<div class="risk-meter"><div class="risk-meter-fill risk-med" id="scoreBar" style="width:0%"></div></div>' +
+      '</div>';
+
+    categories.forEach(function (cat, cIdx) {
+      h += '<div class="scorecard-cat">' +
+        '<div class="scorecard-cat-header">' +
+          '<b>' + esc(cat.name) + '</b>' +
+          '<span class="cnt" id="cat-count-' + cIdx + '">0 / ' + cat.items.length + '</span>' +
+        '</div>';
+      cat.items.forEach(function (it, iIdx) {
+        var id = 'sc-' + cIdx + '-' + iIdx;
+        h += '<div class="scorecard-chk">' +
+          '<input type="checkbox" id="' + id + '" data-c="' + cIdx + '">' +
+          '<label for="' + id + '">' + fmt(it) + '</label>' +
+        '</div>';
+      });
+      h += '</div>';
+    });
+
+    h += '<div style="margin:24px 0;display:flex;gap:12px">' +
+      '<button class="btn primary" type="button" id="copyScorecard">Copy PRR Launch Scorecard</button>' +
+    '</div>';
+
+    afterRender = function () {
+      function updateScore() {
+        var checked = $$('.scorecard-chk input:checked');
+        var passed = checked.length;
+        var pct = Math.round((passed / totalItems) * 100);
+        var verdict = passed >= 27 ? 'READY FOR PRODUCTION (GREEN)' : (passed >= 20 ? 'CONDITIONALLY GATED (AMBER)' : 'BLOCKED FOR PRODUCTION (RED)');
+        var cls = passed >= 27 ? 'two-way' : (passed >= 20 ? 'mixed' : 'one-way');
+        var vEl = $('#scoreVerdict');
+        if (vEl) {
+          vEl.className = 'door ' + cls;
+          vEl.textContent = passed + ' / ' + totalItems + ' Passed (' + pct + '%) · ' + verdict;
+        }
+        var bar = $('#scoreBar');
+        if (bar) {
+          bar.style.width = pct + '%';
+          bar.className = 'risk-meter-fill ' + (passed >= 27 ? 'risk-low' : (passed >= 20 ? 'risk-med' : 'risk-crit'));
+        }
+
+        categories.forEach(function (cat, cIdx) {
+          var cChecked = $$('.scorecard-chk input[data-c="' + cIdx + '"]:checked').length;
+          var el = $('#cat-count-' + cIdx);
+          if (el) el.textContent = cChecked + ' / ' + cat.items.length;
+        });
+      }
+
+      $$('.scorecard-chk input').forEach(function (chk) {
+        chk.addEventListener('change', updateScore);
+      });
+
+      var btn = $('#copyScorecard');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var checked = $$('.scorecard-chk input:checked');
+          var passed = checked.length;
+          var pct = Math.round((passed / totalItems) * 100);
+          var verdict = passed >= 27 ? 'READY FOR PRODUCTION (GREEN)' : (passed >= 20 ? 'CONDITIONALLY GATED (AMBER)' : 'BLOCKED FOR PRODUCTION (RED)');
+
+          var md = '# AI Production Readiness Review (PRR) Scorecard\n\n' +
+            '- **Status:** ' + verdict + '\n' +
+            '- **Score:** ' + passed + ' / ' + totalItems + ' (' + pct + '%)\n' +
+            '- **Date:** ' + new Date().toISOString().split('T')[0] + '\n\n' +
+            '## Verified Criteria Checklist\n';
+
+          categories.forEach(function (cat, cIdx) {
+            md += '### ' + cat.name + '\n';
+            cat.items.forEach(function (it, iIdx) {
+              var isDone = $('#sc-' + cIdx + '-' + iIdx).checked;
+              md += '- [' + (isDone ? 'x' : ' ') + '] ' + it + '\n';
+            });
+            md += '\n';
+          });
+
+          copyText(md, this);
+        });
+      }
+    };
+
+    return h;
+  }
+
+  function pageReviewGen() {
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/tools">Tools</a> / Architecture Review Generator</div>' +
+      '<h1>Architecture Review (ADR / PRR) Generator</h1>' +
+      '<p class="lede">Fill out your system parameters to instantly generate a standardized, production-grade Architecture Decision Record (ADR) and Production Readiness Review (PRR) in markdown format.</p>' +
+      '<div class="box" style="margin:20px 0">' +
+        '<div class="bp-grid">' +
+          '<div class="bp-item"><h4>System / Feature Name</h4><input class="gen-input" id="rg_name" value="Enterprise Customer Support Agent" style="width:100%"></div>' +
+          '<div class="bp-item"><h4>Owner & Engineering Lead</h4><input class="gen-input" id="rg_owner" value="AI Engineering Team / Platform EM" style="width:100%"></div>' +
+          '<div class="bp-item"><h4>Primary Architecture Pattern</h4>' +
+            '<select class="gen-input" id="rg_arch" style="width:100%">' +
+              A.architectures.map(function(a){ return '<option value="' + a.id + '">' + esc(a.name) + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+          '<div class="bp-item"><h4>Foundation Model</h4>' +
+            '<select class="gen-input" id="rg_model" style="width:100%">' +
+              '<option value="Gemini 2.5 Flash">Gemini 2.5 Flash (Low latency, high throughput)</option>' +
+              '<option value="Gemini 2.5 Pro">Gemini 2.5 Pro (Deep reasoning, multi-turn coding)</option>' +
+              '<option value="Claude 3.7 Sonnet">Claude 3.7 Sonnet on Vertex AI</option>' +
+              '<option value="Llama 3.3 70B">Llama 3.3 70B on Model Garden / vLLM</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="bp-item"><h4>Storage & Vector Strategy</h4>' +
+            '<select class="gen-input" id="rg_store" style="width:100%">' +
+              '<option value="Vertex AI Search (Managed RAG)">Vertex AI Search (Managed RAG)</option>' +
+              '<option value="Vertex AI Vector Search + Cloud Storage">Vertex AI Vector Search + Cloud Storage</option>' +
+              '<option value="BigQuery Vector Search">BigQuery Vector Search</option>' +
+              '<option value="AlloyDB (pgvector)">AlloyDB (pgvector)</option>' +
+              '<option value="Spanner Graph">Spanner Graph (GraphRAG)</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="bp-item"><h4>Monthly Token Budget ($)</h4><input class="gen-input" id="rg_budget" value="$2,500 / month" style="width:100%"></div>' +
+        '</div>' +
+        '<div style="margin-top:16px"><button class="btn primary" type="button" id="btnGenReview">Generate ADR & Review Document</button></div>' +
+      '</div>' +
+
+      '<div class="box" style="margin:20px 0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<h3 style="margin:0">Generated Architecture Review Document</h3>' +
+          '<button class="btn" type="button" id="copyGenReview">Copy Markdown</button>' +
+        '</div>' +
+        '<pre class="adr" id="reviewOutput" style="margin-top:12px">Click "Generate ADR & Review Document" above to produce your markdown architecture review.</pre>' +
+      '</div>';
+
+    afterRender = function () {
+      function generate() {
+        var name = $('#rg_name').value;
+        var owner = $('#rg_owner').value;
+        var archId = $('#rg_arch').value;
+        var arch = archById[archId];
+        var model = $('#rg_model').value;
+        var store = $('#rg_store').value;
+        var budget = $('#rg_budget').value;
+
+        var md = '# Architecture Decision Record (ADR): ' + name + '\n\n' +
+          '**Status:** APPROVED\n' +
+          '**Date:** ' + new Date().toISOString().split('T')[0] + '\n' +
+          '**Deciders:** ' + owner + '\n' +
+          '**Reference Architecture:** ' + (arch ? arch.name + ' (#' + arch.id + ')' : archId) + '\n\n' +
+          '## 1. Context & Problem Statement\n' +
+          'We need to build and operate ' + name + ' with deterministic cost control, production-grade security, and measurable retrieval quality.\n\n' +
+          '## 2. Decision\n' +
+          '- **Foundation Model:** ' + model + ' with automatic fallback and context caching.\n' +
+          '- **Data & Retrieval Store:** ' + store + '.\n' +
+          '- **Serving & Runtime:** Cloud Run / Vertex AI Agent Engine with least-privilege IAM service accounts.\n' +
+          '- **Budget Limit:** Hard budget threshold alert set at ' + budget + '.\n\n' +
+          '## 3. Security & Governance Guardrails\n' +
+          '- Deployed inside VPC Service Controls (VPC-SC) perimeter.\n' +
+          '- Inbound prompt sanitization via Vertex AI Model Armor.\n' +
+          '- Full OpenTelemetry distributed tracing exported to Cloud Trace and BigQuery.\n\n' +
+          '## 4. Evaluation & Production Release Gates\n' +
+          '- Groundedness & Faithfulness threshold >= 0.90 evaluated via Vertex AI AutoSxS.\n' +
+          '- Latency SLA: P95 Time-to-First-Token <= 800ms.\n' +
+          '- Hallucination rate bounded to < 3% on golden test dataset.\n';
+
+        var out = $('#reviewOutput');
+        if (out) out.textContent = md.replace(/\\n/g, '\n');
+      }
+
+      var genBtn = $('#btnGenReview');
+      if (genBtn) genBtn.addEventListener('click', generate);
+
+      var copyBtn = $('#copyGenReview');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          var text = $('#reviewOutput').textContent;
+          copyText(text, this);
+        });
+      }
+    };
+
+    return h;
+  }
+
   function pagePlaybooksIndex() {
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Playbooks</div>' +
       '<h1>AI Engineering Playbooks</h1>' +
@@ -830,6 +1827,65 @@
       '<h1>' + esc(tk.title) + '</h1>' +
       '<p class="lede">' + fmt(tk.lede) + '</p>';
 
+    // 8 Copyable Leadership Templates
+    if (tk.templates && tk.templates.length) {
+      h += '<h2>8 Copyable Production AI Engineering Templates</h2>' +
+        '<p style="max-width:72ch">Standardized markdown templates for engineering managers, principal engineers, and architects. Copy directly into your repositories, pull requests, and review meetings.</p>' +
+        '<div class="grid" style="margin:20px 0">';
+      tk.templates.forEach(function (t, i) {
+        h += '<div class="box" style="margin:0;display:flex;flex-direction:column;justify-content:space-between">' +
+          '<div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+              '<span class="cat-tag">' + esc(t.badge) + '</span>' +
+              '<button class="btn btn-sm copy-tmpl-btn" type="button" data-idx="' + i + '">Copy Template</button>' +
+            '</div>' +
+            '<h3 style="margin:4px 0 6px">' + esc(t.title) + '</h3>' +
+            '<p style="color:var(--muted);font-size:13px;line-height:1.5">' + fmt(t.desc) + '</p>' +
+          '</div>' +
+          '<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600;font-size:12px;color:var(--accent)">Preview Markdown</summary>' +
+            '<pre class="adr" style="margin-top:8px;font-size:11px;max-height:220px;overflow-y:auto">' + esc(t.markdown) + '</pre>' +
+          '</details>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    // 12 Industry Use Cases
+    if (tk.useCaseCatalog && tk.useCaseCatalog.length) {
+      h += '<h2>12 Enterprise Industry Use Cases & Service Stacks</h2>' +
+        '<p style="max-width:72ch">Concrete enterprise AI blueprints with quantified business KPIs, recommended architectures, and Google Cloud service stacks.</p>' +
+        '<div class="grid" style="margin:20px 0">';
+      tk.useCaseCatalog.forEach(function (uc) {
+        h += '<div class="card" style="--h:215">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center">' +
+            '<span class="cat-tag">' + esc(uc.domain) + '</span>' +
+            '<span class="door two-way" style="font-size:10px">' + esc(uc.suitability) + '</span>' +
+          '</div>' +
+          '<h3 style="margin:8px 0 6px">' + esc(uc.title) + '</h3>' +
+          '<p style="font-size:13px;color:var(--muted);line-height:1.5">' + fmt(uc.desc) + '</p>' +
+          '<div style="margin:10px 0;font-size:12px"><b>Target KPI:</b> <code style="color:var(--ok)">' + esc(uc.kpi) + '</code></div>' +
+          '<div style="font-size:12px"><b>Architecture:</b> <a href="#/a/' + uc.arch + '">#' + esc(uc.arch) + ' →</a></div>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    // Daily Cockpit Operating Checklists
+    if (tk.dailyCockpit) {
+      h += '<h2>' + esc(tk.dailyCockpit.title) + '</h2>' +
+        '<p>' + fmt(tk.dailyCockpit.intro) + '</p>' +
+        '<div class="grid" style="margin:20px 0">';
+      (tk.dailyCockpit.domains || []).forEach(function (dom) {
+        h += '<div class="box">' +
+          '<h3>' + esc(dom.name) + '</h3>' +
+          '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+          dom.items.map(function (it) { return '<li style="margin:6px 0">' + fmt(it) + '</li>'; }).join('') +
+          '</ul>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
     // Use Case Assessment
     h += '<h2>' + esc(tk.useCaseAssessment.title) + '</h2>' +
       '<p>' + fmt(tk.useCaseAssessment.intro) + '</p>' +
@@ -906,43 +1962,124 @@
         return '<tr><td><b>' + esc(c.area) + '</b></td><td>' + fmt(c.skills) + '</td><td><span class="door two-way">' + esc(c.levelTarget) + '</span></td></tr>';
       }).join('') + '</tbody></table></div>';
 
-    // Copyable Templates
-    h += '<h2>Copyable Leadership Templates</h2>' +
-      '<div class="box" style="margin:16px 0">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center">' +
-          '<h3>' + esc(tk.architectureReview.title) + '</h3>' +
-          '<button class="btn" type="button" id="copyArchReview">Copy Review Template</button>' +
-        '</div>' +
-        '<p style="margin:8px 0;color:var(--muted)">' + fmt(tk.architectureReview.intro) + '</p>' +
-        '<pre class="adr" style="margin-top:10px">' + esc(tk.architectureReview.templateMarkdown) + '</pre>' +
-      '</div>' +
-      '<div class="box" style="margin:16px 0">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center">' +
-          '<h3>' + esc(tk.executiveReportTemplate.title) + '</h3>' +
-          '<button class="btn" type="button" id="copyExecReport">Copy Executive Report</button>' +
-        '</div>' +
-        '<p style="margin:8px 0;color:var(--muted)">' + fmt(tk.executiveReportTemplate.intro) + '</p>' +
-        '<pre class="adr" style="margin-top:10px">' + esc(tk.executiveReportTemplate.templateMarkdown) + '</pre>' +
-      '</div>';
-
     afterRender = function () {
-      var btn1 = $('#copyArchReview');
-      if (btn1) btn1.addEventListener('click', function () { copyText(tk.architectureReview.templateMarkdown, this); });
-      var btn2 = $('#copyExecReport');
-      if (btn2) btn2.addEventListener('click', function () { copyText(tk.executiveReportTemplate.templateMarkdown, this); });
+      $$('.copy-tmpl-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-idx'), 10);
+          if (tk.templates && tk.templates[idx]) {
+            copyText(tk.templates[idx].markdown, this);
+          }
+        });
+      });
     };
 
     return h;
   }
 
-  /* ---------- labs & roadmaps ---------- */
   function pageLabs() {
     var l = A.labs;
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Labs & Roadmaps</div>' +
       '<h1>' + esc(l.title) + '</h1>' +
       '<p class="lede">' + fmt(l.lede) + '</p>';
 
-    // Learning Paths
+    // 12 Production Projects
+    if (l.exercises && l.exercises.length) {
+      h += '<h2>12 Production Hands-On Projects</h2>' +
+        '<p style="max-width:72ch">Production implementation projects with complete repository structures, step-by-step guides, code snippets, security hardening, evaluation plans, and cost estimates.</p>';
+
+      var levels = [
+        ['Level 1: Core AI Engineering', l.exercises.filter(function (e) { return e.level.indexOf('Level 1') > -1; })],
+        ['Level 2: Advanced Enterprise RAG & Agents', l.exercises.filter(function (e) { return e.level.indexOf('Level 2') > -1; })],
+        ['Level 3: Principal & Enterprise Scale', l.exercises.filter(function (e) { return e.level.indexOf('Level 3') > -1; })]
+      ];
+
+      levels.forEach(function (grp) {
+        if (!grp[1].length) return;
+        h += '<h3 style="margin-top:28px">' + esc(grp[0]) + ' <span class="cnt">(' + grp[1].length + ' projects)</span></h3>';
+        grp[1].forEach(function (ex) {
+          h += '<div class="lab-card">' +
+            '<div class="lab-header">' +
+              '<span class="lab-level">' + esc(ex.level) + '</span>' +
+              '<span class="lab-time">⏱ ' + esc(ex.time) + '</span>' +
+              (ex.arch ? '<a class="chip" href="#/a/' + ex.arch + '">📐 ' + esc(ex.arch) + '</a>' : '') +
+            '</div>' +
+            '<h3 style="margin:4px 0 8px">' + esc(ex.title) + '</h3>' +
+            '<p style="color:var(--muted);font-size:13px"><b>Goal:</b> ' + fmt(ex.goal) + '</p>' +
+            (ex.techStack ? '<div style="margin:8px 0;font-size:12px"><b>Tech Stack:</b> ' + ex.techStack.map(function(s){ return '<code>' + esc(s) + '</code>'; }).join(' · ') + '</div>' : '') +
+
+            '<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:700;color:var(--accent)">View Project Implementation Guide & Code →</summary>' +
+              '<div style="margin-top:12px">' +
+                (ex.repoStructure ? '<h4>Repository Structure</h4><pre class="repo-tree">' + esc(ex.repoStructure) + '</pre>' : '') +
+                '<h4>Step-by-Step Implementation</h4>' +
+                '<ol class="lab-steps">' +
+                ex.steps.map(function (st) { return '<li>' + fmt(st) + '</li>'; }).join('') +
+                '</ol>' +
+                (ex.codeSnippet ? '<div style="margin:14px 0"><h4>Key Code Implementation</h4><pre class="code-box"><code>' + esc(ex.codeSnippet) + '</code></pre></div>' : '') +
+                '<div class="lists two" style="margin:14px 0">' +
+                  (ex.security ? '<div class="box"><h4>Security Hardening</h4>' + ul(ex.security) + '</div>' : '') +
+                  (ex.evalPlan ? '<div class="box"><h4>Evaluation Plan</h4>' + ul(ex.evalPlan) + '</div>' : '') +
+                '</div>' +
+                '<div style="margin:10px 0;font-size:12px"><b>Cost Estimate:</b> ' + fmt(ex.costEstimate || 'Standard Vertex AI token consumption.') + '</div>' +
+                (ex.checklist && ex.checklist.length ? '<h4>Verification Checklist</h4><ul class="bp-chk-list">' + ex.checklist.map(function(c, i){ return '<li class="bp-chk-item"><input type="checkbox" id="chk-lab-' + ex.id + '-' + i + '"><label for="chk-lab-' + ex.id + '-' + i + '">' + fmt(c) + '</label></li>'; }).join('') + '</ul>' : '') +
+              '</div>' +
+            '</details>' +
+          '</div>';
+        });
+      });
+    }
+
+    // 16-Week Curriculum
+    if (l.curriculum16Week && l.curriculum16Week.phases) {
+      h += '<h2>' + esc(l.curriculum16Week.title) + '</h2>' +
+        '<p>' + fmt(l.curriculum16Week.intro) + '</p>' +
+        '<div class="grid" style="margin:20px 0">';
+      l.curriculum16Week.phases.forEach(function (ph) {
+        h += '<div class="box">' +
+          '<div class="mini">' + esc(ph.weeks) + '</div>' +
+          '<h3>' + esc(ph.phase) + '</h3>' +
+          '<p style="color:var(--muted);font-size:13px"><b>Focus:</b> ' + fmt(ph.focus) + '</p>' +
+          '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
+          (ph.topics || []).map(function (t) { return '<li style="margin:5px 0">' + fmt(t) + '</li>'; }).join('') +
+          '</ul>' +
+          '<div style="font-size:12px;margin-top:8px"><b>Milestone:</b> <code style="color:var(--ok)">' + esc(ph.milestone) + '</code></div>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    // 3-Tier Competency Model
+    if (l.competencyModel && l.competencyModel.tiers) {
+      h += '<h2>3-Tier Competency Model for AI Engineering</h2>' +
+        '<div class="grid" style="margin:20px 0">';
+      l.competencyModel.tiers.forEach(function (tier) {
+        h += '<div class="box">' +
+          '<div class="cat-tag">' + esc(tier.name) + '</div>' +
+          '<p style="font-size:13px;color:var(--muted)">' + fmt(tier.desc) + '</p>' +
+          '<h4>Core Competencies</h4>' +
+          '<ul style="margin:6px 0;padding-left:18px;font-size:13px">' +
+          (tier.skills || []).map(function (s) { return '<li style="margin:5px 0">' + fmt(s) + '</li>'; }).join('') +
+          '</ul>' +
+        '</div>';
+      });
+      h += '</div>';
+    }
+
+    // Capability Benchmark Radar
+    if (l.radarBenchmark && l.radarBenchmark.dimensions) {
+      h += '<h2>' + esc(l.radarBenchmark.title) + '</h2>' +
+        '<p>' + fmt(l.radarBenchmark.intro) + '</p>' +
+        '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Engineering Dimension</th><th>Level 1: Baseline</th><th>Level 3: Production Master</th><th>Level 5: Principal Leader</th></tr></thead><tbody>' +
+        l.radarBenchmark.dimensions.map(function (d) {
+          return '<tr><td><b>' + esc(d.name) + '</b></td>' +
+            '<td style="color:var(--muted)">' + fmt(d.l1) + '</td>' +
+            '<td>' + fmt(d.l3) + '</td>' +
+            '<td style="font-weight:600;color:var(--accent)">' + fmt(d.l5) + '</td>' +
+            '</tr>';
+        }).join('') +
+        '</tbody></table></div>';
+    }
+
+    // Role-Based Roadmaps
     h += '<h2>Role-Based Progressive Learning Roadmaps</h2>' +
       '<div class="roadmap-grid">';
     l.learningPaths.forEach(function (path) {
@@ -959,26 +2096,7 @@
     });
     h += '</div>';
 
-    // Hands-on Labs
-    h += '<h2>Hands-on Production Labs (5 Exercises)</h2>' +
-      '<p style="max-width:62ch">Step-by-step practical implementation exercises for engineering teams using the Google Cloud Console, gcloud CLI, and Python SDK.</p>';
-
-    l.exercises.forEach(function (ex) {
-      h += '<div class="lab-card">' +
-        '<div class="lab-header">' +
-          '<span class="lab-level">' + esc(ex.level) + '</span>' +
-          '<span class="lab-time">⏱ ' + esc(ex.time) + '</span>' +
-        '</div>' +
-        '<h3>' + esc(ex.title) + '</h3>' +
-        '<p style="color:var(--muted)"><b>Lab Goal:</b> ' + fmt(ex.goal) + '</p>' +
-        '<h4>Step-by-Step Instructions:</h4>' +
-        '<ol class="lab-steps">' +
-        ex.steps.map(function (st) { return '<li>' + fmt(st) + '</li>'; }).join('') +
-        '</ol>' +
-      '</div>';
-    });
-
-    // Google Cloud Architecture Hub
+    // Official Google Cloud Architecture Resources
     h += '<h2>Official Google Cloud Architecture Resources</h2>' +
       '<div class="grid" style="margin:16px 0">';
     l.officialResources.forEach(function (res) {
@@ -1003,26 +2121,35 @@
     var curTheme = kind === 'd' && decById[id] ? decById[id].theme : null;
     var h = '<h3>Explore</h3>' +
       nl('#/', 'Home', !kind) +
+      nl('#/tools', 'Engineering Tools (9)', kind === 'tools' && !id) +
       nl('#/a', 'Architectures (' + A.architectures.length + ')', kind === 'a' && !id) +
       nl('#/d', 'Decision Centre (' + A.decisions.length + ')', kind === 'd' && !id) +
       nl('#/p', 'Engineering Playbooks (' + A.engineeringPlaybooks.length + ')', kind === 'p' && !id) +
       nl('#/gov', 'Security & Governance', kind === 'gov') +
       nl('#/ops', 'Production Operations', kind === 'ops') +
-      nl('#/toolkit', 'Manager Toolkit', kind === 'toolkit') +
-      nl('#/labs', 'Labs & Roadmaps', kind === 'labs');
+      nl('#/toolkit', 'Manager Toolkit (' + (A.toolkit.templates ? A.toolkit.templates.length : 8) + ' templates)', kind === 'toolkit') +
+      nl('#/labs', 'Labs & Projects (' + A.labs.exercises.length + ')', kind === 'labs');
 
-    h += '<h3>Playbooks</h3>';
+    h += '<h3>Engineering Tools</h3>' +
+      nl('#/tools/compare', 'Service comparison engine', (kind === 'tools' || kind === 'd') && id === 'compare') +
+      nl('#/tools/rag-assistant', 'RAG design assistant', (kind === 'tools' || kind === 'd') && id === 'rag-assistant') +
+      nl('#/tools/agent-assistant', 'Agent design assistant', (kind === 'tools' || kind === 'd') && id === 'agent-assistant') +
+      nl('#/tools/risk-analyzer', 'Architecture risk analyzer', (kind === 'tools' || kind === 'd') && id === 'risk-analyzer') +
+      nl('#/tools/readiness-scorecard', 'Production readiness scorecard', (kind === 'tools' || kind === 'd') && id === 'readiness-scorecard') +
+      nl('#/tools/review-gen', 'Architecture review generator', (kind === 'tools' || kind === 'd') && id === 'review-gen') +
+      nl('#/d/shaper', 'Solution shaper', (kind === 'tools' || kind === 'd') && id === 'shaper') +
+      nl('#/d/calculator', 'Cost per task calculator', (kind === 'tools' || kind === 'd') && id === 'calculator') +
+      nl('#/d/checklists', 'Readiness checklists', (kind === 'tools' || kind === 'd') && id === 'checklists');
+
+    h += '<h3>Playbooks (' + A.engineeringPlaybooks.length + ')</h3>';
     A.engineeringPlaybooks.forEach(function (p) {
       var shortTitle = p.title.replace(' Playbook', '').replace(' Engineering & Orchestration', '').replace(' & Hardening', '');
       h += nl('#/p/' + p.id, shortTitle, kind === 'p' && id === p.id);
     });
 
-    h += '<h3>Decisions & Tools</h3>' +
+    h += '<h3>Decision Guides (' + A.decisions.length + ')</h3>' +
       nl('#/d/em', 'For engineering managers', kind === 'd' && id === 'em') +
-      nl('#/d/pe', 'For principal engineers', kind === 'd' && id === 'pe') +
-      nl('#/d/shaper', 'Solution shaper', kind === 'd' && id === 'shaper') +
-      nl('#/d/checklists', 'Readiness checklists', kind === 'd' && id === 'checklists') +
-      nl('#/d/calculator', 'Cost per task', kind === 'd' && id === 'calculator');
+      nl('#/d/pe', 'For principal engineers', kind === 'd' && id === 'pe');
 
     A.decisionThemes.forEach(function (t) {
       var list = A.decisions.filter(function (d) { return d.theme === t.id; });
@@ -1031,8 +2158,17 @@
     });
 
     h += '<h3>Architectures (' + A.architectures.length + ')</h3>';
-    h += '<details' + (kind === 'a' && id ? ' open' : '') + '><summary style="--h:215"><span class="dot"></span><span>All Architectures</span><span class="n">' + A.architectures.length + '</span></summary><ul>' +
-      A.architectures.map(function (a) { return '<li><a href="#/a/' + a.id + '"' + (kind === 'a' && id === a.id ? ' aria-current="page"' : '') + '>' + esc(a.name) + '</a></li>'; }).join('') + '</ul></details>';
+    var catGroups = [
+      ['Foundation ML', A.architectures.filter(function(a){return a.cat==='foundation-ml';})],
+      ['GenAI Systems', A.architectures.filter(function(a){return a.cat==='genai';})],
+      ['RAG Architectures', A.architectures.filter(function(a){return a.cat==='rag';})],
+      ['Multi-Agent Systems', A.architectures.filter(function(a){return a.cat==='agents';})],
+      ['Production & MLOps', A.architectures.filter(function(a){return a.cat==='production';})]
+    ];
+    catGroups.forEach(function (g) {
+      h += '<details' + (kind === 'a' && id && archById[id] && g[1].some(function(a){return a.id===id;}) ? ' open' : '') + '><summary style="--h:215"><span class="dot"></span><span>' + esc(g[0]) + '</span><span class="n">' + g[1].length + '</span></summary><ul>' +
+        g[1].map(function (a) { return '<li><a href="#/a/' + a.id + '"' + (kind === 'a' && id === a.id ? ' aria-current="page"' : '') + '>' + esc(a.name) + '</a></li>'; }).join('') + '</ul></details>';
+    });
 
     h += '<h3>Services (' + A.services.length + ')</h3>';
     A.categories.forEach(function (c) {
@@ -1042,20 +2178,36 @@
     $('#side').innerHTML = h;
   }
 
-  /* ---------- router ---------- */
   function render() {
     $$('.stepper').forEach(function (el) { if (el._stop) el._stop(); });
     var parts = location.hash.replace(/^#\/?/, '').split('/'), kind = parts[0] || '', id = parts[1] || '';
     pendingSteppers = []; afterRender = null;
-    var html, title = 'Google Cloud for AI/ML Systems — an interactive atlas';
-    if (kind === 's' && byId[id]) { html = pageService(id); title = byId[id].name + ' — Google Cloud for AI/ML Systems'; }
-    else if (kind === 'c' && catById[id]) { html = pageCategory(id); title = catById[id].name + ' — Google Cloud for AI/ML Systems'; }
-    else if (kind === 'a') { if (id && archById[id]) { html = pageArch(id); title = archById[id].name + ' — Google Cloud for AI/ML Systems'; } else html = pageArchIndex(); }
+    var html, title = 'Google Cloud for AI Systems — an interactive operating system';
+
+    var ALL_TOOLS = {
+      compare: ['Service comparison engine', pageCompare],
+      'rag-assistant': ['RAG architecture design assistant', pageRagAssistant],
+      'agent-assistant': ['Agentic architecture design assistant', pageAgentAssistant],
+      'risk-analyzer': ['Architecture risk analyzer', pageRiskAnalyzer],
+      'readiness-scorecard': ['Production readiness scorecard', pageReadinessScorecard],
+      'review-gen': ['Architecture review generator', pageReviewGen],
+      shaper: ['Solution shaper', pageShaper],
+      checklists: ['Readiness checklists', pageChecklists],
+      calculator: ['Cost per task calculator', pageCalculator]
+    };
+
+    if (kind === 's' && byId[id]) { html = pageService(id); title = byId[id].name + ' — Google Cloud for AI Systems'; }
+    else if (kind === 'c' && catById[id]) { html = pageCategory(id); title = catById[id].name + ' — Google Cloud for AI Systems'; }
+    else if (kind === 'a') { if (id && archById[id]) { html = pageArch(id); title = archById[id].name + ' — Google Cloud for AI Systems'; } else html = pageArchIndex(); }
+    else if (kind === 'tools') {
+      if (!id) { html = pageToolsHub(); title = 'AI Engineering Interactive Tools — Google Cloud AI Atlas'; }
+      else if (ALL_TOOLS[id]) { html = ALL_TOOLS[id][1](); title = ALL_TOOLS[id][0] + ' — Google Cloud AI Atlas'; }
+      else html = notFound();
+    }
     else if (kind === 'd') {
-      var TOOLS = { shaper: ['Solution shaper', pageShaper], checklists: ['Readiness checklists', pageChecklists], calculator: ['Cost per task', pageCalculator] };
-      if (!id || id === 'em' || id === 'pe' || id === 'all') { html = pageDecisionHub(id); title = (id === 'em' ? 'Decisions for engineering managers' : id === 'pe' ? 'Decisions for principal engineers' : 'Decision guides') + ' — Google Cloud for AI/ML Systems'; }
-      else if (TOOLS[id]) { html = TOOLS[id][1](); title = TOOLS[id][0] + ' — Google Cloud for AI/ML Systems'; }
-      else if (decById[id]) { html = pageDecision(id); title = decById[id].title + ' — Google Cloud for AI/ML Systems'; }
+      if (!id || id === 'em' || id === 'pe' || id === 'all') { html = pageDecisionHub(id); title = (id === 'em' ? 'Decisions for engineering managers' : id === 'pe' ? 'Decisions for principal engineers' : 'Decision guides') + ' — Google Cloud for AI Systems'; }
+      else if (ALL_TOOLS[id]) { html = ALL_TOOLS[id][1](); title = ALL_TOOLS[id][0] + ' — Google Cloud for AI Systems'; }
+      else if (decById[id]) { html = pageDecision(id); title = decById[id].title + ' — Google Cloud for AI Systems'; }
       else html = notFound();
     }
     else if (kind === 'p') {
@@ -1086,6 +2238,7 @@
     }
     else if (!kind) html = pageHome();
     else html = notFound();
+
     var main = $('#main'); main.innerHTML = html;
     pendingSteppers.forEach(function (spec, i) { mountStepper($('[data-sp="' + i + '"]', main), spec); });
     if (afterRender) afterRender();
@@ -1096,6 +2249,7 @@
     $('#menuBtn').setAttribute('aria-expanded', 'false');
     var cs = $('.side a[aria-current=page]'); if (cs && cs.scrollIntoView) cs.scrollIntoView({ block: 'nearest' });
   }
+
   window.addEventListener('hashchange', render);
 
   /* ---------- chrome: nav, theme, search ---------- */
@@ -1122,6 +2276,13 @@
     return { type: 'Playbook', href: '#/p/' + p.id, name: p.title, id: p.id, tag: p.tag, cat: 'Playbook',
       hay: (p.title + ' ' + p.tag + ' ' + p.intro + ' ' + p.sections.map(function (s) { return s.title + ' ' + (s.body || '') + ' ' + (s.bullets ? s.bullets.join(' ') : ''); }).join(' ')).toLowerCase() };
   })).concat([
+    { type: 'Tool', href: '#/tools', name: 'AI Engineering Interactive Tools', id: 'tools', tag: 'All 9 decision tools, comparison matrices, and calculators', cat: 'Tool Hub', hay: 'tools compare rag agent risk scorecard review shaper calculator checklists' },
+    { type: 'Tool', href: '#/tools/compare', name: 'Service Comparison Engine', id: 'compare', tag: 'Side-by-side matrices for Vector, Agent Runtimes, Models, Orchestration', cat: 'Tool', hay: 'compare vector database search agent engine cloud run gke gemini claude llama' },
+    { type: 'Tool', href: '#/tools/rag-assistant', name: 'RAG Architecture Design Assistant', id: 'rag-assistant', tag: '5-step interactive sizing & pattern wizard', cat: 'Tool', hay: 'rag assistant wizard vector search hybrid spanner chunking embedding' },
+    { type: 'Tool', href: '#/tools/agent-assistant', name: 'Agentic Architecture Design Assistant', id: 'agent-assistant', tag: '4-step autonomy, tools & orchestration wizard', cat: 'Tool', hay: 'agent assistant wizard autonomous swarm hitl evaluator router adk' },
+    { type: 'Tool', href: '#/tools/risk-analyzer', name: 'Architecture Risk Analyzer', id: 'risk-analyzer', tag: 'STRIDE threat calculator and mitigation plan generator', cat: 'Tool', hay: 'risk analyzer stride threat prompt injection model armor security blast radius' },
+    { type: 'Tool', href: '#/tools/readiness-scorecard', name: 'Production Readiness Scorecard', id: 'readiness-scorecard', tag: 'Interactive 30-point evaluation launch gate', cat: 'Tool', hay: 'scorecard readiness prr launch gate production checklist evaluation' },
+    { type: 'Tool', href: '#/tools/review-gen', name: 'Architecture Review (ADR/PRR) Generator', id: 'review-gen', tag: 'Form-driven ADR & PRR markdown review generator', cat: 'Tool', hay: 'generator adr prr review markdown architecture decision record' },
     { type: 'Tool', href: '#/d/em', name: 'Decisions for engineering managers', id: 'em', tag: 'Default calls, evidence to ask for, and the guides you lead', cat: 'Decision tab', hay: 'manager budget headcount risk launch gate quick calls' },
     { type: 'Tool', href: '#/d/pe', name: 'Decisions for principal engineers', id: 'pe', tag: 'Default designs, trade-offs and the tests to demand', cat: 'Decision tab', hay: 'principal architect design review adr trade-off quick calls' },
     { type: 'Tool', href: '#/d/shaper', name: 'Solution shaper', id: 'shaper', tag: 'Get a starting stack, risks and next decisions for your use case', cat: 'Tool', hay: 'recommend stack wizard rag agent starting point' },
@@ -1129,8 +2290,8 @@
     { type: 'Tool', href: '#/d/calculator', name: 'Cost per task calculator', id: 'calculator', tag: 'Unit economics for LLM features and the levers that cut cost', cat: 'Tool', hay: 'price tokens caching batch unit economics budget' },
     { type: 'Governance', href: '#/gov', name: 'Enterprise AI Governance & Landing Zones', id: 'gov', tag: 'Resource Manager landing zones, network isolation, 8-pillar security framework, tenancy models', cat: 'Governance', hay: 'landing zone resource manager hierarchy shared vpc psc cloud armor security framework tenancy org policy' },
     { type: 'Operations', href: '#/ops', name: 'Production AI Operations Centre', id: 'ops', tag: '10-widget dashboard template, Cloud Logging / Monitoring queries, SRE runbooks, postmortem template', cat: 'Operations', hay: 'dashboard cloud logging monitoring query runbook 429 throttling postmortem incident sre latency ttft gemini' },
-    { type: 'Toolkit', href: '#/toolkit', name: 'AI Engineering Manager Toolkit', id: 'toolkit', tag: 'Use-case assessment, estimation, RACI, RAID, quality gates, skills matrix', cat: 'Toolkit', hay: 'toolkit assessment estimation raci raid quality gates vendor skills executive status report template' },
-    { type: 'Labs', href: '#/labs', name: 'Hands-on Labs & Learning Roadmaps', id: 'labs', tag: 'Role roadmaps, 5 implementation labs, Google Cloud Architecture links', cat: 'Labs', hay: 'labs exercises tutorial roadmaps learn curriculum hands-on' }
+    { type: 'Toolkit', href: '#/toolkit', name: 'AI Engineering Manager Toolkit', id: 'toolkit', tag: '8 production templates, 12 industry use cases, daily cockpit, RACI, RAID, quality gates', cat: 'Toolkit', hay: 'toolkit templates sdd adr prr threat model eval report finops incident runbook use cases industry daily cockpit assessment' },
+    { type: 'Labs', href: '#/labs', name: 'Hands-on Labs & Learning Roadmaps', id: 'labs', tag: '12 production projects, 16-week curriculum, 3-tier competency model, capability radar', cat: 'Labs', hay: 'labs exercises tutorial roadmaps learn curriculum hands-on projects' }
   ]);
   function openSearch() { overlay.hidden = false; q.value = ''; runSearch(); q.focus(); }
   function closeSearch() { overlay.hidden = true; }

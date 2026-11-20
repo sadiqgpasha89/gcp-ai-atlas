@@ -424,6 +424,14 @@ window.ATLAS.engineeringPlaybooks = [
           "**Answer Relevance (Target: >90%):** How directly the synthesized response answers the user's prompt without extraneous filler.",
           "**Citation Precision (Target: >98%):** Percentage of inline citations that point to an actual supporting statement in the source passage."
         ]
+      },
+      {
+        "title": "5. The 12 Subdomains of the Production RAG Lifecycle",
+        "body": "Enterprise RAG is not a single prompt trick — it is an end-to-end data and retrieval lifecycle spanning 12 distinct subdomains:\n\n1. **Source Ingestion:** Batch and streaming ingestion from [[gcs|Cloud Storage]], databases, and SaaS tools.\n2. **Document Parsing:** Layout-aware cracking via [[document-ai]] preserving headers and tables.\n3. **Normalization & Cleaning:** PII scrubbing with [[sdp]], deduplication, and markdown normalization.\n4. **Chunking Strategies:** Semantic, hierarchical parent-child, and layout boundary chunking.\n5. **Metadata Enrichment:** Author, department, security ACL tags, and summary attributes.\n6. **Embedding Generation:** Dense, sparse, and multimodal embedding generation.\n7. **Indexing & Storage:** High-scale vector storage in [[vector-search]] or [[alloydb]].\n8. **Retrieval:** Dense, sparse, hybrid (RRF), and metadata-filtered retrieval.\n9. **Reranking:** Deep cross-encoder reranking via Google Semantic Ranker.\n10. **Context Construction:** Context window packing, deduplication, and prompt assembly.\n11. **Generation & Grounding:** Synthesizing factual answers with inline citations on [[gemini]].\n12. **Evaluation & Monitoring:** Offline Recall@K and Groundedness evaluation via [[ap-evals]]."
+      },
+      {
+        "title": "6. Component-Level RAG Quality Tuning Workflow",
+        "body": "When enterprise RAG quality fails in production, use this systematic diagnostic workflow to identify which component to fix:\n\n- **Poor Retrieval Recall (<80%):** Do not touch the LLM prompt. Fix document cracking, adjust chunk size, add query expansion, or switch to hybrid dense+keyword search.\n- **High Recall but Low Precision (<70%):** Retrieved passages contain relevant facts mixed with irrelevant noise. Add metadata pre-filtering, tune vector distance thresholds, or deploy the Google Semantic Ranker.\n- **Good Context but Bad Answer:** The correct passage was retrieved, but the LLM answer is incomplete or wrong. Fix the system instruction, increase context clarity, or upgrade from Flash to Gemini 1.5 Pro.\n- **Correct Answer but Wrong Citations:** The model hallucinated sources. Enforce strict XML delimiter grounding and citation verification.\n- **High Retrieval Latency (>1.5s):** Parallelize dense and keyword retrieval passes, enable Redis semantic caching, or deploy Vector Search with Private Service Connect.\n- **High Operational Cost:** Enable Gemini Context Caching for large shared knowledge bases, reduce retrieved chunk count from top-10 to top-4, or route simple lookups to smaller models."
       }
     ],
     "see": [
@@ -478,6 +486,14 @@ window.ATLAS.engineeringPlaybooks = [
           "**Wall-Clock Timeout:** Enforce an explicit timeout (e.g. 60 seconds) on agent graph execution via [[workflows]].",
           "**Human-in-the-Loop (HITL) Write Gates:** Require cryptographic human approval via Cloud Workflows callbacks for all writes, financial transactions, or external emails."
         ]
+      },
+      {
+        "title": "5. 15+ Enterprise Agent Design Patterns",
+        "body": "Master the catalog of verified agent patterns before authoring complex autonomous systems:\n\n- **Sequential Pipeline:** Predictable step-by-step handoffs between specialized agents.\n- **Parallel Swarm:** Concurrent fan-out of independent sub-tasks with centralized aggregation.\n- **Coordinator / Orchestrator:** Central router delegating tasks to domain specialists.\n- **Hierarchical Supervisor:** Multi-level supervisor-worker trees with bounded delegation.\n- **Planner-Executor:** Separate planning phase with stepwise verification and re-planning.\n- **Reflection & Self-Correction:** Agent reviews its own intermediate draft before responding.\n- **Critic-Reviewer:** Generator agent drafts, Critic agent tests against rubric.\n- **Multi-Agent Debate:** Diverse agent personas debate options to reach consensus.\n- **Blackboard / Shared State:** Agents communicate by reading and writing to shared memory.\n- **Event-Driven Agent:** Asynchronous agents triggered by Pub/Sub message queues.\n- **Human-in-the-Loop:** Automated execution paused at write checkpoints for human approval.\n- **Agentic RAG:** Agent dynamically decides when to search, filter, or query structured SQL.\n- **Agent2Agent (A2A):** Decentralized cross-boundary agent communication with mTLS."
+      },
+      {
+        "title": "6. The Golden Decision Rule: Start Simple",
+        "body": "Google architecture guidance explicitly dictates: **Start with the simplest architecture that satisfies business requirements**.\n\n1. Begin with a single specialized prompt or deterministic code.\n2. If grounding is required, add standard RAG.\n3. If multiple tools are required, deploy a single specialized agent with [[adk|ADK]].\n4. Introduce multi-agent delegation **only** when separate teams own distinct tools, when context windows are overwhelmed, or when strict security isolation requires distinct service account identities."
       }
     ],
     "see": [
@@ -533,6 +549,10 @@ window.ATLAS.engineeringPlaybooks = [
           "**Online Feedback Capture:** Log explicit user feedback (thumbs up/down) and implicit signals (copy-to-clipboard, retry frequency) to [[cloud-monitoring]].",
           "**Automated Rollback:** Configure Cloud Monitoring alerting policies on P95 latency, 429 quota errors, or negative feedback spikes to trigger instant automated rollback within 5 minutes."
         ]
+      },
+      {
+        "title": "5. Production AI Release Gates Checklist",
+        "body": "Enforce strict automated gates in Cloud Build before any prompt, model, or tool configuration deploys to production:\n\n- **Gate 1 (Unit & Tool Contracts):** 100% pass on tool schema validation and mock function execution.\n- **Gate 2 (Security & Red-Teaming):** Zero vulnerabilities to prompt injection and jailbreak test suites.\n- **Gate 3 (Groundedness & Recall):** Eval score on golden dataset must not regress by more than 1.0%.\n- **Gate 4 (Latency SLA):** P95 response time must remain within the agreed budget (e.g. <2,000ms).\n- **Gate 5 (Cost Ceiling):** Projected cost per task must not exceed budget threshold.\n- **Gate 6 (Canary Promotion):** Route 5% traffic for 24 hours; automatically roll back if 5xx errors or negative user ratings exceed 1.5%."
       }
     ],
     "see": [
@@ -587,6 +607,10 @@ window.ATLAS.engineeringPlaybooks = [
           "**Mandatory Backend Filter Injection:** The backend search proxy must inject a mandatory security filter matching caller group claims extracted from verified JWT tokens.",
           "**Customer-Managed Encryption Keys (CMEK):** Encrypt all Cloud Storage buckets and Vertex AI indexes with dedicated keys in [[kms|Cloud KMS]]. Revoking key access renders tenant data permanently unreadable."
         ]
+      },
+      {
+        "title": "5. The 14 AI-Specific Threat Vectors",
+        "body": "Protect against the comprehensive OWASP Top 10 for LLMs and agent threat catalog:\n\n1. **Direct Prompt Injection:** Adversarial user inputs attempting to override system instructions.\n2. **Indirect Prompt Injection:** Malicious instructions hidden inside untrusted retrieved web pages or documents.\n3. **Jailbreaks:** Sophisticated persona adoption or linguistic encoding bypassing safety filters.\n4. **Sensitive Data Disclosure:** Accidental leakage of confidential corporate PII into model outputs.\n5. **Data Exfiltration:** Agent manipulated into sending internal database records to external webhook URLs.\n6. **Retrieval Poisoning:** Adversary uploading malicious documents to pollute vector search indices.\n7. **Tool Abuse & Parameter Tampering:** Agent tricked into calling tools with destructive arguments.\n8. **Unauthorized Tool Execution:** Agent calling administrative functions without proper user authorization.\n9. **Excessive Agent Autonomy:** Unbounded agents taking irreversible financial or operational actions without human review.\n10. **Privilege Escalation:** Agent inheriting elevated administrative service accounts instead of user clearance.\n11. **Model Denial of Service:** Specially crafted prompts causing massive token generation and quota exhaustion.\n12. **Insecure Output Handling:** Application executing raw LLM code or SQL without sanitization.\n13. **Hallucinated Actions:** Agent executing non-existent tools or hallucinated API endpoints.\n14. **Supply Chain Vulnerabilities:** Compromised third-party model weights, prompt templates, or MCP tool servers."
       }
     ],
     "see": [
@@ -640,6 +664,10 @@ window.ATLAS.engineeringPlaybooks = [
           "**Prompt Circuit Breakers:** Maintain dynamic prompt versioning in Secret Manager or runtime environment variables so prompts can be reverted in 60 seconds without code deployments.",
           "**Stochastic Postmortems:** Conduct post-incident reviews using the 5 Whys adapted for AI: investigate dataset distribution shifts, prompt drift, and retrieval recall failure."
         ]
+      },
+      {
+        "title": "4. Full-Stack AI Telemetry & Distributed Tracing Schema",
+        "body": "Instrument OpenTelemetry spans across the complete agent invocation lifecycle:\n\n- **Trace Header:** Root trace ID, parent span ID, session ID, user ID, tenant ID.\n- **Agent Metadata:** Agent name, agent version, system prompt hash, runtime container ID.\n- **Model Execution:** Model identifier ([[gemini|Gemini 1.5 Pro]]), temperature, input tokens, output tokens, TTFT, generation latency.\n- **Tool Execution:** Tool name, serialized arguments, execution duration, return status code, sanitized response payload.\n- **Retrieval Context:** Datastore ID, query vector hash, retrieved document IDs, similarity scores, reranker latency.\n- **Evaluation Telemetry:** Online Groundedness score, safety filter trigger flag, user thumbs-up/down feedback."
       }
     ],
     "see": [
@@ -650,6 +678,259 @@ window.ATLAS.engineeringPlaybooks = [
       "svc:cloud-monitoring",
       "svc:gemini",
       "svc:apigee"
+    ]
+  },
+  {
+    "id": "finops-economics",
+    "title": "AI FinOps & Unit Economics Playbook",
+    "badge": "Cost & Economics",
+    "tag": "Total cost formula, cost per successful task, token optimization, semantic caching and model routing.",
+    "intro": "The biggest failure mode in enterprise generative AI is deploying a technical success that is an economic catastrophe. This playbook establishes the FinOps framework for AI Engineering Managers to calculate total cost of ownership, model unit economics, and implement architectural levers that reduce inference costs by 60-80%.",
+    "sections": [
+      {
+        "title": "1. The Total AI System Cost Formula",
+        "body": "Engineering leaders frequently make the mistake of budgeting only for model token pricing. Production AI cost is the sum of four distinct operational layers:\n\n$$\\text{Total AI System Cost} = C_{\\text{Inference}} + C_{\\text{Infrastructure}} + C_{\\text{Data}} + C_{\\text{Operations}}$$\n\nWhere:\n- **$C_{\\text{Inference}}$**: Input tokens, output tokens, embedding generation, cross-encoder reranking, and external model API calls.\n- **$C_{\\text{Infrastructure}}$**: Cloud Run serverless CPU/GPU seconds, GKE accelerator nodes, load balancing, networking egress, and VPC perimeters.\n- **$C_{\\text{Data}}$**: BigQuery storage and analytical scans, Cloud Storage dual-region replication, vector index node hours in [[vector-search]], and Datastream CDC.\n- **$C_{\\text{Operations}}$**: Evaluation test runs via [[ap-evals]], Cloud Logging and Monitoring ingestion, distributed tracing, and third-party observability licensing."
+      },
+      {
+        "title": "2. The Golden Metric: Cost per Successful Task",
+        "body": "Do not judge AI systems by cost per API invocation or cost per thousand tokens. A model that costs $0.02 per call but succeeds only 40% of the time requires retries, human escalations, and user abandonment, making it far more expensive than a $0.08 model with 98% accuracy.\n\n$$\\text{Cost per Successful Task} = \\frac{\\text{Total System Cost}}{\\text{Successfully Completed Tasks}}$$\n\nTrack this metric across every business workflow. When an agent experiences tool loops, prompt injection, or hallucinated arguments, the cost of failed runs must be attributed directly to the task's economic profile."
+      },
+      {
+        "title": "3. The 6 Architectural Cost-Optimization Levers",
+        "body": "Apply these six architectural levers in order of implementation effort and impact:",
+        "bullets": [
+          "**1. Prompt Compression & Layout Trimming:** Strip redundant conversational filler and JSON whitespace from prompt context. Using layout-aware Markdown chunking instead of raw document text cuts input token volume by 30-45%.",
+          "**2. Semantic Response Caching:** Deploy [[memorystore|Memorystore for Redis]] in front of Gemini. For repetitive enterprise FAQs, semantic similarity caching resolves 25-40% of queries with sub-10ms latency at zero token cost.",
+          "**3. Dynamic Model Routing:** Route simple intent classification, entity extraction, and filtering to [[gemini|Gemini 1.5 Flash]] ($0.075 / 1M tokens), reserving Gemini 1.5 Pro ($1.25 / 1M tokens) strictly for complex multi-hop synthesis.",
+          "**4. Context Caching on Gemini:** For applications sharing a large document corpus (e.g. 500-page corporate policy manual), leverage Gemini Context Caching to receive an 75% discount on cached input tokens.",
+          "**5. Batch Asynchronous Processing:** For non-realtime classification, summarization, and offline evaluations, use the Vertex AI Batch Prediction API to achieve 50% discount compared to online inference.",
+          "**6. Provisioned Throughput Rightsizing:** Transition from pay-as-you-go to Provisioned Throughput only when baseline sustained QPS utilization exceeds 70%, avoiding paying for unused reserved model units during off-peak hours."
+        ]
+      },
+      {
+        "title": "4. Quotas, Budgets and runaway Loop Prevention",
+        "body": "Autonomous agents with tool access can enter infinite retry loops, burning thousands of dollars in minutes:",
+        "tips": [
+          "**Enforce Hard Step Caps:** Set a hard ceiling of max 5 tool executions per agent turn in [[adk|ADK]].",
+          "**Session-Level Token Budgets:** Terminate agent execution if cumulative tokens for a single conversation thread exceed 50,000 tokens.",
+          "**Real-time Budget Action Alerts:** Configure Pub/Sub alerts on Google Cloud Billing budgets to disable runaway service accounts automatically if spend crosses 120% of forecast."
+        ]
+      }
+    ],
+    "see": [
+      "dec:cost-levers",
+      "dec:where-model-runs",
+      "svc:billing",
+      "svc:gemini",
+      "svc:memorystore",
+      "svc:cloud-run"
+    ]
+  },
+  {
+    "id": "evaluation-testing",
+    "title": "AI Evaluation & Quality Engineering Playbook",
+    "badge": "Quality & Evals",
+    "tag": "Test pyramid, LLM-as-a-judge, RAG metrics, agent trajectory evaluation, and CI/CD release gates.",
+    "intro": "The fundamental difference between hobbyist AI development and enterprise AI engineering is empirical measurement. If you cannot measure quality statistically, every change to a prompt, model, or chunking strategy is an argument rather than an engineering decision. This playbook establishes the testing pyramid and evaluation pipeline for production AI systems on Google Cloud.",
+    "sections": [
+      {
+        "title": "1. The AI Quality Testing Pyramid",
+        "body": "Traditional unit testing is necessary but completely insufficient for probabilistic generative systems. Implement a five-layer AI testing pyramid:\n\n1. **Deterministic Unit Tests:** Verify tool functions, JSON parsers, API contracts, and parameter validation with 100% pass expectations.\n2. **Security & Red-Teaming Tests:** Automated penetration testing against prompt injection libraries, jailbreaks, and PII exfiltration.\n3. **Component Evaluation (Retrieval):** Statistical retrieval benchmarking measuring Recall@K, Precision@K, and MRR on golden query sets.\n4. **End-to-End Generation Evaluation:** Multi-metric scoring of Groundedness, Faithfulness, and Answer Relevance using [[ap-evals|Vertex AI Evaluation]].\n5. **Agent Trajectory & Behavior Tests:** Step-by-step verification of tool selection accuracy, argument precision, loop recovery, and delegation boundaries."
+      },
+      {
+        "title": "2. Core RAG Evaluation Metrics",
+        "body": "Always decouple retrieval evaluation from generation evaluation so you know exactly which component to fix when quality degrades:",
+        "bullets": [
+          "**Recall@K (Target: >85% at K=5):** Did the retrieval system surface the ground-truth document passage in the top K candidates?",
+          "**Mean Reciprocal Rank (MRR) (Target: >0.80):** What is the reciprocal rank of the first relevant document? Higher MRR ensures relevant context sits at the top of the LLM prompt.",
+          "**Context Precision & Relevance (Target: >90%):** Does the retrieved context contain only information relevant to the question, or is it filled with irrelevant noise?",
+          "**Faithfulness / Groundedness (Target: >95%):** Is every factual claim in the generated answer directly supported by the retrieved passages, or did the model invent facts?",
+          "**Answer Relevance (Target: >90%):** Did the model directly address the user's specific intent, or did it provide an evasive answer?"
+        ]
+      },
+      {
+        "title": "3. Agent Trajectory & Behavior Metrics",
+        "body": "Evaluating agents requires inspecting the entire execution path, not just the final user-facing text:",
+        "bullets": [
+          "**Task Success Rate (Target: >90%):** The percentage of agent executions that completely satisfy the user's objective without human intervention.",
+          "**Tool Selection Accuracy (Target: >96%):** Did the agent choose the correct tool from its registry given the user's request?",
+          "**Tool Argument Accuracy (Target: >98%):** Were the extracted parameters formatted with exact schema types and valid values?",
+          "**Unnecessary Tool Call Rate (Target: <5%):** Did the agent invoke redundant or wasteful tools that inflated latency and cost?",
+          "**Trajectory Recovery Rate (Target: >80%):** When a tool returned an error (e.g. 404 or validation failure), did the agent successfully recover or crash?"
+        ]
+      },
+      {
+        "title": "4. Automated CI/CD Release Gates",
+        "body": "A code or prompt change should never reach production solely because its Docker container builds successfully. Enforce automated evaluation gates in Cloud Build:\n\n- **PR Gate (Fast):** Run 50 golden test cases covering core user journeys; build fails if Groundedness drops by more than 1%.\n- **Staging Gate (Deep):** Run 1,000+ comprehensive test cases with edge cases and adversarial attacks; verify P95 latency and token cost.\n- **Production Canary Gate:** Route 10% of live traffic to the new model version; compare online user feedback and Groundedness against the control group before 100% rollout."
+      }
+    ],
+    "see": [
+      "arch:genaiops-lifecycle",
+      "dec:evaluation",
+      "svc:ap-evals",
+      "svc:gemini",
+      "svc:infra-manager"
+    ]
+  },
+  {
+    "id": "data-engineering",
+    "title": "AI Data Platforms, Ingestion & Preparation Playbook",
+    "badge": "Data Engineering",
+    "tag": "Document cracking, OCR, metadata extraction, deduplication, incremental sync and ACL propagation.",
+    "intro": "Production AI systems are constrained far more by data quality and data engineering architecture than by model capability. An LLM cannot reason over documents it cannot parse, and vector retrieval fails if document boundaries are flattened. This playbook outlines data preparation, ingestion pipelines, and governance for enterprise AI on Google Cloud.",
+    "sections": [
+      {
+        "title": "1. Document Cracking & Layout Preservation",
+        "body": "Naive text extraction strips headers, tables, and multi-column reading order. Enterprise documents (financial reports, contracts, manuals) require semantic cracking:\n\n- Use [[document-ai|Document AI]] layout parser to extract documents into structured Markdown preserving section hierarchy (`#`, `##`, `###`).\n- Convert financial and statistical tables into Markdown or HTML tables so column-row cell relationships are preserved for embedding models.\n- Run optical character recognition (OCR) on embedded charts and diagrams, extracting text coordinates and visual bounding boxes."
+      },
+      {
+        "title": "2. Data Cleansing, Deduplication & Normalization",
+        "body": "Garbage in, garbage out is especially true for vector retrieval. Before embedding documents, run an automated cleaning pipeline:\n\n- **Deduplication:** Hash document contents using MinHash or SimHash to eliminate exact and near-duplicate pages that pollute search results.\n- **PII Scrubbing:** Pass raw text through [[sdp|Sensitive Data Protection (Cloud DLP)]] to mask Social Security numbers, credit cards, and personal contact details.\n- **Header Prepending:** Prepend document metadata (document title, author, update timestamp, section path) to every chunk so the embedding model has context even on small passages."
+      },
+      {
+        "title": "3. Incremental Ingestion & Deletion Propagation",
+        "body": "Real enterprise data changes continuously. An enterprise RAG pipeline must handle document updates and deletions gracefully:\n\n- **CDC via Datastream:** Capture source database changes in real time and stream them into [[bigquery]] or vector stores.\n- **Tombstoning & Deletion:** When a document is deleted from Cloud Storage, an Eventarc trigger must immediately delete its corresponding vector embeddings from [[vector-search]] and [[ai-search]].\n- **Version Control:** Maintain document version hashes to re-embed only modified sections rather than re-indexing entire multi-terabyte corpora."
+      },
+      {
+        "title": "4. Document-Level ACL Synchronization",
+        "body": "Users must never retrieve documents they lack permission to view in source systems (Google Drive, SharePoint, Salesforce):\n\n- Extract access control lists (ACLs) during document ingestion and index them as metadata tags alongside vector embeddings.\n- In [[ai-search|Agent Search]] or [[vector-search|Vector Search]], enforce mandatory pre-filtering using verified user identity claims.\n- Periodically re-sync group memberships to ensure revoked employee permissions take effect immediately."
+      }
+    ],
+    "see": [
+      "arch:traditional-rag",
+      "arch:secure-multitenant-rag",
+      "dec:vector-store",
+      "svc:document-ai",
+      "svc:sdp",
+      "svc:bigquery",
+      "svc:gcs"
+    ]
+  },
+  {
+    "id": "multimodal-engineering",
+    "title": "Multimodal AI Systems & Cross-Modal Intelligence Playbook",
+    "badge": "Multimodal AI",
+    "tag": "Image understanding, video analysis, audio processing, document OCR and multimodal RAG architectures.",
+    "intro": "Enterprise intelligence lives beyond text. Blueprints, medical scans, surveillance feeds, financial charts, and customer call recordings contain mission-critical information that text-only models cannot touch. This playbook establishes the architecture and engineering standards for building production multimodal AI systems on Google Cloud.",
+    "sections": [
+      {
+        "title": "1. Multimodal Ingestion & Pre-processing",
+        "body": "Handling multi-gigabyte media streams requires specialized ingestion and compression pipelines:\n\n- **Video Processing:** Extract keyframes using scene-change detection rather than uniform time intervals; pass extracted frames alongside audio tracks to [[gemini|Gemini 1.5 Pro]].\n- **Audio Pipelines:** Process long-form audio through [[speech-to-text|Speech-to-Text]] for high-fidelity transcription, then feed both the transcript and raw audio to Gemini for acoustic sentiment analysis.\n- **Document Images:** High-resolution scans (300+ DPI) should be cracked with [[document-ai]] to produce clean text layouts, with high-resolution visual bounding boxes preserved for chart inspection."
+      },
+      {
+        "title": "2. Multimodal Embeddings & Retrieval",
+        "body": "Cross-modal retrieval enables searching images with text queries and searching text with image inputs:\n\n- Generate multimodal embeddings using Vertex AI Multimodal Embedding models, which map text and images into a shared vector space.\n- Store vectors in [[vector-search|Vertex AI Vector Search]] to execute sub-15ms similarity lookups across mixed media corpora.\n- Index both visual representations (image embeddings) and textual representations (OCR and Vision AI labels) to support hybrid cross-modal search."
+      },
+      {
+        "title": "3. The 6 Production Multimodal Patterns",
+        "body": "Adopt these six verified production patterns for multimodal enterprise workloads:",
+        "bullets": [
+          "**1. Document Intelligence:** Extract complex structured data from invoices, IDs, and financial reports using Document AI and Gemini.",
+          "**2. Visual Quality Inspection:** Detect manufacturing defects and assembly errors by comparing factory camera photos against golden CAD models.",
+          "**3. Video Summarization & Search:** Ingest security or training videos, generate temporal timestamp markers, and answer user queries with direct video clip jumps.",
+          "**4. Contact Center Call Analysis:** Transcribe customer service audio with Speech-to-Text, analyze speaker sentiment, and extract action items.",
+          "**5. Multimodal RAG Assistant:** Answer complex technical queries using both textual manuals and visual wiring diagrams.",
+          "**6. Multilingual Visual Translation:** Translate text embedded inside signage, labels, and product packaging using Vision AI and Translation APIs."
+        ]
+      },
+      {
+        "title": "4. Latency and Cost Optimization for Multimodal AI",
+        "body": "Multimodal tokens (especially high-resolution images and video) consume significant context windows:\n\n- **Downsample Media Responsibly:** Resize images to 1,024x1,024 resolution before sending to Gemini; higher resolutions dramatically increase token count without proportional accuracy gain.\n- **Audio Frame Rate Tuning:** Compress audio files to 16kHz mono MP3 or Opus format to minimize upload bandwidth and processing latency.\n- **Pre-computed Visual Captions:** For static image catalogs, generate detailed text descriptions once during ingestion and index them as text to reduce runtime multimodal inference costs."
+      }
+    ],
+    "see": [
+      "arch:multimodal-rag",
+      "arch:document-intelligence",
+      "svc:vision-ai",
+      "svc:document-ai",
+      "svc:speech-to-text",
+      "svc:gemini"
+    ]
+  },
+  {
+    "id": "enterprise-integration",
+    "title": "Enterprise Integration, MCP & Agent2Agent (A2A) Protocols Playbook",
+    "badge": "Integration & MCP",
+    "tag": "Model Context Protocol (MCP), Agent2Agent (A2A), ERP/CRM integration, Apigee API governance and Pub/Sub.",
+    "intro": "AI systems cannot operate in isolated silos. Enterprise agents must interact with legacy ERPs (SAP), CRMs (Salesforce), ticketing platforms (ServiceNow), and partner systems. This playbook establishes the architecture for connecting Google Cloud AI agents to enterprise systems using open protocols: Model Context Protocol (MCP) and Agent2Agent (A2A).",
+    "sections": [
+      {
+        "title": "1. Model Context Protocol (MCP) Architecture",
+        "body": "Anthropic's open Model Context Protocol (MCP) has become the industry standard for exposing tools, resources, and prompt templates to AI agents:\n\n- **MCP Clients:** Embedded in [[adk|ADK]] and Vertex AI Agent Runtime to discover and invoke tools dynamically.\n- **MCP Servers:** Containerized microservices running on [[cloud-run|Cloud Run]] exposing enterprise databases, APIs, and business logic over SSE transport.\n- **Resources:** Standardized read-only endpoints allowing agents to inspect files, database schemas, and documentation without custom wrappers.\n- **Tools:** Actionable functions with JSON Schema parameter definitions and executable callbacks."
+      },
+      {
+        "title": "2. Agent2Agent (A2A) Protocol & Interoperability",
+        "body": "As organizations deploy specialized agents across different business units and external partners, direct Agent-to-Agent communication becomes necessary:\n\n- **Agent Discovery:** Registry services where agents broadcast their capabilities, input schemas, and service-level agreements.\n- **Mutual Authentication:** Cryptographic identity verification using mTLS certificates and OIDC tokens managed via [[agent-governance]].\n- **Task Lifecycle:** Formal state machines for task delegation: `PROPOSED` -> `ACCEPTED` -> `IN_PROGRESS` -> `COMPLETED` / `REJECTED`.\n- **Contract Negotiation:** Bounded parameters where buyer and supplier agents negotiate terms within pre-approved thresholds."
+      },
+      {
+        "title": "3. Enterprise ERP & CRM Connectors",
+        "body": "Integrating agents with core business platforms requires strict isolation and parameter validation:",
+        "bullets": [
+          "**SAP ERP Integration:** Expose RFC / BAPI business functions through authenticated Cloud Run proxies with strict parameter bounds to prevent unauthorized ledger entries.",
+          "**Salesforce CRM Integration:** Use OAuth 2.0 user delegation so the agent can only read and update customer leads within the logged-in sales rep's authorized territories.",
+          "**ServiceNow IT Service Management:** Allow IT support agents to query knowledge bases and open tickets, with automated escalation to human tier-2 engineers for critical outages."
+        ]
+      },
+      {
+        "title": "4. API Governance with Apigee",
+        "body": "Exposing internal LLMs and agent tools to hundreds of developers requires enterprise API governance:\n\n- Use [[apigee|Apigee API Management]] to enforce spike arrest, rate limits, and token-based quota allocations across business units.\n- Implement prompt inspection policies to detect sensitive API keys or credit card numbers in outbound tool arguments.\n- Maintain immutable API transaction logs in BigQuery for enterprise chargeback and regulatory auditing."
+      }
+    ],
+    "see": [
+      "arch:mcp-agent",
+      "arch:a2a-network",
+      "arch:apigee-ai",
+      "svc:adk",
+      "svc:agent-protocols",
+      "svc:apigee",
+      "svc:cloud-run"
+    ]
+  },
+  {
+    "id": "delivery-playbook",
+    "title": "AI Project Delivery Playbook & 12 Industry Use Cases",
+    "badge": "Delivery & Leadership",
+    "tag": "Project lifecycle, feasibility matrix, business KPIs, and 12 production industry use-case blueprints.",
+    "intro": "Leading an AI engineering team requires more than technical knowledge; it requires disciplined project delivery: qualifying real business problems, establishing measurable KPIs, managing stakeholder expectations, and navigating the path from initial prototype to scaled production. This playbook provides the operational delivery framework and 12 complete industry blueprints.",
+    "sections": [
+      {
+        "title": "1. The 6-Stage AI Project Delivery Lifecycle",
+        "body": "Follow a disciplined stage-gate process to prevent multi-month engineering investments into doomed AI prototypes:\n\n1. **Discovery & Feasibility (Weeks 1-2):** Validate data readiness, define business KPIs, score feasibility, and verify that AI is truly required over deterministic code.\n2. **Architecture & Threat Modeling (Weeks 3-4):** Select GCP services, author Architecture Decision Records (ADRs), and model security threats.\n3. **Eval Baseline & Prototype (Weeks 5-6):** Build a 100-case golden evaluation dataset; establish baseline scores on simplest managed stack.\n4. **Pilot & Human-in-the-Loop (Weeks 7-10):** Deploy to limited internal users; enforce approval gates on write actions; track cost per task.\n5. **Production Release Gates (Weeks 11-12):** Pass security, quality, reliability, and FinOps audits; establish canary routing and on-call rota.\n6. **Scale & Optimization (Ongoing):** Apply FinOps levers (caching, batching, routing); raise autonomy only where measured quality supports it."
+      },
+      {
+        "title": "2. AI Use-Case Feasibility Matrix",
+        "body": "Before committing engineering headcount, score candidate projects across these 7 dimensions (Low / Medium / High):\n\n- **Business Value:** Measurable labor hours saved, revenue lift, or strategic priority.\n- **Data Availability:** High-quality, curated, permissioned documents exist in [[gcs]] or [[bigquery]].\n- **AI Suitability:** Problem requires reasoning, summarization, or semantic synthesis rather than deterministic arithmetic.\n- **Deterministic Tolerance:** Business can tolerate 95% accuracy with human escalation, rather than requiring 100.000% perfection.\n- **Technical Complexity:** Single-prompt utility (Low) vs multi-agent distributed system (High).\n- **Risk Profile:** Read-only internal summary (Low) vs autonomous financial transaction execution (High).\n- **ROI Potential:** Projected 12-month return relative to compute and engineering headcount cost."
+      },
+      {
+        "title": "3. The 12 Enterprise Industry Blueprints",
+        "body": "Standard production architectures for the 12 most impactful enterprise AI use cases:",
+        "bullets": [
+          "**1. Retail — Competitive Intelligence & Demand Forecasting:** Scrape public competitor pricing, analyze consumer reviews, and forecast localized inventory in BigQuery ML.",
+          "**2. Banking — Anti-Money Laundering & Fraud Detection:** Combine real-time feature streams with graph analysis in Spanner Graph to identify fraud rings.",
+          "**3. Insurance — Automated Claims Cracking:** Ingest police reports, repair photos, and medical bills via Document AI and Gemini to accelerate claims settlement.",
+          "**4. Healthcare — Clinical Documentation Assistant:** Transcribe doctor-patient conversations with Speech-to-Text and synthesize structured SOAP notes with strict HIPAA compliance.",
+          "**5. Manufacturing — Predictive Equipment Maintenance:** Ingest IoT sensor telemetry into Dataflow, detecting vibration anomalies before catastrophic machine failure.",
+          "**6. Supply Chain — Global Disruption Rerouting:** Monitor real-time weather and port delays, automatically proposing optimal freight rerouting options.",
+          "**7. Customer Support — Tier-1 Autonomous Resolution:** Resolve 60%+ of tier-1 customer inquiries with grounded RAG and authorized CRM tool execution.",
+          "**8. Human Resources — Employee Policy & Benefits Navigator:** Answer complex health insurance and leave questions with citations from company handbooks.",
+          "**9. IT Operations — Autonomous Incident Triage:** Correlate Cloud Logging errors during outages, suggesting root causes and running diagnostic scripts.",
+          "**10. Legal — Automated Contract Review:** Extract risk clauses, indemnity liabilities, and non-standard terms from multi-hundred-page commercial agreements.",
+          "**11. Sales — Account Intelligence & Proposal Drafting:** Aggregate CRM history and news to generate personalized, tailored RFP responses.",
+          "**12. Marketing — Multilingual Campaign Personalization:** Generate culturally adapted advertising copy, visual assets, and localized product descriptions at scale."
+        ]
+      },
+      {
+        "title": "4. Leading Design Reviews and Risk Assessments",
+        "body": "As an AI Engineering Manager, lead technical design reviews with these mandatory challenge questions:\n\n- 'What is our baseline score on real data, and how was the evaluation set verified?'\n- 'Why is this an agent rather than a deterministic script or a simple prompt?'\n- 'What happens when a tool returns an error or hallucinated arguments?'\n- 'What is the projected cost per successful task at 10x current volume?'\n- 'Can an untrusted document inject instructions that trigger unauthorized actions?'"
+      }
+    ],
+    "see": [
+      "dec:build-buy-customize",
+      "dec:autonomy-level",
+      "dec:cost-levers",
+      "svc:adk",
+      "svc:gemini",
+      "svc:bigquery"
     ]
   }
 ];

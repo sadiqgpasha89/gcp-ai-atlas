@@ -465,3 +465,76 @@ svg.radar .ql{font:600 11px var(--sans);fill:var(--ink)}
 [data-theme=dark] .raci-a{background:hsl(25 50% 25%);color:hsl(25 80% 85%)}
 [data-theme=dark] .raci-c{background:hsl(150 40% 22%);color:hsl(150 60% 85%)}
 [data-theme=dark] .raci-i{background:hsl(270 40% 25%);color:hsl(270 60% 85%)}
+
+/* ----- Category Filter Bar (Architectures & Catalog) ----- */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 24px;padding-bottom:12px;border-bottom:1px solid var(--line2)}
+.filter-btn{appearance:none;background:var(--paper);border:1px solid var(--line2);padding:7px 14px;border-radius:99px;font:600 13px var(--sans);color:var(--muted);cursor:pointer;transition:all .15s ease}
+.filter-btn:hover{color:var(--ink);border-color:var(--accent)}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filter-btn .count-pill{font:700 11px var(--mono);opacity:.85;margin-left:4px}
+.cat-tag{display:inline-block;font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:4px;background:var(--bg);color:var(--muted);margin-bottom:6px}
+
+/* ----- 12-Section Architecture Blueprint ----- */
+.bp-container{display:flex;flex-direction:column;gap:24px;margin-top:24px}
+.bp-sec{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:22px 24px;box-shadow:4px 4px 0 var(--line)}
+.bp-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.bp-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font:700 12px var(--mono)}
+.bp-title{font-size:17px;font-weight:700;margin:0;font-family:var(--sans)}
+.bp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.bp-item{background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:14px}
+.bp-item h4{margin:0 0 6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.bp-chk-list{list-style:none;padding:0;margin:12px 0}
+.bp-chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line2);font-size:13px;line-height:1.5}
+.bp-chk-item:last-child{border-bottom:none}
+.bp-chk-item input[type="checkbox"]{margin-top:3px;cursor:pointer;accent-color:var(--accent);width:16px;height:16px}
+
+/* ----- Interactive Engineering Tools Hub & Pages ----- */
+.tool-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin:22px 0}
+.tool-hub-card{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:22px;box-shadow:4px 4px 0 var(--line);display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s}
+.tool-hub-card:hover{transform:translateY(-2px);box-shadow:4px 6px 0 var(--line);border-color:var(--accent)}
+.tool-hub-card h3{margin:8px 0 6px;font-size:18px}
+.tool-hub-card p{color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:14px;flex-grow:1}
+.tool-tag{align-self:flex-start;font:700 10px var(--mono);padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+
+/* Service Comparison Engine */
+.comp-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line2);border-radius:12px;background:var(--paper)}
+.comp-table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
+.comp-table th{background:color-mix(in srgb,var(--bg) 70%,var(--paper));padding:12px 14px;border:1px solid var(--line2);font:700 12px var(--mono)}
+.comp-table td{padding:12px 14px;border:1px solid var(--line2);vertical-align:top;line-height:1.5}
+.comp-table tr:hover td{background:color-mix(in srgb,var(--accent-soft) 25%,transparent)}
+.comp-table th:first-child,.comp-table td:first-child{position:sticky;left:0;background:var(--paper);font-weight:700;z-index:1}
+
+/* Interactive Wizard (RAG & Agent Assistants) */
+.wiz-box{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:24px;box-shadow:4px 4px 0 var(--line);margin:20px 0}
+.wiz-step{margin-bottom:20px}
+.wiz-step-title{font-size:15px;font-weight:700;margin-bottom:10px}
+.wiz-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.wiz-opt{border:1px solid var(--line2);background:var(--bg);padding:12px 14px;border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:left}
+.wiz-opt:hover{border-color:var(--accent)}
+.wiz-opt.selected{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.wiz-opt-title{font-size:13px;font-weight:700;color:var(--ink)}
+.wiz-opt-desc{font-size:11px;color:var(--muted);margin-top:4px}
+.wiz-result{background:var(--bg);border:1px solid var(--line2);border-left:4px solid var(--accent);border-radius:10px;padding:18px 20px;margin-top:20px}
+
+/* Architecture Risk Analyzer */
+.risk-meter{height:12px;background:var(--line2);border-radius:6px;overflow:hidden;margin:12px 0;position:relative}
+.risk-meter-fill{height:100%;border-radius:6px;transition:width .3s ease,background-color .3s ease}
+.risk-score-badge{display:inline-block;font:700 12px var(--mono);padding:4px 10px;border-radius:99px}
+.risk-low{background:hsl(150 60% 88%);color:hsl(150 60% 25%)}
+.risk-med{background:hsl(40 85% 88%);color:hsl(40 85% 25%)}
+.risk-high{background:hsl(25 85% 88%);color:hsl(25 85% 25%)}
+.risk-crit{background:hsl(0 80% 88%);color:hsl(0 80% 25%)}
+[data-theme=dark] .risk-low{background:hsl(150 40% 22%);color:hsl(150 60% 85%)}
+[data-theme=dark] .risk-med{background:hsl(40 50% 25%);color:hsl(40 85% 85%)}
+[data-theme=dark] .risk-high{background:hsl(25 50% 25%);color:hsl(25 85% 85%)}
+[data-theme=dark] .risk-crit{background:hsl(0 50% 25%);color:hsl(0 80% 85%)}
+
+/* Readiness Scorecard */
+.scorecard-cat{margin-bottom:20px;border:1px solid var(--line2);border-radius:10px;background:var(--bg);padding:14px 16px}
+.scorecard-cat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.scorecard-chk{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+.scorecard-chk input{cursor:pointer;width:16px;height:16px;accent-color:var(--accent)}
+
+/* Code & Repo Tree */
+.repo-tree{font:12px/1.6 var(--mono);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:12px 16px;overflow-x:auto;white-space:pre}
+.code-box{background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:14px;font:12px/1.55 var(--mono);overflow-x:auto;position:relative;margin:10px 0}
