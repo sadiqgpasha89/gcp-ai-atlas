@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
@@ -211,6 +211,98 @@ for (const [k, v] of Object.entries(A.shaper.defaults)) if (!Q.find(q => q.id ==
 for (const c of A.categories) {
   if (!A.services.some(s => s.cat === c.id)) err(`category ${c.id}: has no services`);
   checkText(`category ${c.id}.lens`, c.lens);
+}
+
+
+/* ---------- service metadata (data/meta.js) ---------- */
+const meta = A.meta || {};
+const LIFECYCLE = new Set(['ga', 'preview', 'deprecated', 'retired', 'unknown']);
+const VERIF = new Set(['verified', 'needs-verification', 'not-applicable']);
+const isoDate = /^\d{4}-\d{2}-\d{2}$/;
+for (const id of Object.keys(meta)) if (!ids.has(id)) err(`meta ${id}: no such service`);
+for (const s of A.services) {
+  const m = meta[s.id], w = `meta ${s.id}`;
+  if (!m) { err(`${w}: missing metadata record`); continue; }
+  if (!LIFECYCLE.has(m.lifecycle)) err(`${w}: bad lifecycle ${m.lifecycle}`);
+  if (!VERIF.has(m.verification)) err(`${w}: bad verification ${m.verification}`);
+  if (m.verification === 'verified') {
+    if (!isoDate.test(m.verified || '')) err(`${w}: verified requires an ISO date in "verified"`);
+    if (!/^https:\/\/(cloud\.google\.com|docs\.cloud\.google\.com|developers\.google\.com)\//.test(m.sourceUrl || '')) err(`${w}: verified requires a Google documentation sourceUrl`);
+  } else if (m.verified) err(`${w}: has a verified date but verification is ${m.verification}`);
+  if (m.lifecycle !== 'unknown' && m.verification !== 'verified') err(`${w}: lifecycle ${m.lifecycle} asserted without verification`);
+  for (const a of m.alt || []) { if (!ids.has(a)) err(`${w}: alt references unknown service ${a}`); if (a === s.id) err(`${w}: alt references itself`); }
+  if (!Array.isArray(m.was)) err(`${w}: was must be an array`);
+}
+
+/* ---------- playbooks: tables, code, see refs, dates ---------- */
+const pbIds = new Set(A.engineeringPlaybooks.map(p => p.id));
+const localLabs = A.labs.localLabs || [];
+const labIds = new Set(localLabs.map(l => l.id));
+const toolIds = new Set(['compare', 'rag-assistant', 'agent-assistant', 'risk-analyzer', 'readiness-scorecard', 'review-gen', 'shaper', 'checklists', 'calculator']);
+const pageIds = new Set(['gov', 'ops', 'toolkit', 'labs']);
+const pbSeen = new Set();
+for (const pb of A.engineeringPlaybooks) {
+  const w = `playbook ${pb.id}`;
+  if (pbSeen.has(pb.id)) err(`${w}: duplicate id`); pbSeen.add(pb.id);
+  if (pb.lastReviewed && !isoDate.test(pb.lastReviewed)) err(`${w}: lastReviewed must be ISO date`);
+  if (pb.glance) for (const k of ['purpose', 'triggers', 'roles', 'artefacts', 'exit']) if (!pb.glance[k] || !pb.glance[k].length) err(`${w}: glance.${k} empty`);
+  for (const sec of pb.sections || []) {
+    const sw = `${w} / ${sec.title}`;
+    if (sec.table) {
+      if (!Array.isArray(sec.table.cols) || !sec.table.cols.length) err(`${sw}: table needs cols`);
+      for (const [i, r] of (sec.table.rows || []).entries()) if (!Array.isArray(r) || r.length !== sec.table.cols.length) err(`${sw}: table row ${i} has ${r && r.length} cells, expected ${sec.table.cols.length}`);
+      for (const r of sec.table.rows || []) for (const c of r) checkText(`${sw} table cell`, c);
+    }
+    if (sec.code !== undefined && (typeof sec.code !== 'string' || !sec.code.trim())) err(`${sw}: code must be a non-empty string`);
+  }
+  for (const ref of pb.see || []) {
+    const [k, id] = ref.split(':');
+    const ok = k === 'svc' ? ids.has(id) : k === 'arch' ? archIds.has(id) : k === 'dec' ? decIds.has(id)
+      : k === 'pb' ? pbIds.has(id) : k === 'lab' ? labIds.has(id) : k === 'tool' ? toolIds.has(id) : k === 'page' ? pageIds.has(id) : false;
+    if (!ok) err(`${w}: unresolved see ref ${ref}`);
+  }
+}
+
+/* ---------- templates and local labs ---------- */
+const tplSeen = new Set();
+for (const t of A.toolkit.templates || []) {
+  if (tplSeen.has(t.id)) err(`template ${t.id}: duplicate id`); tplSeen.add(t.id);
+  for (const k of ['id', 'title', 'desc', 'markdown']) if (!t[k] || typeof t[k] !== 'string') err(`template ${t.id}: missing ${k}`);
+}
+for (const l of localLabs) {
+  const w = `local lab ${l.id}`;
+  for (const k of ['id', 'title', 'level', 'time', 'path', 'objective', 'run', 'test', 'environment']) if (!l[k]) err(`${w}: missing ${k}`);
+  if (!fs.existsSync(path.join(root, l.path, 'README.md'))) err(`${w}: ${l.path}/README.md does not exist`);
+  if (!Array.isArray(l.demonstrates) || !l.demonstrates.length) err(`${w}: demonstrates must be a non-empty array`);
+  if (!Array.isArray(l.limits) || !l.limits.length) err(`${w}: limits must be a non-empty array (state what the lab does not prove)`);
+}
+
+/* ---------- autonomy table in the agent playbook must match the lab's levels ---------- */
+{
+  const { LEVELS } = await import(pathToFileURL(path.join(root, 'labs/bounded-agent/agent.mjs')).href);
+  const pb = A.engineeringPlaybooks.find(p => p.id === 'agent-bounded-design');
+  const sec = pb && pb.sections.find(x => x.table && x.table.cols[0] === 'Level');
+  if (!sec) err('agent-bounded-design: autonomy-level table not found');
+  else {
+    const rows = sec.table.rows.map(r => r[0]);
+    const want = Object.keys(LEVELS).map(n => 'L' + n);
+    if (JSON.stringify(rows) !== JSON.stringify(want)) err(`autonomy table levels ${rows} do not match lab LEVELS ${want}`);
+  }
+}
+
+/* ---------- no secrets in the repo's data and lab files ---------- */
+{
+  const secretRe = /(AIza[0-9A-Za-z_-]{35}|-----BEGIN [A-Z ]*PRIVATE KEY-----|"private_key"\s*:|ghp_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{30,})/;
+  const walkDir = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.name === 'node_modules' || e.name === '.git' ? [] : e.isDirectory() ? walkDir(path.join(d, e.name)) : [path.join(d, e.name)]);
+  for (const f of ['data', 'labs', 'assets', 'scripts', 'tests'].flatMap(d => fs.existsSync(path.join(root, d)) ? walkDir(path.join(root, d)) : []))
+    if (/\.(js|mjs|json|md|html|css)$/.test(f) && secretRe.test(fs.readFileSync(f, 'utf8'))) err(`possible secret in ${path.relative(root, f)}`);
+}
+
+/* ---------- freshness report (informational, never fails the build) ---------- */
+{
+  const counts = { verified: 0, 'needs-verification': 0, 'not-applicable': 0 };
+  for (const s of A.services) counts[(meta[s.id] || {}).verification || 'needs-verification']++;
+  console.log(`freshness: ${counts.verified} verified, ${counts['needs-verification']} needs-verification, ${counts['not-applicable']} not-applicable of ${A.services.length} services`);
 }
 
 const words = A.services.reduce((n, s) => n + JSON.stringify(s).split(/\s+/).length, 0);

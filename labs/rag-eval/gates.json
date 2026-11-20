@@ -1,0 +1,5 @@
+{
+  "note": "Tolerances are specific to THIS lab's tiny dataset. They are not recommended defaults for any real system: set your own from the variance you observe on your own data.",
+  "k": 3,
+  "tolerances": { "precision": 0.02, "recall": 0.02, "mrr": 0.02, "ndcg": 0.02, "abstentionAccuracy": 0.0 }
+}

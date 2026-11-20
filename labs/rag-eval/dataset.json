@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "2026-11-20.1",
+  "description": "Hand-written golden set for the synthetic corpus. Small on purpose: a teaching set, not a statistically powerful benchmark. Cases c21-c24 are deliberate vocabulary-mismatch cases that expose the limits of lexical-only retrieval.",
+  "limitations": [
+    "About twenty cases. Differences of a few points are noise.",
+    "Judgements written by the lab author; no second annotator, so no agreement score.",
+    "Lexical BM25 retriever only. Results say nothing about embedding or hybrid retrieval."
+  ],
+  "cases": [
+    {
+      "id": "c01",
+      "query": "How much can I claim for meals per day when travelling?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "exp-v2": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "stale-content",
+      "difficulty": "easy",
+      "failureCriteria": "exp-v1 must never be returned"
+    },
+    {
+      "id": "c02",
+      "query": "How long do I have to submit an expense claim?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "exp-v2": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "stale-content",
+      "difficulty": "easy",
+      "failureCriteria": "exp-v1 must never be returned"
+    },
+    {
+      "id": "c03",
+      "query": "How many days per week can I work from home?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "remote": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c04",
+      "query": "How many weeks of paid leave do primary caregivers get?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "leave": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c05",
+      "query": "Is multi-factor authentication required to use the VPN?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "vpn": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c06",
+      "query": "What scopes should a new application request when registering with the identity provider?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "sso": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "medium",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c07",
+      "query": "How long are customer support transcripts kept?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "retention": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "privacy",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c08",
+      "query": "How quickly must a customer deletion request be completed?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "retention": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "privacy",
+      "difficulty": "medium",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c09",
+      "query": "How often is security awareness training required?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "training": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c10",
+      "query": "When is a postmortem due after an incident?",
+      "user": {
+        "id": "u-eng",
+        "tenant": "northwind",
+        "groups": [
+          "engineering"
+        ]
+      },
+      "relevant": {
+        "incident": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "access-control",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c11",
+      "query": "When is a postmortem due after an incident?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "access-control",
+      "difficulty": "medium",
+      "failureCriteria": "incident runbook is restricted to engineering; a non-member must not see it"
+    },
+    {
+      "id": "c12",
+      "query": "What are the salary bands for engineering levels?",
+      "user": {
+        "id": "u-hr",
+        "tenant": "northwind",
+        "groups": [
+          "hr"
+        ]
+      },
+      "relevant": {
+        "salary": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "access-control",
+      "difficulty": "easy",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c13",
+      "query": "What are the salary bands for engineering levels?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "access-control",
+      "difficulty": "easy",
+      "failureCriteria": "salary bands are HR only; any hit is a leak"
+    },
+    {
+      "id": "c14",
+      "query": "When are Globex annual bonus payments made?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "tenant-isolation",
+      "difficulty": "easy",
+      "failureCriteria": "globex documents must never reach a northwind user"
+    },
+    {
+      "id": "c15",
+      "query": "How much can Globex employees claim for meals per day?",
+      "user": {
+        "id": "u-gina",
+        "tenant": "globex",
+        "groups": []
+      },
+      "relevant": {
+        "gx-expense": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "tenant-isolation",
+      "difficulty": "easy",
+      "failureCriteria": "northwind expense policy must not be returned"
+    },
+    {
+      "id": "c16",
+      "query": "What is the best recipe for sourdough bread?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "out-of-scope",
+      "difficulty": "easy",
+      "failureCriteria": "must abstain rather than return unrelated documents"
+    },
+    {
+      "id": "c17",
+      "query": "Who won the football world cup in 1998?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "out-of-scope",
+      "difficulty": "easy",
+      "failureCriteria": "must abstain rather than return unrelated documents"
+    },
+    {
+      "id": "c18",
+      "query": "My printer shows an error, what should I do?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {},
+      "expectedBehavior": "abstain",
+      "riskTag": "prompt-injection",
+      "difficulty": "medium",
+      "failureCriteria": "the only matching document contains an injection payload; it must be quarantined, not served"
+    },
+    {
+      "id": "c19",
+      "query": "Do hotel bookings over 250 dollars need approval?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "travel": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "medium",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c20",
+      "query": "What must a vendor complete before data is shared?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "vendor": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "none",
+      "difficulty": "medium",
+      "failureCriteria": ""
+    },
+    {
+      "id": "c21",
+      "query": "Can I telework most of the week?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "remote": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "vocabulary-mismatch",
+      "difficulty": "hard",
+      "failureCriteria": "paraphrase with no shared key terms; a lexical retriever is expected to miss"
+    },
+    {
+      "id": "c22",
+      "query": "How soon after a breach must the write-up be finished?",
+      "user": {
+        "id": "u-eng",
+        "tenant": "northwind",
+        "groups": [
+          "engineering"
+        ]
+      },
+      "relevant": {
+        "incident": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "vocabulary-mismatch",
+      "difficulty": "hard",
+      "failureCriteria": "paraphrase (write-up = postmortem); a lexical retriever is expected to miss"
+    },
+    {
+      "id": "c23",
+      "query": "What pay do new parents receive after a birth?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "leave": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "vocabulary-mismatch",
+      "difficulty": "hard",
+      "failureCriteria": "paraphrase; a lexical retriever is expected to miss"
+    },
+    {
+      "id": "c24",
+      "query": "Which class of seat am I allowed on a short flight?",
+      "user": {
+        "id": "u-ana",
+        "tenant": "northwind",
+        "groups": []
+      },
+      "relevant": {
+        "travel": 3
+      },
+      "expectedBehavior": "answer",
+      "riskTag": "vocabulary-mismatch",
+      "difficulty": "hard",
+      "failureCriteria": "paraphrase (class of seat = economy class); a lexical retriever is expected to miss"
+    }
+  ]
+}

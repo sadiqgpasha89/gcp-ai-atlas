@@ -23,7 +23,19 @@
       });
   }
   function paras(s) { return String(s).split(/\n\n+/).map(function (p) { return '<p>' + fmt(p) + '</p>'; }).join(''); }
-  function ul(items) { return '<ul>' + items.map(function (i) { return '<li>' + fmt(i) + '</li>'; }).join('') + '</ul>'; }
+  function ul(items) { if (!Array.isArray(items)) items = String(items == null ? '' : items).split(/\n+/).filter(Boolean); return '<ul>' + items.map(function (i) { return '<li>' + fmt(i) + '</li>'; }).join('') + '</ul>'; }
+  /* ---- metadata, verification and cross-link helpers ---- */
+  var meta = A.meta || {}, AL = window.AtlasLogic || {};
+  var REPO = 'https://github.com/sadiqgpasha89/gcp-ai-atlas';
+  function issueLink(title) { return REPO + '/issues/new?title=' + encodeURIComponent(title); }
+  var LIFE = { ga: 'Generally available', preview: 'Preview', deprecated: 'Deprecated', retired: 'Retired', unknown: 'Lifecycle not verified' };
+  function verState(id) { var m = meta[id]; return !m ? 'none' : (m.verification === 'verified' ? 'verified' : (m.verification === 'not-applicable' ? 'na' : 'unverified')); }
+  function verBadge(id) {
+    var m = meta[id], st = verState(id);
+    if (st === 'verified') return '<span class="vbadge ok" title="Checked against official documentation on ' + esc(m.verified) + '">Verified ' + esc(m.verified) + '</span>';
+    if (st === 'na') return '<span class="vbadge na">Verification not applicable</span>';
+    return '<span class="vbadge unk" title="Not yet checked against official documentation by the Atlas maintainers">Not yet verified</span>';
+  }
   function hueOf(catId) { return catById[catId] ? catById[catId].hue : 215; }
 
   /* ---------- isometric drawing ---------- */
@@ -218,7 +230,7 @@
   }
 
   function serviceCard(s) {
-    return '<a class="card" style="--h:' + hueOf(s.cat) + '" href="#/s/' + s.id + '">' + miniCube(hueOf(s.cat)) + '<h3>' + esc(s.name) + '</h3><p>' + esc(s.tag) + '</p></a>';
+    return '<a class="card" data-ver="' + verState(s.id) + '" style="--h:' + hueOf(s.cat) + '" href="#/s/' + s.id + '">' + miniCube(hueOf(s.cat)) + '<h3>' + esc(s.name) + '</h3><p>' + esc(s.tag) + '</p>' + verBadge(s.id) + '</a>';
   }
 
   function pageCategory(id) {
@@ -226,16 +238,52 @@
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Category</div><h1>' + esc(c.name) + '</h1><p class="lede">' + esc(c.short) + '</p>';
     h += paras(c.intro);
     h += '<div class="callout"><b>Design lens</b>' + fmt(c.lens) + '</div>';
-    h += '<h2>Services</h2><div class="grid">' + c.items.map(serviceCard).join('') + '</div>';
+    var nv = c.items.filter(function (x) { return verState(x.id) === 'verified'; }).length;
+    h += '<h2>Services</h2>' +
+      '<div class="filters" role="group" aria-label="Filter services by verification status">' +
+      '<button type="button" class="fchip active" data-f="all" aria-pressed="true">All (' + c.items.length + ')</button>' +
+      '<button type="button" class="fchip" data-f="verified" aria-pressed="false">Verified (' + nv + ')</button>' +
+      '<button type="button" class="fchip" data-f="unverified" aria-pressed="false">Not yet verified (' + (c.items.length - nv) + ')</button></div>' +
+      '<p class="fine" id="fnote">Verification status comes from each service\'s metadata record. It is about whether the Atlas maintainers have checked the record against official documentation, not about the quality of the service.</p>' +
+      '<div class="grid" id="svcGrid">' + c.items.map(serviceCard).join('') + '</div><p class="none" id="fempty" hidden>No services in this category match that filter.</p>';
+    afterRender = function () {
+      var chips = $$('.fchip'), cards = $$('#svcGrid .card');
+      chips.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var f = b.getAttribute('data-f'), shown = 0;
+          chips.forEach(function (x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+          cards.forEach(function (cd) { var v = cd.getAttribute('data-ver'), ok = f === 'all' || (f === 'verified' ? v === 'verified' : v !== 'verified'); cd.hidden = !ok; if (ok) shown++; });
+          $('#fempty').hidden = shown > 0;
+        });
+      });
+    };
     return h;
   }
 
+  function productFacts(s) {
+    var m = meta[s.id]; if (!m) return '';
+    var rows = [];
+    rows.push(['Name in this catalogue', esc(s.name)]);
+    if (m.was && m.was.length) rows.push(['Previously known as', m.was.map(esc).join(', ') + '<small class="fine">Older names can still appear in documentation, console labels or API and SDK identifiers. A rename does not imply those changed.</small>']);
+    rows.push(['Lifecycle', '<span class="life ' + esc(m.lifecycle) + '">' + esc(LIFE[m.lifecycle] || m.lifecycle) + '</span>']);
+    rows.push(['Verification', verBadge(s.id) + (m.verification === 'verified' && m.sourceUrl ? ' <a href="' + esc(m.sourceUrl) + '" target="_blank" rel="noopener">source checked ↗</a>' : '')]);
+    if (s.doc) rows.push(['Official documentation', '<a href="https://cloud.google.com/' + esc(s.doc) + '" target="_blank" rel="noopener">Google Cloud docs ↗</a>' + (m.verification === 'verified' ? '' : '<small class="fine">Link taken from the existing record; not yet checked.</small>')]);
+    if (m.alt && m.alt.length) rows.push(['Compare with', m.alt.filter(function (x) { return byId[x]; }).map(function (x) { return '<a href="#/s/' + x + '">' + esc(byId[x].name) + '</a>'; }).join(' · ')]);
+    var h = '<section class="facts" aria-labelledby="facts-h"><h2 id="facts-h">Product facts</h2><dl>' + rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>';
+    if (m.verification !== 'verified') h += '<p class="fine warnline">This record has not been checked against official documentation by the Atlas maintainers. Product names, lifecycle status, limits, regions and prices change. Confirm in the linked documentation before you design around anything here.</p>';
+    if (m.choose || m.avoid) {
+      h += '<div class="lists two guide"><div class="box"><h3>Choose it when</h3><p>' + fmt(m.choose || 'Not yet written.') + '</p></div><div class="box warn"><h3>Avoid it when</h3><p>' + fmt(m.avoid || 'Not yet written.') + '</p></div></div><p class="fine">Atlas guidance for orientation. It is not an official Google recommendation.</p>';
+    }
+    h += '<p class="fine"><a href="' + issueLink('Content issue: ' + s.name + ' (' + s.id + ')') + '" target="_blank" rel="noopener">Report an issue with this page ↗</a> (opens a GitHub issue; there is no promise of a reply).</p></section>';
+    return h;
+  }
   function pageService(id) {
     var s = byId[id]; if (!s) return notFound();
     var c = catById[s.cat], hue = c.hue, i = c.items.indexOf(s);
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a class="chip" style="--h:' + hue + '" href="#/c/' + c.id + '">' + esc(c.name) + '</a>' +
       (s.doc ? '<a href="https://cloud.google.com/' + esc(s.doc) + '" target="_blank" rel="noopener">Google Cloud docs ↗</a>' : '') + '</div>';
     h += '<h1>' + esc(s.name) + '</h1><p class="lede">' + esc(s.tag) + '</p>';
+    h += productFacts(s);
     h += '<h2 style="margin-top:28px">What it is</h2>' + paras(s.what);
     h += '<h2>How it works</h2>' + stepperHost({ flow: s.flow, steps: s.steps, hue: hue });
     h += '<div class="lists two" style="margin-top:34px"><div class="box warn"><h3>Gotchas</h3>' + ul(s.gotchas) + '</div><div class="box"><h3>Edge cases</h3>' + ul(s.edges) + '</div></div>';
@@ -761,8 +809,114 @@
       h += '</fieldset>';
     });
     h += '<button class="btn" type="button" id="calcReset">Reset to defaults</button></form><div id="calcOut" class="calcout" aria-live="polite"></div></div></div>';
-    afterRender = mountCalculator;
+    h += scenarioShell();
+    afterRender = function () { mountCalculator(); if (AL.scenarioCost) mountScenario(); };
     return h;
+  }
+  /* ----- FinOps scenario panel (uses assets/logic.js, the same code the unit tests run) ----- */
+  var SCEN_EXTRA = [
+    ['Workload shape', [
+      ['requestsPerTask', 'User-visible requests per task', '1', 'Used for cost per request.'],
+      ['users', 'Active users per month', '0', 'Used for cost per user. Leave 0 to skip.'],
+      ['retryPct', 'Attempts that need one retry (%)', '0', 'Retries repeat the whole pipeline, so cost scales by 1 + this share.']]],
+    ['Other per-task costs (your prices)', [
+      ['toolCallsPerTask', 'Billable tool/API calls per task', '0', ''], ['pTool', 'Price per tool/API call', '0', ''],
+      ['retrievalPerTask', 'Retrieval queries per task', '0', ''], ['pRetrieval1k', 'Price per 1,000 retrieval queries', '0', ''],
+      ['embedTokPerTask', 'Query-embedding tokens per task', '0', ''], ['pEmbed', 'Price per 1M embedding tokens', '0', ''],
+      ['rerankPerTask', 'Rerank requests per task', '0', ''], ['pRerank1k', 'Price per 1,000 rerank requests', '0', '']]],
+    ['Fixed monthly costs', [
+      ['fixObs', 'Logging, tracing, monitoring', '0', ''], ['fixEval', 'Evaluation runs', '0', ''],
+      ['fixStorage', 'Storage and index hosting', '0', ''], ['fixPlatform', 'Other fixed platform cost', '0', '']]],
+    ['One-time setup', [
+      ['oneDocs', 'Documents to index', '0', ''], ['oneTokPerDoc', 'Tokens embedded per document', '0', 'Priced with the embedding price above.'],
+      ['oneOther', 'Other setup cost', '0', '']]],
+    ['Budget', [['monthlyBudget', 'Monthly budget (0 = none)', '0', 'Shows headroom or overspend.']]]
+  ];
+  function scenarioShell() {
+    var h = '<h2 style="margin-top:36px">Scenario model</h2><p class="lede" style="max-width:72ch">Builds on the inputs above. Adds retries, tool, retrieval and rerank costs, fixed and one-time costs, unit economics, pinned comparison and export. You supply every price; the Atlas holds none.</p>' +
+      '<div class="callout"><b>Estimate, not a quote</b>Results come from your assumptions. They are not a guaranteed cloud bill. Record where your prices came from so the numbers can be checked later.</div>' +
+      '<div class="wide"><div class="calc"><form id="scenForm" class="calcform" onsubmit="return false">' +
+      '<fieldset><legend>Pricing record</legend>' +
+      '<label class="num"><span class="nl2">Scenario name</span><span class="inp"><input type="text" name="name" placeholder="e.g. Support assistant, hybrid RAG"></span></label>' +
+      '<label class="num"><span class="nl2">Currency</span><span class="inp"><input type="text" name="currency" value="USD"></span></label>' +
+      '<label class="num"><span class="nl2">Pricing source (URL or document)</span><span class="inp"><input type="text" name="pricingSource" placeholder="paste the pricing page you used"></span></label>' +
+      '<label class="num"><span class="nl2">Date prices were retrieved</span><span class="inp"><input type="date" name="retrievedOn"></span></label>' +
+      '<label class="num"><span class="nl2">Region assumed</span><span class="inp"><input type="text" name="region" placeholder="e.g. a single Region you will deploy to"></span></label></fieldset>' +
+      '<fieldset><legend>Starting shape</legend><label class="num"><span class="nl2">Archetype preset</span><span class="inp"><select name="preset"><option value="">Choose a shape…</option>' +
+      (AL.PRESETS || []).map(function (x) { return '<option value="' + x.id + '">' + esc(x.name) + '</option>'; }).join('') + '</select></span><small id="presetNote">A preset changes the shape (calls, tools, retrieval), never prices. Edit afterwards.</small></label></fieldset>';
+    SCEN_EXTRA.forEach(function (g) {
+      h += '<fieldset><legend>' + esc(g[0]) + '</legend>';
+      g[1].forEach(function (f) {
+        h += '<label class="num"><span class="nl2">' + esc(f[1]) + '</span><span class="inp"><input type="number" inputmode="decimal" min="0" step="any" name="' + f[0] + '" value="' + f[2] + '"></span>' + (f[3] ? '<small>' + esc(f[3]) + '</small>' : '') + '</label>';
+      });
+      h += '</fieldset>';
+    });
+    h += '<fieldset><legend>Budget guard</legend><label class="num"><span class="nl2">Target cost per successful task</span><span class="inp"><input type="number" min="0" step="any" name="target" value="0"></span><small>Shows the most model calls per task that fit the target. 0 skips it.</small></label></fieldset>' +
+      '</form><div id="scenOut" class="calcout" aria-live="polite"></div></div></div>';
+    return h;
+  }
+  function mountScenario() {
+    var legacy = $('#calcForm'), sf = $('#scenForm'), out = $('#scenOut'), pinned = null;
+    function num(f, k) { var v = parseFloat(f.elements[k].value); return isFinite(v) ? v : 0; }
+    function raw() {
+      var r = {
+        tasksPerMonth: num(legacy, 'req') * 30, callsPerTask: num(legacy, 'calls'), inTok: num(legacy, 'inTok'), outTok: num(legacy, 'outTok'),
+        successPct: num(legacy, 'success'), pIn: num(legacy, 'pIn'), pOut: num(legacy, 'pOut'), semPct: num(legacy, 'sem'),
+        cacheFrac: num(legacy, 'cacheFrac'), cacheDisc: num(legacy, 'cacheDisc'), batchShare: num(legacy, 'batchShare'), batchDisc: num(legacy, 'batchDisc'), infra: num(legacy, 'infra')
+      };
+      SCEN_EXTRA.forEach(function (g) { g[1].forEach(function (f) { r[f[0]] = num(sf, f[0]); }); });
+      return r;
+    }
+    function meta() { return { name: sf.elements.name.value, currency: sf.elements.currency.value, pricingSource: sf.elements.pricingSource.value, retrievedOn: sf.elements.retrievedOn.value, region: sf.elements.region.value }; }
+    function cur(v) { if (v == null || !isFinite(v)) return 'n/a'; var c = (sf.elements.currency.value || '').trim(); return (c ? c + ' ' : '') + (Math.abs(v) >= 100 ? Math.round(v).toLocaleString('en-US') : (Math.abs(v) >= 1 ? v.toFixed(2) : v.toFixed(4))); }
+    function pct(v) { return v == null ? 'n/a' : (v > 0 ? '+' : '') + v.toFixed(0) + '%'; }
+    function paint() {
+      var r = AL.scenarioCost(raw()), m = meta(), h = '';
+      if (!(r.inputs.tasksPerMonth > 0)) { out.innerHTML = '<p class="none">Enter tasks per day above to see results.</p>'; return; }
+      if (!m.pricingSource.trim() || !m.retrievedOn) h += '<p class="fine warnline">Pricing source or retrieval date is not recorded. Exports will say so. Fill both before sharing these numbers.</p>';
+      if (!(r.inputs.pIn > 0 || r.inputs.pOut > 0)) h += '<p class="fine warnline">No model prices entered, so model cost is zero. This is an input gap, not a free system.</p>';
+      r.warnings.forEach(function (w) { h += '<p class="fine warnline">Input corrected: ' + esc(w) + '</p>'; });
+      h += '<div class="eyebrow">Unit economics</div><div class="kpis">' +
+        '<div class="kpi"><small>Per request</small><b>' + cur(r.unit.perRequest) + '</b></div>' +
+        '<div class="kpi"><small>Per workflow (task)</small><b>' + cur(r.unit.perWorkflow) + '</b></div>' +
+        '<div class="kpi"><small>Per user per month</small><b>' + cur(r.unit.perUser) + '</b></div>' +
+        '<div class="kpi"><small>Per successful task</small><b>' + cur(r.unit.perSuccessfulTask) + '</b></div></div>';
+      h += '<div class="kpis"><div class="kpi"><small>Monthly variable</small><b>' + cur(r.monthlyVariable) + '</b></div><div class="kpi"><small>Monthly fixed</small><b>' + cur(r.monthlyFixed) + '</b></div>' +
+        '<div class="kpi"><small>Monthly total</small><b>' + cur(r.monthlyTotal) + '</b></div><div class="kpi"><small>One-time setup</small><b>' + cur(r.oneTimeTotal) + '</b></div>' +
+        '<div class="kpi"><small>Year one (12 months + setup)</small><b>' + cur(r.yearOneTotal) + '</b></div></div>';
+      if (r.budget) h += '<p class="' + (r.budget.over ? 'warnline' : 'okline') + '">' + (r.budget.over ? 'Over budget by ' + cur(-r.budget.headroom) : 'Within budget, headroom ' + cur(r.budget.headroom)) + ' per month.</p>';
+      var tgt = num(sf, 'target');
+      if (tgt > 0) { var mc = AL.maxCallsForTarget(raw(), tgt); h += '<p class="fine">' + (mc == null ? 'Target cannot be solved: model prices or volume are missing.' : (mc === 0 ? 'Even one model call per task exceeds the target, because other costs already do.' : 'Largest number of model calls per task that fits the target: <b>' + mc + '</b>.')) + '</p>'; }
+      h += '<h3>Largest cost drivers (monthly)</h3><div class="tablewrap"><table><thead><tr><th>Component</th><th>Monthly</th><th>Share</th></tr></thead><tbody>' +
+        r.drivers.map(function (d) { return '<tr><td>' + esc(d.name) + '</td><td>' + cur(d.monthly) + '</td><td>' + (d.share == null ? 'n/a' : (d.share * 100).toFixed(1) + '%') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      h += '<h3>Sensitivity</h3><div class="tablewrap"><table><thead><tr><th>Change one thing</th><th>Setting</th><th>Monthly total</th><th>Change</th></tr></thead><tbody>' +
+        AL.sensitivity(raw()).map(function (row) { return row.points.map(function (pt, i) { return '<tr>' + (i === 0 ? '<td rowspan="' + row.points.length + '" style="white-space:normal">' + esc(row.label) + '</td>' : '') + '<td>' + esc(pt.label) + '</td><td>' + cur(pt.monthlyTotal) + '</td><td>' + pct(pt.deltaPct) + '</td></tr>'; }).join(''); }).join('') + '</tbody></table></div>';
+      h += '<h3>Compare scenarios</h3><p><button class="btn" type="button" id="scPin">Pin current as scenario A</button> <button class="btn" type="button" id="scUnpin"' + (pinned ? '' : ' disabled') + '>Clear pin</button></p>';
+      if (pinned) {
+        var c = AL.compareScenarios(pinned.raw, raw());
+        h += '<p>Scenario A' + (pinned.name ? ' (' + esc(pinned.name) + ')' : '') + ' ' + cur(c.a.monthlyTotal) + ' vs current ' + cur(c.b.monthlyTotal) + ' per month: <b>' + pct(c.totalDeltaPct) + '</b>' + (c.biggestDriver ? '. Biggest mover: ' + esc(c.biggestDriver) : '') + '.</p>' +
+          '<div class="tablewrap"><table><thead><tr><th>Component</th><th>A</th><th>Current</th><th>Change</th></tr></thead><tbody>' + c.rows.map(function (x) { return '<tr><td>' + esc(x.name) + '</td><td>' + cur(x.a) + '</td><td>' + cur(x.b) + '</td><td>' + pct(x.deltaPct) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      } else h += '<p class="fine">Pin a scenario, change the inputs (or pick another preset), and the differences appear here.</p>';
+      h += '<h3>Export</h3><p><button class="btn" type="button" id="scMd">Copy as Markdown</button> <button class="btn" type="button" id="scJson">Copy as JSON</button></p><p class="fine">Exports include the assumptions, the pricing record and a reminder that this is an estimate.</p>';
+      out.innerHTML = h;
+      $('#scPin').addEventListener('click', function () { pinned = { raw: raw(), name: sf.elements.name.value }; paint(); });
+      $('#scUnpin').addEventListener('click', function () { pinned = null; paint(); });
+      $('#scMd').addEventListener('click', function () { copyText(AL.scenarioMarkdown(raw(), meta()), this); });
+      $('#scJson').addEventListener('click', function () { copyText(JSON.stringify({ meta: meta(), inputs: AL.scenarioCost(raw()).inputs, disclaimer: 'Estimate from user-supplied assumptions, not a quote.' }, null, 2), this); });
+    }
+    sf.elements.preset.addEventListener('change', function () {
+      var id = sf.elements.preset.value; if (!id) return;
+      var pr = AL.PRESETS.filter(function (x) { return x.id === id; })[0]; if (!pr) return;
+      var patched = AL.applyPreset(raw(), id), k;
+      if (legacy.elements.calls) legacy.elements.calls.value = patched.callsPerTask;
+      SCEN_EXTRA.forEach(function (g) { g[1].forEach(function (f) { if (pr.patch[f[0]] != null) sf.elements[f[0]].value = pr.patch[f[0]]; }); });
+      $('#presetNote').textContent = pr.note + ' Shape only: set your own prices.';
+      legacy.dispatchEvent(new Event('input')); paint();
+    });
+    sf.addEventListener('input', paint); sf.addEventListener('change', paint);
+    legacy.addEventListener('input', paint);
+    $('#calcReset').addEventListener('click', function () { setTimeout(paint, 0); });
+    paint();
   }
   function mountCalculator() {
     var form = $('#calcForm'), out = $('#calcOut'), p = {}, k;
@@ -1642,6 +1796,8 @@
     return h;
   }
 
+  var TOOL_NAMES = { compare: 'Service comparison engine', 'rag-assistant': 'RAG architecture design assistant', 'agent-assistant': 'Agentic architecture design assistant', 'risk-analyzer': 'Architecture risk analyzer', 'readiness-scorecard': 'Production readiness scorecard', 'review-gen': 'Architecture review generator', shaper: 'Solution shaper', checklists: 'Readiness checklists', calculator: 'Cost per task calculator' };
+  var PAGE_NAMES = { gov: 'Security & Governance', ops: 'Operations & Reliability', toolkit: 'Toolkit & Templates', labs: 'Labs & Roadmaps' };
   function pagePlaybook(id) {
     var pb = A.engineeringPlaybooks.find(function (p) { return p.id === id; });
     if (!pb) return notFound();
@@ -1651,10 +1807,32 @@
       '<p class="lede">' + esc(pb.tag) + '</p>' +
       '<div class="callout"><b>Playbook Scope & Context</b>' + fmt(pb.intro) + '</div>';
 
+    if (pb.glance) {
+      var g = pb.glance;
+      h += '<section class="glance" aria-label="Playbook at a glance"><h2>At a glance</h2><dl>' +
+        (g.purpose ? '<div><dt>Purpose</dt><dd>' + fmt(g.purpose) + '</dd></div>' : '') +
+        (g.triggers && g.triggers.length ? '<div><dt>Use it when</dt><dd>' + ul(g.triggers) + '</dd></div>' : '') +
+        (g.roles && g.roles.length ? '<div><dt>Roles</dt><dd>' + ul(g.roles) + '</dd></div>' : '') +
+        (g.artefacts && g.artefacts.length ? '<div><dt>Artefacts produced</dt><dd>' + ul(g.artefacts) + '</dd></div>' : '') +
+        (g.exit && g.exit.length ? '<div><dt>Exit criteria</dt><dd>' + ul(g.exit) + '</dd></div>' : '') +
+        '</dl></section>';
+    }
+    if (pb.lastReviewed) {
+      h += '<p class="fine">Last edited: ' + esc(pb.lastReviewed) + '. This is an editorial date and does not mean Google product facts were re-verified. ' +
+        '<a href="' + issueLink('Playbook issue: ' + pb.title) + '" target="_blank" rel="noopener">Report an issue ↗</a></p>';
+    }
+
     (pb.sections || []).forEach(function (sec) {
       h += '<h2>' + esc(sec.title) + '</h2>';
       if (sec.body) h += paras(sec.body);
+      if (sec.table && sec.table.cols) {
+        h += '<div class="tablewrap" tabindex="0" role="region" aria-label="' + esc(sec.title) + ' table"><table class="matrix-table"><thead><tr>' +
+          sec.table.cols.map(function (c) { return '<th scope="col">' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          sec.table.rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return i === 0 ? '<th scope="row">' + fmt(c) + '</th>' : '<td>' + fmt(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '</tbody></table></div>';
+      }
       if (sec.bullets && sec.bullets.length) h += ul(sec.bullets);
+      if (sec.code) h += '<pre class="adr" tabindex="0">' + esc(sec.code) + '</pre>';
       if (sec.tips && sec.tips.length) {
         h += '<div class="box warn" style="margin-top:14px"><h3>Engineering Rules & Best Practices</h3>' + ul(sec.tips) + '</div>';
       }
@@ -1667,6 +1845,10 @@
           if (p[0] === 'arch' && archById[p[1]]) return '<a href="#/a/' + p[1] + '">📐 ' + esc(archById[p[1]].name) + '</a>';
           if (p[0] === 'dec' && decById[p[1]]) return '<a href="#/d/' + p[1] + '">⚖️ ' + esc(decById[p[1]].title) + '</a>';
           if (p[0] === 'svc' && byId[p[1]]) return '<a href="#/s/' + p[1] + '">📦 ' + esc(byId[p[1]].name) + '</a>';
+          if (p[0] === 'pb') { var q = A.engineeringPlaybooks.find(function (x) { return x.id === p[1]; }); if (q) return '<a href="#/p/' + p[1] + '">📘 ' + esc(q.title) + '</a>'; }
+          if (p[0] === 'lab') { var ll = ((A.labs && A.labs.localLabs) || []).find(function (x) { return x.id === p[1]; }); if (ll) return '<a href="#/labs">🧪 Local lab: ' + esc(ll.title) + '</a>'; }
+          if (p[0] === 'tool' && TOOL_NAMES[p[1]]) return '<a href="#/tools/' + p[1] + '">🛠️ ' + esc(TOOL_NAMES[p[1]]) + '</a>';
+          if (p[0] === 'page' && PAGE_NAMES[p[1]]) return '<a href="#/' + p[1] + '">🗂️ ' + esc(PAGE_NAMES[p[1]]) + '</a>';
           return '';
         }).filter(Boolean).join('') + '</div>';
     }
@@ -1877,9 +2059,9 @@
         '<div class="grid" style="margin:20px 0">';
       (tk.dailyCockpit.domains || []).forEach(function (dom) {
         h += '<div class="box">' +
-          '<h3>' + esc(dom.name) + '</h3>' +
+          '<h3>' + esc(dom.name || dom.title || '') + '</h3>' +
           '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
-          dom.items.map(function (it) { return '<li style="margin:6px 0">' + fmt(it) + '</li>'; }).join('') +
+          (dom.items || dom.questions || []).map(function (it) { return '<li style="margin:6px 0">' + fmt(it) + '</li>'; }).join('') +
           '</ul>' +
         '</div>';
       });
@@ -1982,6 +2164,18 @@
       '<h1>' + esc(l.title) + '</h1>' +
       '<p class="lede">' + fmt(l.lede) + '</p>';
 
+    // Runnable local labs (tested, mock/offline)
+    if (l.localLabs && l.localLabs.length) {
+      h += '<h2>Runnable local labs</h2>' +
+        '<p style="max-width:72ch">Two labs you can run on your own machine with Node.js only. They use <b>mock tools and a synthetic corpus</b>: no Google Cloud project, credentials, network access or billable resources. They demonstrate engineering controls; they do not benchmark any Google service. Clone the repository to run them.</p><div class="lists two">' +
+        l.localLabs.map(function (x) {
+          return '<div class="box"><h3>' + esc(x.title) + '</h3><p class="fine">' + esc(x.level) + ' · ' + esc(x.time) + ' · <code>' + esc(x.path) + '</code></p><p>' + fmt(x.objective) + '</p>' +
+            '<p class="fine">' + esc(x.environment || '') + '</p><h4>Run</h4><pre class="adr" tabindex="0">' + esc(x.run) + '</pre><h4>Test</h4><pre class="adr" tabindex="0">' + esc(x.test) + '</pre>' +
+            '<h4>Demonstrates</h4>' + ul(x.demonstrates || []) + '<h4>Limits</h4>' + ul(x.limits || []) +
+            '<p class="fine"><a href="' + REPO + '/tree/main/' + esc(x.path) + '" target="_blank" rel="noopener">View on GitHub ↗</a></p></div>';
+        }).join('') + '</div>';
+    }
+
     // 12 Production Projects
     if (l.exercises && l.exercises.length) {
       h += '<h2>12 Production Hands-On Projects</h2>' +
@@ -2005,7 +2199,7 @@
             '</div>' +
             '<h3 style="margin:4px 0 8px">' + esc(ex.title) + '</h3>' +
             '<p style="color:var(--muted);font-size:13px"><b>Goal:</b> ' + fmt(ex.goal) + '</p>' +
-            (ex.techStack ? '<div style="margin:8px 0;font-size:12px"><b>Tech Stack:</b> ' + ex.techStack.map(function(s){ return '<code>' + esc(s) + '</code>'; }).join(' · ') + '</div>' : '') +
+            (ex.techStack ? '<div style="margin:8px 0;font-size:12px"><b>Tech Stack:</b> ' + (Array.isArray(ex.techStack) ? ex.techStack : String(ex.techStack).split(/,\s*/)).map(function(s){ return '<code>' + esc(s) + '</code>'; }).join(' · ') + '</div>' : '') +
 
             '<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:700;color:var(--accent)">View Project Implementation Guide & Code →</summary>' +
               '<div style="margin-top:12px">' +
@@ -2266,7 +2460,7 @@
   var overlay = $('#overlay'), q = $('#q'), resultsEl = $('#results'), sel = 0, hits = [];
   var index = A.services.map(function (s) {
     return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name,
-      hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' ')].join(' ').toLowerCase() };
+      hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' '), ((meta[s.id] || {}).was || []).join(' ')].join(' ').toLowerCase() };
   }).concat(A.architectures.map(function (a) {
     return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: (a.name + ' ' + a.short + ' ' + a.why.join(' ')).toLowerCase() };
   })).concat(A.decisions.map(function (d) {
@@ -2274,7 +2468,11 @@
       hay: plain([d.title, d.question, d.why, d.em.call, d.pe.call, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
   })).concat(A.engineeringPlaybooks.map(function (p) {
     return { type: 'Playbook', href: '#/p/' + p.id, name: p.title, id: p.id, tag: p.tag, cat: 'Playbook',
-      hay: (p.title + ' ' + p.tag + ' ' + p.intro + ' ' + p.sections.map(function (s) { return s.title + ' ' + (s.body || '') + ' ' + (s.bullets ? s.bullets.join(' ') : ''); }).join(' ')).toLowerCase() };
+      hay: (p.title + ' ' + p.tag + ' ' + p.intro + ' ' + p.sections.map(function (s) { return s.title + ' ' + (s.body || '') + ' ' + (s.bullets ? s.bullets.join(' ') : '') + ' ' + (s.table ? s.table.cols.join(' ') + ' ' + s.table.rows.map(function (r) { return r.join(' '); }).join(' ') : ''); }).join(' ')).toLowerCase() };
+  })).concat(((A.labs.localLabs) || []).map(function (l) {
+    return { type: 'Lab', href: '#/labs', name: 'Local lab: ' + l.title, id: l.id, tag: l.objective, cat: 'Runnable local lab', hay: (l.demonstrates || []).join(' ').toLowerCase() };
+  })).concat(((A.toolkit.templates) || []).map(function (t) {
+    return { type: 'Template', href: '#/toolkit', name: t.title.replace(/^\d+\.\s*/, ''), id: t.id, tag: t.desc, cat: 'Template', hay: String(t.markdown).toLowerCase() };
   })).concat([
     { type: 'Tool', href: '#/tools', name: 'AI Engineering Interactive Tools', id: 'tools', tag: 'All 9 decision tools, comparison matrices, and calculators', cat: 'Tool Hub', hay: 'tools compare rag agent risk scorecard review shaper calculator checklists' },
     { type: 'Tool', href: '#/tools/compare', name: 'Service Comparison Engine', id: 'compare', tag: 'Side-by-side matrices for Vector, Agent Runtimes, Models, Orchestration', cat: 'Tool', hay: 'compare vector database search agent engine cloud run gke gemini claude llama' },

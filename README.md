@@ -103,8 +103,35 @@ Structured skill advancement pathways and production lab scenarios:
 
 - **Zero Build Step, Zero Dependencies**: Pure standards-based ES6+, CSS custom properties, and semantic HTML5. No build bundler, compiler, or npm packages required at runtime.
 - **Instant Client-Side Hash Routing**: Instant navigation across all pillars via hash routing (`#/s/...`, `#/a/...`, `#/d/...`, `#/p/...`, `#/gov`, `#/ops`, `#/toolkit`, `#/labs`).
-- **Deep Search & Fast Filtering**: Instant client-side search across all 73 services, 13 architectures, 23 decisions, 5 playbooks, governance controls, dashboard widgets, and labs.
+- **Deep Search & Fast Filtering**: Instant client-side search across all 73 services (including previous names), 42 architectures, 23 decisions, 16 playbooks, governance controls, templates, and labs.
 - **Strict Data Integrity Testing**: Validated via `scripts/check.mjs`, ensuring zero broken cross-references, complete stepper node coverage, valid see links, and exhaustive solution shaper path execution.
+
+## Verification status and honesty policy
+
+Every service has a metadata record (`data/meta.js`). Today all 73 are marked **needs-verification** with lifecycle **unknown**: nobody has yet compared them with official Google documentation, and the site says so on each service page. A record can only become `verified` with an ISO date and a Google documentation URL; the validator enforces it. Engineering guidance added in the latest upgrade is labelled "Atlas guidance, not an official Google recommendation". See `docs/content-governance.md` and `docs/known-limitations.md`.
+
+## Runnable local labs
+
+Two labs run with Node only (no cloud account, no network, no cost), using mock tools and a synthetic corpus:
+
+```bash
+node labs/rag-eval/run.mjs            # access-controlled retrieval, deletion, evaluation gate
+node labs/bounded-agent/run.mjs       # budgets, approvals, failure injection, trajectory evaluation
+```
+
+They demonstrate engineering controls. They do not benchmark any Google service.
+
+## Tests
+
+```bash
+node scripts/check.mjs
+node --test "tests/*.test.mjs"
+node --test labs/rag-eval/test.mjs labs/bounded-agent/test.mjs
+```
+
+## Documentation
+
+`docs/implementation-status.md` (task-by-task ledger), `docs/audit/`, `docs/architecture/`, `docs/decisions/`, `docs/content-governance.md`, `docs/contributing-content.md`, `docs/testing-and-release.md`, `docs/known-limitations.md`.
 
 ## Run Locally
 

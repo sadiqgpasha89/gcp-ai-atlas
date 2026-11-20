@@ -538,3 +538,28 @@ svg.radar .ql{font:600 11px var(--sans);fill:var(--ink)}
 /* Code & Repo Tree */
 .repo-tree{font:12px/1.6 var(--mono);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:12px 16px;overflow-x:auto;white-space:pre}
 .code-box{background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:14px;font:12px/1.55 var(--mono);overflow-x:auto;position:relative;margin:10px 0}
+
+/* ---- engineering-depth upgrade: verification, product facts, filters, glance, scenario ---- */
+.vbadge{display:inline-block;margin-top:8px;font:600 11px var(--mono);letter-spacing:.03em;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);background:var(--bg)}
+.vbadge.ok{color:var(--ok);border-color:var(--ok)}
+.vbadge.unk{color:var(--warn);border-color:var(--warn)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.fchip{font:600 13px var(--sans);padding:6px 12px;border-radius:999px;border:1.5px solid var(--line2);background:var(--paper);color:var(--ink);cursor:pointer}
+.fchip.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fine{font-size:13px;color:var(--muted);line-height:1.5}
+.fine.warnline,.warnline{color:var(--warn);font-size:13px}
+.okline{color:var(--ok);font-size:14px}
+.facts{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:6px 18px 14px;margin:18px 0}
+.facts dl,.glance dl{margin:0}
+.facts dl>div,.glance dl>div{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 16px;padding:9px 0;border-bottom:1px solid var(--line)}
+.facts dl>div:last-child,.glance dl>div:last-child{border-bottom:0}
+.facts dt,.glance dt{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.facts dd,.glance dd{margin:0}
+.facts dd small,.glance dd ul{display:block}
+.glance dd ul{margin:0;padding-left:18px}
+.glance{background:var(--paper);border:1px solid var(--line2);border-left:5px solid var(--accent);border-radius:12px;padding:2px 18px 8px;margin:16px 0}
+.glance h2{margin:14px 0 4px}
+.life{font-weight:600}.life.unknown{color:var(--warn)}.life.ga{color:var(--ok)}.life.deprecated,.life.retired{color:var(--warn)}
+.card[hidden]{display:none}
+@media (max-width:640px){.facts dl>div,.glance dl>div{grid-template-columns:1fr}}
+.calcform select,.calcform input[type=text],.calcform input[type=date]{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line2);border-radius:8px;background:var(--bg);color:var(--ink)}

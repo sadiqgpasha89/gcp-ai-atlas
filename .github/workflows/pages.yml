@@ -22,10 +22,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate service data
+      - name: Validate content, metadata and cross-references
         run: node scripts/check.mjs
-      - name: Syntax-check app
-        run: node --check assets/app.js
+      - name: Syntax-check app and logic
+        run: |
+          node --check assets/app.js
+          node --check assets/logic.js
+      - name: Unit and content tests
+        run: node --test "tests/*.test.mjs"
+      - name: Local lab tests (offline, mock tools, no cloud access)
+        run: |
+          node --test labs/rag-eval/test.mjs
+          node --test labs/bounded-agent/test.mjs
+      - name: RAG evaluation gate against committed baseline
+        run: node labs/rag-eval/run.mjs
 
   deploy:
     needs: validate
