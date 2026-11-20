@@ -1817,7 +1817,7 @@
           ],
           [
             "Recall@k",
-            "Share of all relevant items found in the top k (undefined when a case has none)",
+            "Share of all relevant items found in the top k (not defined when a case has none)",
             "That the top results are ordered well; that the model uses the evidence"
           ],
           [

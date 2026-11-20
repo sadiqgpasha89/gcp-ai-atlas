@@ -648,7 +648,7 @@
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/d">Decisions</a> / Tool</div><h1>Solution shaper</h1>' +
       '<p class="lede">Describe the system. Get a starting shape you can argue with.</p>' +
       '<div class="callout"><b>Read this first</b>This is a rule-based starting point, not an architecture sign-off. It shows the usual shape for your answers and the decisions most worth a conversation. Your evals and constraints override it.</div>' +
-      '<div class="shaper"><form id="shForm" class="shform" onsubmit="return false">';
+      '<div class="shaper"><form id="shForm" class="shform">';
     Q.forEach(function (q) {
       h += '<fieldset data-q="' + q.id + '"><legend>' + esc(q.label) + '</legend>' + q.options.map(function (o) {
         return '<label class="opt"><input type="radio" name="' + q.id + '" value="' + o[0] + '"><span>' + esc(o[1]) + '</span></label>';
@@ -799,7 +799,7 @@
     var h = '<div class="eyebrow"><a href="#/">Atlas</a> / <a href="#/d">Decisions</a> / Tool</div><h1>Cost per task</h1>' +
       '<p class="lede">Unit economics for an LLM feature, and which levers move them.</p>' +
       '<div class="callout"><b>About the numbers</b>Prices here are placeholders for the arithmetic. Look up current prices for your model and Region, and measure your own token counts. Nothing is sent anywhere: the calculation runs in your browser.</div>' +
-      '<div class="wide"><div class="calc"><form id="calcForm" class="calcform" onsubmit="return false">';
+      '<div class="wide"><div class="calc"><form id="calcForm" class="calcform">';
     CALC_FIELDS.forEach(function (g) {
       h += '<fieldset><legend>' + esc(g[0]) + '</legend>';
       g[1].forEach(function (f) {
@@ -835,7 +835,7 @@
   function scenarioShell() {
     var h = '<h2 style="margin-top:36px">Scenario model</h2><p class="lede" style="max-width:72ch">Builds on the inputs above. Adds retries, tool, retrieval and rerank costs, fixed and one-time costs, unit economics, pinned comparison and export. You supply every price; the Atlas holds none.</p>' +
       '<div class="callout"><b>Estimate, not a quote</b>Results come from your assumptions. They are not a guaranteed cloud bill. Record where your prices came from so the numbers can be checked later.</div>' +
-      '<div class="wide"><div class="calc"><form id="scenForm" class="calcform" onsubmit="return false">' +
+      '<div class="wide"><div class="calc"><form id="scenForm" class="calcform">' +
       '<fieldset><legend>Pricing record</legend>' +
       '<label class="num"><span class="nl2">Scenario name</span><span class="inp"><input type="text" name="name" placeholder="e.g. Support assistant, hybrid RAG"></span></label>' +
       '<label class="num"><span class="nl2">Currency</span><span class="inp"><input type="text" name="currency" value="USD"></span></label>' +
@@ -2112,10 +2112,10 @@
     // RAID Tracker
     h += '<h2>' + esc(tk.raidTracker.title) + '</h2>' +
       '<p>' + fmt(tk.raidTracker.intro) + '</p>' +
-      '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Type</th><th>Risk / Assumption / Issue / Dependency</th><th>Engineering Mitigation Strategy</th></tr></thead><tbody>' +
+      '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Type</th><th>Risk / Assumption / Issue / Dependency</th><th>Mitigation, validation or resolution</th></tr></thead><tbody>' +
       tk.raidTracker.items.map(function (it) {
         var cls = it.type === 'Risk' ? 'door one-way' : (it.type === 'Issue' ? 'door mixed' : 'door two-way');
-        return '<tr><td><span class="' + cls + '">' + esc(it.type) + '</span></td><td><b>' + esc(it.title) + '</b></td><td>' + fmt(it.mitigation) + '</td></tr>';
+        return '<tr><td><span class="' + cls + '">' + esc(it.type) + '</span></td><td><b>' + esc(it.title) + '</b></td><td>' + fmt(it.mitigation || it.validation || it.resolution || '') + '</td></tr>';
       }).join('') + '</tbody></table></div>';
 
     // Quality Gates
@@ -2232,10 +2232,6 @@
           '<div class="mini">' + esc(ph.weeks) + '</div>' +
           '<h3>' + esc(ph.phase) + '</h3>' +
           '<p style="color:var(--muted);font-size:13px"><b>Focus:</b> ' + fmt(ph.focus) + '</p>' +
-          '<ul style="margin:8px 0;padding-left:18px;font-size:13px">' +
-          (ph.topics || []).map(function (t) { return '<li style="margin:5px 0">' + fmt(t) + '</li>'; }).join('') +
-          '</ul>' +
-          '<div style="font-size:12px;margin-top:8px"><b>Milestone:</b> <code style="color:var(--ok)">' + esc(ph.milestone) + '</code></div>' +
         '</div>';
       });
       h += '</div>';
@@ -2247,12 +2243,9 @@
         '<div class="grid" style="margin:20px 0">';
       l.competencyModel.tiers.forEach(function (tier) {
         h += '<div class="box">' +
-          '<div class="cat-tag">' + esc(tier.name) + '</div>' +
-          '<p style="font-size:13px;color:var(--muted)">' + fmt(tier.desc) + '</p>' +
-          '<h4>Core Competencies</h4>' +
-          '<ul style="margin:6px 0;padding-left:18px;font-size:13px">' +
-          (tier.skills || []).map(function (s) { return '<li style="margin:5px 0">' + fmt(s) + '</li>'; }).join('') +
-          '</ul>' +
+          '<div class="cat-tag">' + esc(tier.tier) + '</div>' +
+          '<h4>Services and skills</h4>' +
+          '<p style="font-size:13px;color:var(--muted)">' + fmt(tier.services) + '</p>' +
         '</div>';
       });
       h += '</div>';
@@ -2262,12 +2255,11 @@
     if (l.radarBenchmark && l.radarBenchmark.dimensions) {
       h += '<h2>' + esc(l.radarBenchmark.title) + '</h2>' +
         '<p>' + fmt(l.radarBenchmark.intro) + '</p>' +
-        '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Engineering Dimension</th><th>Level 1: Baseline</th><th>Level 3: Production Master</th><th>Level 5: Principal Leader</th></tr></thead><tbody>' +
+        '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Engineering Dimension</th><th>Target level (1 to 5)</th><th>What it covers</th></tr></thead><tbody>' +
         l.radarBenchmark.dimensions.map(function (d) {
           return '<tr><td><b>' + esc(d.name) + '</b></td>' +
-            '<td style="color:var(--muted)">' + fmt(d.l1) + '</td>' +
-            '<td>' + fmt(d.l3) + '</td>' +
-            '<td style="font-weight:600;color:var(--accent)">' + fmt(d.l5) + '</td>' +
+            '<td style="font-weight:600;color:var(--accent)">' + esc(d.target) + '</td>' +
+            '<td>' + fmt(d.desc) + '</td>' +
             '</tr>';
         }).join('') +
         '</tbody></table></div>';
@@ -2306,6 +2298,41 @@
     return h;
   }
 
+  /* ---------- Content freshness (#/freshness): what has and has not been checked against Google documentation ---------- */
+  function pageFreshness() {
+    var total = A.services.length, ver = A.services.filter(function (x) { return verState(x.id) === 'verified'; });
+    var h = '<div class="eyebrow"><a href="#/">Atlas</a> / Content freshness</div><h1>Content freshness and sources</h1>' +
+      '<p class="lede">What has been compared with official Google Cloud documentation, on what date, from which page, and what has not. Product names, lifecycle status, limits and quotas change; treat anything not marked verified as a starting point to confirm.</p>' +
+      '<div class="kpis">' +
+        '<div class="kpi"><small>Service records</small><b>' + total + '</b></div>' +
+        '<div class="kpi"><small>Verified</small><b>' + ver.length + '</b><span class="fine">checked against a recorded Google page</span></div>' +
+        '<div class="kpi"><small>Not yet verified</small><b>' + (total - ver.length) + '</b><span class="fine">labelled on each page</span></div>' +
+      '</div>';
+    h += '<h2>Verified service records</h2>';
+    if (ver.length) {
+      h += '<div class="tablewrap"><table class="matrix-table"><thead><tr><th>Service</th><th>Checked</th><th>Lifecycle</th><th>Source</th></tr></thead><tbody>' +
+        ver.map(function (x) { var m = meta[x.id]; return '<tr><td><a href="#/s/' + esc(x.id) + '">' + esc(x.name) + '</a></td><td>' + esc(m.verified) + '</td><td>' + esc(LIFE[m.lifecycle] || m.lifecycle) + '</td><td><a href="' + esc(m.sourceUrl) + '" target="_blank" rel="noopener">Source ↗</a></td></tr>'; }).join('') +
+        '</tbody></table></div>';
+    } else {
+      h += '<div class="callout"><b>None yet.</b> No service record has been compared with official documentation, so none shows a verified date. This is deliberate: a record is only marked verified when a person opens the official page and records the date and URL.</div>';
+    }
+    h += '<h2>Coverage by category</h2><div class="tablewrap"><table class="matrix-table"><thead><tr><th>Category</th><th>Services</th><th>Verified</th><th>Not yet verified</th></tr></thead><tbody>' +
+      A.categories.map(function (c) {
+        var nv = c.items.filter(function (x) { return verState(x.id) === 'verified'; }).length;
+        return '<tr><th scope="row"><a href="#/c/' + esc(c.id) + '">' + esc(c.name) + '</a></th><td>' + c.items.length + '</td><td>' + nv + '</td><td>' + (c.items.length - nv) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    var life = {};
+    A.services.forEach(function (x) { var k = (meta[x.id] || {}).lifecycle || 'unknown'; life[k] = (life[k] || 0) + 1; });
+    h += '<h2>Lifecycle status</h2><p style="max-width:68ch">Lifecycle (generally available, preview, deprecated, retired) is only shown for verified records. Every other record reads “Lifecycle not verified”.</p><ul>' +
+      Object.keys(life).map(function (k) { return '<li>' + esc(LIFE[k] || k) + ': <b>' + life[k] + '</b></li>'; }).join('') + '</ul>';
+    h += '<h2>What the dates on this site mean</h2><ul>' +
+      '<li><b>Verified</b> (service record): the date someone compared the record with the Google page named as its source.</li>' +
+      '<li><b>Last edited</b> (playbook): the date the text was last changed. It does not mean Google product facts were re-checked.</li>' +
+      '<li><b>Prices:</b> never stored in the data. Calculators use numbers you type, and example values are labelled as such.</li></ul>' +
+      '<p class="fine">Rules and the verification procedure are in <a href="' + REPO + '/blob/main/docs/content-governance.md" target="_blank" rel="noopener">docs/content-governance.md ↗</a>. Found something out of date? <a href="' + issueLink('Content revalidation: ') + '" target="_blank" rel="noopener">Open an issue ↗</a>.</p>';
+    return h;
+  }
+
   function notFound() { return '<h1>Not found</h1><p class="lede">That page does not exist. <a href="#/">Back to the atlas</a>.</p>'; }
 
   /* ---------- sidebar ---------- */
@@ -2323,6 +2350,7 @@
       nl('#/ops', 'Production Operations', kind === 'ops') +
       nl('#/toolkit', 'Manager Toolkit (' + (A.toolkit.templates ? A.toolkit.templates.length : 8) + ' templates)', kind === 'toolkit') +
       nl('#/labs', 'Labs & Projects (' + A.labs.exercises.length + ')', kind === 'labs');
+      nl('#/freshness', 'Content freshness', kind === 'freshness');
 
     h += '<h3>Engineering Tools</h3>' +
       nl('#/tools/compare', 'Service comparison engine', (kind === 'tools' || kind === 'd') && id === 'compare') +
@@ -2430,6 +2458,10 @@
       html = pageLabs();
       title = 'Hands-on Labs & Learning Roadmaps — Google Cloud AI Atlas';
     }
+    else if (kind === 'freshness') {
+      html = pageFreshness();
+      title = 'Content freshness and sources — Google Cloud AI Atlas';
+    }
     else if (!kind) html = pageHome();
     else html = notFound();
 
@@ -2444,6 +2476,7 @@
     var cs = $('.side a[aria-current=page]'); if (cs && cs.scrollIntoView) cs.scrollIntoView({ block: 'nearest' });
   }
 
+  document.addEventListener('submit', function (e) { e.preventDefault(); });
   window.addEventListener('hashchange', render);
 
   /* ---------- chrome: nav, theme, search ---------- */
@@ -2457,68 +2490,48 @@
     try { localStorage.setItem('atlas-theme', next); } catch (e) {}
   });
 
-  var overlay = $('#overlay'), q = $('#q'), resultsEl = $('#results'), sel = 0, hits = [];
-  var index = A.services.map(function (s) {
-    return { type: 'Service', href: '#/s/' + s.id, name: s.name, id: s.id, tag: s.tag, cat: catById[s.cat].name,
-      hay: [s.name, s.id, s.tag, s.what, s.ml.join(' '), s.gotchas.join(' '), s.edges.join(' '), ((meta[s.id] || {}).was || []).join(' ')].join(' ').toLowerCase() };
-  }).concat(A.architectures.map(function (a) {
-    return { type: 'Architecture', href: '#/a/' + a.id, name: a.name, id: a.id, tag: a.short, cat: 'Architecture', hay: (a.name + ' ' + a.short + ' ' + a.why.join(' ')).toLowerCase() };
-  })).concat(A.decisions.map(function (d) {
-    return { type: 'Decision', href: '#/d/' + d.id, name: d.title, id: d.id, tag: d.question, cat: 'Decision guide',
-      hay: plain([d.title, d.question, d.why, d.em.call, d.pe.call, d.redflags.join(' '), d.ask.join(' '), d.rules.map(function (r) { return r.join(' '); }).join(' ')].join(' ')).toLowerCase() };
-  })).concat(A.engineeringPlaybooks.map(function (p) {
-    return { type: 'Playbook', href: '#/p/' + p.id, name: p.title, id: p.id, tag: p.tag, cat: 'Playbook',
-      hay: (p.title + ' ' + p.tag + ' ' + p.intro + ' ' + p.sections.map(function (s) { return s.title + ' ' + (s.body || '') + ' ' + (s.bullets ? s.bullets.join(' ') : '') + ' ' + (s.table ? s.table.cols.join(' ') + ' ' + s.table.rows.map(function (r) { return r.join(' '); }).join(' ') : ''); }).join(' ')).toLowerCase() };
-  })).concat(((A.labs.localLabs) || []).map(function (l) {
-    return { type: 'Lab', href: '#/labs', name: 'Local lab: ' + l.title, id: l.id, tag: l.objective, cat: 'Runnable local lab', hay: (l.demonstrates || []).join(' ').toLowerCase() };
-  })).concat(((A.toolkit.templates) || []).map(function (t) {
-    return { type: 'Template', href: '#/toolkit', name: t.title.replace(/^\d+\.\s*/, ''), id: t.id, tag: t.desc, cat: 'Template', hay: String(t.markdown).toLowerCase() };
-  })).concat([
-    { type: 'Tool', href: '#/tools', name: 'AI Engineering Interactive Tools', id: 'tools', tag: 'All 9 decision tools, comparison matrices, and calculators', cat: 'Tool Hub', hay: 'tools compare rag agent risk scorecard review shaper calculator checklists' },
-    { type: 'Tool', href: '#/tools/compare', name: 'Service Comparison Engine', id: 'compare', tag: 'Side-by-side matrices for Vector, Agent Runtimes, Models, Orchestration', cat: 'Tool', hay: 'compare vector database search agent engine cloud run gke gemini claude llama' },
-    { type: 'Tool', href: '#/tools/rag-assistant', name: 'RAG Architecture Design Assistant', id: 'rag-assistant', tag: '5-step interactive sizing & pattern wizard', cat: 'Tool', hay: 'rag assistant wizard vector search hybrid spanner chunking embedding' },
-    { type: 'Tool', href: '#/tools/agent-assistant', name: 'Agentic Architecture Design Assistant', id: 'agent-assistant', tag: '4-step autonomy, tools & orchestration wizard', cat: 'Tool', hay: 'agent assistant wizard autonomous swarm hitl evaluator router adk' },
-    { type: 'Tool', href: '#/tools/risk-analyzer', name: 'Architecture Risk Analyzer', id: 'risk-analyzer', tag: 'STRIDE threat calculator and mitigation plan generator', cat: 'Tool', hay: 'risk analyzer stride threat prompt injection model armor security blast radius' },
-    { type: 'Tool', href: '#/tools/readiness-scorecard', name: 'Production Readiness Scorecard', id: 'readiness-scorecard', tag: 'Interactive 30-point evaluation launch gate', cat: 'Tool', hay: 'scorecard readiness prr launch gate production checklist evaluation' },
-    { type: 'Tool', href: '#/tools/review-gen', name: 'Architecture Review (ADR/PRR) Generator', id: 'review-gen', tag: 'Form-driven ADR & PRR markdown review generator', cat: 'Tool', hay: 'generator adr prr review markdown architecture decision record' },
-    { type: 'Tool', href: '#/d/em', name: 'Decisions for engineering managers', id: 'em', tag: 'Default calls, evidence to ask for, and the guides you lead', cat: 'Decision tab', hay: 'manager budget headcount risk launch gate quick calls' },
-    { type: 'Tool', href: '#/d/pe', name: 'Decisions for principal engineers', id: 'pe', tag: 'Default designs, trade-offs and the tests to demand', cat: 'Decision tab', hay: 'principal architect design review adr trade-off quick calls' },
-    { type: 'Tool', href: '#/d/shaper', name: 'Solution shaper', id: 'shaper', tag: 'Get a starting stack, risks and next decisions for your use case', cat: 'Tool', hay: 'recommend stack wizard rag agent starting point' },
-    { type: 'Tool', href: '#/d/checklists', name: 'Readiness checklists', id: 'checklists', tag: 'Maturity ladder, production readiness and decision record template', cat: 'Tool', hay: 'production readiness launch checklist adr decision record maturity prototype pilot scale' },
-    { type: 'Tool', href: '#/d/calculator', name: 'Cost per task calculator', id: 'calculator', tag: 'Unit economics for LLM features and the levers that cut cost', cat: 'Tool', hay: 'price tokens caching batch unit economics budget' },
-    { type: 'Governance', href: '#/gov', name: 'Enterprise AI Governance & Landing Zones', id: 'gov', tag: 'Resource Manager landing zones, network isolation, 8-pillar security framework, tenancy models', cat: 'Governance', hay: 'landing zone resource manager hierarchy shared vpc psc cloud armor security framework tenancy org policy' },
-    { type: 'Operations', href: '#/ops', name: 'Production AI Operations Centre', id: 'ops', tag: '10-widget dashboard template, Cloud Logging / Monitoring queries, SRE runbooks, postmortem template', cat: 'Operations', hay: 'dashboard cloud logging monitoring query runbook 429 throttling postmortem incident sre latency ttft gemini' },
-    { type: 'Toolkit', href: '#/toolkit', name: 'AI Engineering Manager Toolkit', id: 'toolkit', tag: '8 production templates, 12 industry use cases, daily cockpit, RACI, RAID, quality gates', cat: 'Toolkit', hay: 'toolkit templates sdd adr prr threat model eval report finops incident runbook use cases industry daily cockpit assessment' },
-    { type: 'Labs', href: '#/labs', name: 'Hands-on Labs & Learning Roadmaps', id: 'labs', tag: '12 production projects, 16-week curriculum, 3-tier competency model, capability radar', cat: 'Labs', hay: 'labs exercises tutorial roadmaps learn curriculum hands-on projects' }
-  ]);
-  function openSearch() { overlay.hidden = false; q.value = ''; runSearch(); q.focus(); }
-  function closeSearch() { overlay.hidden = true; }
-  function runSearch() {
-    var terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
-    hits = index.map(function (it) {
-      var score = 0, ok = true;
-      terms.forEach(function (t) {
-        var nm = it.name.toLowerCase(), s = 0;
-        if (nm.indexOf(t) === 0) s = 100; else if (nm.indexOf(t) > -1) s = 70; else if (it.id.indexOf(t) > -1) s = 55;
-        else if (it.tag.toLowerCase().indexOf(t) > -1) s = 30; else if (it.hay.indexOf(t) > -1) s = 10;
-        if (!s) ok = false; score += s;
-      });
-      return { it: it, score: terms.length ? (ok ? score : 0) : 1 };
-    }).filter(function (h) { return h.score > 0; }).sort(function (a, b) { return b.score - a.score || a.it.name.localeCompare(b.it.name); }).slice(0, 12);
-    sel = 0; paint();
+  /* ---- Search: index/query logic lives in assets/search.js (unit-tested in Node) ---- */
+  var overlay = $('#overlay'), q = $('#q'), resultsEl = $('#results'), filtersEl = $('#searchFilters'), sel = 0, hits = [], kind = 'all';
+  var S = window.AtlasSearch, index = S.build(A);
+  var kindCounts = {};
+  index.forEach(function (it) { kindCounts[it.kind] = (kindCounts[it.kind] || 0) + 1; });
+  function paintFilters() {
+    filtersEl.innerHTML = [['all', 'All']].concat(S.KINDS.filter(function (k) { return kindCounts[k[0]]; })).map(function (k) {
+      return '<button type="button" class="chip' + (k[0] === kind ? ' on' : '') + '" data-kind="' + k[0] + '" aria-pressed="' + (k[0] === kind) + '">' + esc(k[1]) + '</button>';
+    }).join('');
   }
+  /* Highlights query words. Matching runs on the raw text and each piece is escaped separately, so a query
+     such as "amp" can never cut through an HTML entity like &amp;. */
+  function mark(text, terms) {
+    var words = terms.filter(function (t) { return t.length > 1; }).map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+    if (!words.length) return esc(text);
+    var re = new RegExp('(' + words.join('|') + ')', 'ig');
+    return String(text).split(re).map(function (part, i) { return i % 2 ? '<mark>' + esc(part) + '</mark>' : esc(part); }).join('');
+  }
+  function openSearch() { overlay.hidden = false; q.value = ''; kind = 'all'; paintFilters(); runSearch(); q.focus(); }
+  function closeSearch() { overlay.hidden = true; }
+  function runSearch() { hits = S.query(index, q.value, kind, 15); sel = 0; paint(); }
   function paint() {
-    resultsEl.innerHTML = hits.length ? hits.map(function (h, i) {
-      return '<li role="option"><a href="' + h.it.href + '" class="' + (i === sel ? 'sel' : '') + '"><b>' + esc(h.it.name) + ' <small style="font-weight:400;color:var(--muted)">· ' + esc(h.it.cat) + '</small></b><span>' + esc(h.it.tag) + '</span></a></li>';
-    }).join('') : '<li class="none">No matches. Try a service name or a concept like “vector” or “throttling”.</li>';
+    var terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    resultsEl.innerHTML = hits.length ? hits.map(function (it, i) {
+      return '<li role="option" aria-selected="' + (i === sel) + '"><a href="' + esc(it.href) + '" class="' + (i === sel ? 'sel' : '') + '"><b>' + mark(it.name, terms) +
+        ' <small class="muted-s">· ' + esc(it.type) + (it.cat && it.cat !== it.type ? ' · ' + esc(it.cat) : '') + '</small></b><span>' + mark(plain(it.tag).slice(0, 160), terms) + '</span></a></li>';
+    }).join('') : '<li class="none">No matches' + (kind !== 'all' ? ' in this filter' : '') + '. Try a service name (“Vertex AI Search”), a concept (“throttling”, “vector”), an acronym (“RAG”, “ADK”, “MCP”) or an error code (“429”).' +
+      (kind !== 'all' ? ' <button type="button" class="chip" data-kind="all">Search everything</button>' : '') + '</li>';
+    var st = $('#searchStatus'); if (st) st.textContent = hits.length + (hits.length === 1 ? ' result' : ' results');
+    var cur = resultsEl.querySelector('a.sel'); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
   }
   $('#searchBtn').addEventListener('click', openSearch);
-  overlay.addEventListener('click', function (e) { if (e.target === overlay || e.target.closest('a')) closeSearch(); });
+  overlay.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-kind]');
+    if (chip) { kind = chip.getAttribute('data-kind'); paintFilters(); runSearch(); q.focus(); return; }
+    if (e.target === overlay || e.target.closest('a')) closeSearch();
+  });
   q.addEventListener('input', runSearch);
   q.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(hits.length - 1, sel + 1); paint(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(0, sel - 1); paint(); }
-    else if (e.key === 'Enter' && hits[sel]) { location.hash = hits[sel].it.href; closeSearch(); }
+    else if (e.key === 'Enter' && hits[sel]) { location.hash = hits[sel].href; closeSearch(); }
   });
   document.addEventListener('keydown', function (e) {
     var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ''));
