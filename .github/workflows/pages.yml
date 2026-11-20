@@ -28,6 +28,8 @@ jobs:
         run: |
           node --check assets/app.js
           node --check assets/logic.js
+          node --check assets/search.js
+          node --check assets/theme.js
       - name: Unit and content tests
         run: node --test "tests/*.test.mjs"
       - name: Local lab tests (offline, mock tools, no cloud access)

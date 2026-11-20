@@ -127,7 +127,11 @@ They demonstrate engineering controls. They do not benchmark any Google service.
 node scripts/check.mjs
 node --test "tests/*.test.mjs"
 node --test labs/rag-eval/test.mjs labs/bounded-agent/test.mjs
+npm run smoke      # browser smoke test over every route (needs Playwright; see docs/testing-and-release.md)
+npm run verify     # check + tests + smoke
 ```
+
+See `CHANGELOG.md` for what changed and why.
 
 ## Documentation
 

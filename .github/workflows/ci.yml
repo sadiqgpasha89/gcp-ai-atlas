@@ -1,0 +1,43 @@
+name: CI
+
+# Runs on every pull request and on pushes to any branch except main (main is checked by the Pages workflow).
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Data checks and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run check
+      - run: npm test
+      - name: RAG evaluation gate against committed baseline
+        run: node labs/rag-eval/run.mjs
+
+  smoke:
+    name: Browser smoke test (all routes, search, calculators)
+    runs-on: ubuntu-latest
+    needs: checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright (not a repo dependency; the site itself has no build step)
+        run: |
+          npm install --no-save playwright@1
+          npx playwright install --with-deps chromium
+      - run: npm run smoke
