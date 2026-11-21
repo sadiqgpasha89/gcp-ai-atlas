@@ -6,6 +6,21 @@ Live site: [https://sadiqgpasha89.github.io/gcp-ai-atlas/](https://sadiqgpasha89
 
 ---
 
+## How the site is organised
+
+The top bar links to the six most-used sections. The sidebar groups every section by intent and opens the sub-pages of the section you are in:
+
+| Group | Sections |
+|---|---|
+| Learn | Services (`#/s`), Architectures (`#/a`), Glossary (`#/glossary`), Labs (`#/labs`) |
+| Decide | Decision guides (`#/d`), Interactive tools (`#/tools`) |
+| Build and operate | Playbooks (`#/p`), Security and governance (`#/gov`), Operations (`#/ops`) |
+| Lead | Start here: reading paths by role (`#/start`), Manager toolkit (`#/toolkit`), Content freshness (`#/freshness`) |
+
+New readers can start at `#/start`, which gives an ordered path for engineering managers, principal engineers, AI engineers, and platform or security engineers.
+
+---
+
 ## The 8 Pillars of the AI Engineering Operating System
 
 The Atlas is structured around eight foundational operational pillars that span the entire lifecycle of enterprise AI delivery:
@@ -102,7 +117,8 @@ Structured skill advancement pathways and production lab scenarios:
 ## Technical Stack & Principles
 
 - **Zero Build Step, Zero Dependencies**: Pure standards-based ES6+, CSS custom properties, and semantic HTML5. No build bundler, compiler, or npm packages required at runtime.
-- **Instant Client-Side Hash Routing**: Instant navigation across all pillars via hash routing (`#/s/...`, `#/a/...`, `#/d/...`, `#/p/...`, `#/gov`, `#/ops`, `#/toolkit`, `#/labs`).
+- **Instant Client-Side Hash Routing**: Instant navigation across all pillars via hash routing (`#/s`, `#/s/...`, `#/a/...`, `#/d/...`, `#/p/...`, `#/glossary`, `#/start`, `#/gov`, `#/ops`, `#/toolkit`, `#/labs`).
+- **Minimal theme**: one sans-serif typeface, light and dark modes, hairline borders and one accent colour, defined as CSS custom properties at the top of `assets/style.css`.
 - **Deep Search & Fast Filtering**: Instant client-side search across all 73 services (including previous names), 42 architectures, 23 decisions, 16 playbooks, governance controls, templates, and labs.
 - **Strict Data Integrity Testing**: Validated via `scripts/check.mjs`, ensuring zero broken cross-references, complete stepper node coverage, valid see links, and exhaustive solution shaper path execution.
 

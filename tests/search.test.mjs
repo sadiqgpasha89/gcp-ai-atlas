@@ -24,14 +24,15 @@ test('no entry has an empty or broken name, summary or link', () => {
 });
 
 test('every link resolves to a real route or record', () => {
-  const ids = { s: new Set(A.services.map(x => x.id)), a: new Set(A.architectures.map(x => x.id)), d: new Set(A.decisions.map(x => x.id)), p: new Set(A.engineeringPlaybooks.map(x => x.id)) };
+  const ids = { s: new Set(A.services.map(x => x.id)), a: new Set(A.architectures.map(x => x.id)), d: new Set(A.decisions.map(x => x.id)), p: new Set(A.engineeringPlaybooks.map(x => x.id)),
+    glossary: new Set(A.glossary.map(x => x.id)), start: new Set(A.paths.map(x => x.id)) };
   const modules = new Set(['tools', 'gov', 'ops', 'toolkit', 'labs', 'freshness']);
   const decTools = new Set(['em', 'pe', 'shaper', 'checklists', 'calculator']);
   const sub = { tools: new Set(['compare', 'rag-assistant', 'agent-assistant', 'risk-analyzer', 'readiness-scorecard', 'review-gen']) };
   for (const it of index) {
     const [, kind, id] = it.href.split('/');
     if (kind === 'd') assert.ok(!id || decTools.has(id) || ids.d.has(id), `${it.href} does not exist`);
-    else if (ids[kind]) assert.ok(ids[kind].has(id), `${it.href} does not exist`);
+    else if (ids[kind]) assert.ok((!id && kind !== 'a') || ids[kind].has(id), `${it.href} does not exist`);
     else if (kind === '') assert.equal(it.href, '#/');
     else assert.ok(modules.has(kind) && (!id || sub[kind]?.has(id)), `${it.href} is not a route`);
   }
