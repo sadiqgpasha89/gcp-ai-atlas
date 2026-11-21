@@ -43,28 +43,6 @@
     return '<svg class="iso" viewBox="-30 -16 60 56" style="--h:' + h + '" aria-hidden="true"><g class="node">' +
       '<path class="face f-left" d="M-26 0L0 13V35L-26 22Z"/><path class="face f-right" d="M0 13L26 0V22L0 35Z"/><path class="face f-top" d="M0-13L26 0L0 13L-26 0Z"/></g></svg>';
   }
-  function slab(cx, cy, w, d, label, sub, h, lx) {
-    var hh = w / 2;
-    return '<g style="--h:' + h + '" class="node" tabindex="-1">' +
-      '<path class="face f-left" d="M' + (cx - w) + ' ' + cy + 'L' + cx + ' ' + (cy + hh) + 'V' + (cy + hh + d) + 'L' + (cx - w) + ' ' + (cy + d) + 'Z"/>' +
-      '<path class="face f-right" d="M' + cx + ' ' + (cy + hh) + 'L' + (cx + w) + ' ' + cy + 'V' + (cy + d) + 'L' + cx + ' ' + (cy + hh + d) + 'Z"/>' +
-      '<path class="face f-top" d="M' + cx + ' ' + (cy - hh) + 'L' + (cx + w) + ' ' + cy + 'L' + cx + ' ' + (cy + hh) + 'L' + (cx - w) + ' ' + cy + 'Z"/>' +
-      '<path d="M' + (cx + w * 0.55) + ' ' + (cy - 2) + 'L' + (lx - 8) + ' ' + (cy - 2) + '" stroke="var(--line2)" stroke-dasharray="3 4" fill="none"/>' +
-      '<text x="' + lx + '" y="' + (cy + 2) + '" style="text-anchor:start;font-size:16px;font-family:var(--serif)">' + label + '</text>' +
-      '<text x="' + lx + '" y="' + (cy + 20) + '" style="text-anchor:start;font-size:11px;font-weight:400;fill:var(--muted)">' + sub + '</text></g>';
-  }
-  function heroSVG() {
-    var layers = [
-      { l: 'Foundation', s: 'GCE · TPU · Cloud Storage · Hyperdisk', h: 18, w: 140 },
-      { l: 'Data', s: 'BigQuery · Dataflow · Pub/Sub · Vector Search', h: 175, w: 120 },
-      { l: 'Models', s: 'Gemini · Vertex AI Studio · Model Garden', h: 265, w: 100 },
-      { l: 'Apps & agents', s: 'Cloud Run · Vertex AI Agent Builder · ADK', h: 305, w: 80 }
-    ];
-    var out = '<svg viewBox="0 0 560 420" role="img" aria-label="Isometric stack: foundation, data, models, apps and agents">';
-    layers.forEach(function (L, i) { out += slab(150, 320 - i * 80, L.w, 24, L.l, L.s, L.h, 318); });
-    return out + '</svg>';
-  }
-
   /* ---------- stepper ---------- */
   function mountStepper(host, spec) {
     var flow = spec.flow.map(function (f) { return typeof f === 'string' ? { l: f } : f; });
@@ -162,70 +140,139 @@
   function stepperHost(spec) { pendingSteppers.push(spec); return '<div class="stepper" data-sp="' + (pendingSteppers.length - 1) + '"></div>'; }
 
   /* ---------- pages ---------- */
+  /* ---------- navigation model ----------
+     One list drives the top bar, the sidebar and the footer, so the three cannot disagree.
+     key = the route section that marks the link as current (see navKey). */
+  var TOOLS = [
+    ['#/tools/compare', 'Service comparison engine'],
+    ['#/tools/rag-assistant', 'RAG design assistant'],
+    ['#/tools/agent-assistant', 'Agent design assistant'],
+    ['#/tools/risk-analyzer', 'Architecture risk analyzer'],
+    ['#/tools/readiness-scorecard', 'Production readiness scorecard'],
+    ['#/tools/review-gen', 'Architecture review generator'],
+    ['#/d/shaper', 'Solution shaper'],
+    ['#/d/calculator', 'Cost per task calculator'],
+    ['#/d/checklists', 'Readiness checklists']
+  ];
+  var TOOL_IDS = { shaper: 1, calculator: 1, checklists: 1 };
+  function navSections() {
+    return [
+      { name: 'Learn', items: [
+        ['s', '#/s', 'Services', A.services.length],
+        ['a', '#/a', 'Architectures', A.architectures.length],
+        ['glossary', '#/glossary', 'Glossary', A.glossary.length],
+        ['labs', '#/labs', 'Labs and roadmaps', A.labs.exercises.length]] },
+      { name: 'Decide', items: [
+        ['d', '#/d', 'Decision guides', A.decisions.length],
+        ['tools', '#/tools', 'Interactive tools', TOOLS.length]] },
+      { name: 'Build and operate', items: [
+        ['p', '#/p', 'Playbooks', A.engineeringPlaybooks.length],
+        ['gov', '#/gov', 'Security and governance'],
+        ['ops', '#/ops', 'Operations']] },
+      { name: 'Lead', items: [
+        ['start', '#/start', 'Start here: role paths'],
+        ['toolkit', '#/toolkit', 'Manager toolkit'],
+        ['freshness', '#/freshness', 'Content freshness']] }
+    ];
+  }
+  /* Maps a route to the nav section key that should be marked current. */
+  function navKey(kind, id) {
+    if (kind === 'c') return 's';
+    if (kind === 'd' && TOOL_IDS[id]) return 'tools';
+    return kind;
+  }
+
+  /* ---------- pages ---------- */
   function pageHome() {
-    var n = A.services.length;
-    var h = '<div class="wide"><section class="hero"><div>' +
-      '<div class="eyebrow">The AI Engineering Management Operating System · ' + n + ' services · ' + A.architectures.length + ' architectures · ' + A.decisions.length + ' decisions · ' + A.engineeringPlaybooks.length + ' playbooks · 9 tools</div>' +
-      '<h1>Google Cloud for AI Systems — an interactive operating system.</h1>' +
-      '<p class="lede">From cloud catalog to production AI engineering operating system: design, evaluate, architect, govern, and lead production-grade generative AI, RAG, and multi-agent systems on Google Cloud.</p>' +
-      '<div class="btns">' +
-        '<a class="btn primary" href="#/tools">Engineering Tools (9) →</a>' +
-        '<a class="btn" href="#/a">Architectures (' + A.architectures.length + ')</a>' +
-        '<a class="btn" href="#/p">Playbooks (' + A.engineeringPlaybooks.length + ')</a>' +
-        '<a class="btn" href="#/d">Decision Centre (' + A.decisions.length + ')</a>' +
-        '<a class="btn" href="#/toolkit">Manager Toolkit</a>' +
-        '<a class="btn" href="#/labs">Labs & Projects (' + A.labs.exercises.length + ')</a>' +
-      '</div>' +
-      '</div>' + heroSVG() + '</section>';
+    var h = '<div class="wide"><section class="home-hero">' +
+      '<div class="eyebrow">Independent field guide · Google Cloud · Generative AI, RAG and agents</div>' +
+      '<h1>Design, ship and run AI systems on Google Cloud.</h1>' +
+      '<p class="lede">Look up a service, compare the options, start from a reference architecture, and take a checklist into your next design review. Everything is on one static page, with no sign-in and no tracking.</p>' +
+      '<button type="button" class="bigsearch" id="homeSearch"><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Search services, patterns, decisions, terms…</span><kbd>/</kbd></button>' +
+      '<ul class="stats">' +
+        '<li><a href="#/s"><b>' + A.services.length + '</b>services</a></li>' +
+        '<li><a href="#/a"><b>' + A.architectures.length + '</b>architectures</a></li>' +
+        '<li><a href="#/d"><b>' + A.decisions.length + '</b>decision guides</a></li>' +
+        '<li><a href="#/p"><b>' + A.engineeringPlaybooks.length + '</b>playbooks</a></li>' +
+        '<li><a href="#/tools"><b>' + TOOLS.length + '</b>tools</a></li>' +
+        '<li><a href="#/glossary"><b>' + A.glossary.length + '</b>glossary terms</a></li>' +
+      '</ul></section>';
 
-    h += '<h2>The 6 Levels of Enterprise AI Engineering Maturity</h2>' +
-      '<p style="max-width:72ch">A complete operational maturity framework for AI Engineering Managers and Principal Architects leading enterprise AI on Google Cloud.</p>' +
-      '<div class="grid">' +
-      '<a class="card" style="--h:212" href="#/c/genai"><div class="mini">Level 1</div><h3>1. Service Encyclopedia</h3><p>73 Google Cloud AI, data, and compute services with architecture fit, operational gotchas, and pairing notes.</p></a>' +
-      '<a class="card" style="--h:305" href="#/labs"><div class="mini">Level 2</div><h3>2. Learning Atlas</h3><p>12 complete production labs, 16-week progressive roadmap, and 3-tier competency benchmark.</p></a>' +
-      '<a class="card" style="--h:268" href="#/a"><div class="mini">Level 3</div><h3>3. Architecture Intelligence</h3><p>42 reference architectures with standardized 12-section blueprints and 23 architectural decision guides.</p></a>' +
-      '<a class="card" style="--h:150" href="#/p"><div class="mini">Level 4</div><h3>4. Production Engineering</h3><p>11 deep playbooks: RAG lifecycle, multi-agent patterns, GenAIOps release gates, OpenTelemetry, and FinOps.</p></a>' +
-      '<a class="card" style="--h:25" href="#/gov"><div class="mini">Level 5</div><h3>5. Engineering Leadership</h3><p>Resource Manager hierarchy, 8-pillar security framework, RACI matrices, RAID trackers, and risk analysis.</p></a>' +
-      '<a class="card" style="--h:40" href="#/tools"><div class="mini">Level 6</div><h3>6. AI Delivery Cockpit</h3><p>9 interactive decision tools, 8 copyable production templates, and daily engineering manager checklists.</p></a>' +
-      '</div>';
+    var intents = [
+      ['Understand the platform', 'What each service does and where it fits.', [['#/s', 'Browse all services'], ['#/glossary', 'Glossary of key terms'], ['#/tools/compare', 'Compare similar services'], ['#/labs', 'Labs and learning roadmaps']]],
+      ['Design a system', 'Start from a blueprint and decide with evidence.', [['#/a', 'Reference architectures'], ['#/d/shaper', 'Solution shaper'], ['#/tools/rag-assistant', 'RAG design assistant'], ['#/d', 'Decision guides']]],
+      ['Ship to production', 'Evaluation, security and operations.', [['#/p', 'Engineering playbooks'], ['#/tools/readiness-scorecard', 'Readiness scorecard'], ['#/gov', 'Security and governance'], ['#/ops', 'Operations centre']]],
+      ['Lead the team', 'Scope, staff, budget and report.', [['#/d/em', 'Decisions for managers'], ['#/d/calculator', 'Cost per task calculator'], ['#/toolkit', 'Manager toolkit'], ['#/start', 'Reading paths by role']]]
+    ];
+    h += '<h2>Start where you are</h2><div class="intent">' + intents.map(function (x) {
+      return '<div><h3>' + esc(x[0]) + '</h3><p>' + esc(x[1]) + '</p><ul>' + x[2].map(function (l) { return '<li><a href="' + l[0] + '">' + esc(l[1]) + '</a></li>'; }).join('') + '</ul></div>';
+    }).join('') + '</div>';
 
-    h += '<h2>Interactive Engineering Tools (9)</h2>' +
-      '<p style="max-width:72ch">Decision calculators, architecture wizards, and governance instruments built for day-to-day technical leadership.</p>' +
-      '<div class="grid">' +
-      '<a class="card" style="--h:215" href="#/tools/compare"><div class="mini">Interactive</div><h3>Service Comparison Engine</h3><p>Side-by-side technical trade-off matrices for Vector, Agent Runtimes, Models, and Orchestration.</p></a>' +
-      '<a class="card" style="--h:268" href="#/tools/rag-assistant"><div class="mini">Wizard</div><h3>RAG Design Assistant</h3><p>5-step interactive sizing & pattern wizard recommending optimal retrieval architectures.</p></a>' +
-      '<a class="card" style="--h:150" href="#/tools/agent-assistant"><div class="mini">Wizard</div><h3>Agent Design Assistant</h3><p>4-step autonomy, tools & orchestration wizard recommending deterministic vs swarm patterns.</p></a>' +
-      '<a class="card" style="--h:25" href="#/tools/risk-analyzer"><div class="mini">Governance</div><h3>Architecture Risk Analyzer</h3><p>STRIDE + AI threat risk calculator evaluating system exposure and generating mitigation plans.</p></a>' +
-      '<a class="card" style="--h:185" href="#/tools/readiness-scorecard"><div class="mini">Launch Gate</div><h3>Production Readiness Scorecard</h3><p>Interactive 30-point evaluation across Architecture, Data, Eval, Security, Ops, and FinOps.</p></a>' +
-      '<a class="card" style="--h:40" href="#/tools/review-gen"><div class="mini">Generator</div><h3>Architecture Review Generator</h3><p>Form-driven generator producing formatted markdown ADR / PRR ready for PRs and design reviews.</p></a>' +
-      '<a class="card" style="--h:215" href="#/d/shaper"><div class="mini">Interactive</div><h3>Solution Shaper</h3><p>Seven questions in, a starting stack and the decisions to make next out.</p></a>' +
-      '<a class="card" style="--h:185" href="#/d/calculator"><div class="mini">Calculator</div><h3>Cost per Task Calculator</h3><p>Unit economics calculator with token pricing, context caching, and retry multipliers.</p></a>' +
-      '<a class="card" style="--h:150" href="#/d/checklists"><div class="mini">Checklists</div><h3>Readiness Checklists</h3><p>Maturity ladder and production checklists from prototype to enterprise scale.</p></a>' +
-      '</div>';
+    h += '<h2>Reading paths by role</h2><p class="fine">An ordered route through the atlas, a few hours each. <a href="#/start">See all paths →</a></p><div class="grid">' +
+      A.paths.map(function (p) {
+        return '<a class="card" href="#/start/' + p.id + '"><div class="mini">' + p.steps.length + ' steps · ' + esc(p.time) + '</div><h3>' + esc(p.role) + '</h3><p>' + esc(p.goal) + '</p></a>';
+      }).join('') + '</div>';
 
-    h += '<h2>Reference Architectures (' + A.architectures.length + ')</h2>' +
-      '<p style="max-width:72ch">Production blueprints across 5 categories: Foundation ML, Generative AI, RAG, Multi-Agent Systems, and Enterprise MLOps.</p>' +
-      '<div class="grid">' +
-      A.architectures.slice(0, 8).map(function (a) {
-        return '<a class="card" style="--h:215" href="#/a/' + a.id + '"><div class="mini">Architecture</div><h3>' + esc(a.name) + '</h3><p>' + esc(a.short) + '</p></a>';
-      }).join('') +
-      '</div>' +
-      '<div style="margin:16px 0 32px"><a class="btn" href="#/a">View all ' + A.architectures.length + ' Reference Architectures →</a></div>';
-
-    h += '<h2>AI Engineering Playbooks (' + A.engineeringPlaybooks.length + ')</h2>' +
-      '<p style="max-width:72ch">Deep architectural and operational playbooks covering RAG lifecycle, multi-agent systems, GenAIOps, FinOps, SRE, and security.</p>' +
-      '<div class="grid">' +
-      A.engineeringPlaybooks.map(function (p) {
-        return '<a class="card" style="--h:215" href="#/p/' + p.id + '"><div class="mini">' + esc(p.badge) + '</div><h3>' + esc(p.title) + '</h3><p>' + esc(p.tag) + '</p></a>';
-      }).join('') +
-      '</div>';
-
-    h += '<h2>Service Catalogue by Category (' + A.services.length + ')</h2>' +
-      '<p style="max-width:62ch">Services are grouped by their specific role in an AI/ML system: compute, data, models, orchestration, and security.</p><div class="grid">';
+    h += '<h2>Services by category</h2><div class="grid">';
     A.categories.forEach(function (c) {
-      h += '<a class="card catcard" style="--h:' + c.hue + '" href="#/c/' + c.id + '">' + miniCube(c.hue) + '<div class="mini">' + c.items.length + ' services</div><h3>' + esc(c.name) + '</h3><p>' + esc(c.short) + '</p></a>';
+      h += '<a class="card catcard" style="--h:' + c.hue + '" href="#/c/' + c.id + '"><div class="mini">' + c.items.length + ' services</div><h3>' + esc(c.name) + '</h3><p>' + esc(c.short) + '</p></a>';
     });
-    h += '</div></div>';
+    h += '</div>';
+
+    var featured = ['traditional-rag', 'agentic-rag', 'secure-multitenant-rag', 'multiagent-orchestration', 'genaiops-lifecycle', 'llm-serving'].filter(function (x) { return archById[x]; });
+    h += '<h2>Most-used architectures</h2><div class="grid">' + featured.map(function (x) {
+      var a = archById[x]; return '<a class="card" href="#/a/' + a.id + '"><div class="mini">Architecture</div><h3>' + esc(a.name) + '</h3><p>' + esc(a.short) + '</p></a>';
+    }).join('') + '</div><p style="margin-top:14px"><a href="#/a">All ' + A.architectures.length + ' architectures →</a></p></div>';
+    afterRender = function () { $('#homeSearch').addEventListener('click', openSearch); };
+    return h;
+  }
+
+  function pageServicesIndex() {
+    var h = '<div class="wide"><div class="eyebrow"><a href="#/">Home</a> / Services</div><h1>Services</h1>' +
+      '<p class="lede">' + A.services.length + ' Google Cloud services that matter for AI and ML systems, grouped by the job they do. Each page explains what the service is, how a request flows through it, the gotchas and what it pairs with.</p>' +
+      '<div class="filter-bar" role="group" aria-label="Jump to a category">' + A.categories.map(function (c) {
+        return '<a class="filter-btn" href="#/c/' + c.id + '">' + esc(c.name) + ' <span class="count-pill">' + c.items.length + '</span></a>';
+      }).join('') + '</div>';
+    A.categories.forEach(function (c) {
+      h += '<h2 style="--h:' + c.hue + '">' + esc(c.name) + '</h2><p class="fine">' + esc(c.short) + '</p><div class="grid">' + c.items.map(serviceCard).join('') + '</div>';
+    });
+    return h + '</div>';
+  }
+
+  function glossaryLinkLabel(href) {
+    var p = href.replace(/^#\/?/, '').split('/'), k = p[0], id = p[1];
+    if (k === 's' && byId[id]) return byId[id].name;
+    if (k === 'a' && archById[id]) return archById[id].name;
+    if (k === 'd' && decById[id]) return decById[id].title;
+    if (k === 'p') { var pb = A.engineeringPlaybooks.find(function (x) { return x.id === id; }); if (pb) return pb.title; }
+    var t = TOOLS.filter(function (x) { return x[0] === href; })[0]; if (t) return t[1];
+    var labels = { d: 'Decision guides', ops: 'Operations centre', gov: 'Security and governance', labs: 'Labs', a: 'Architectures', p: 'Playbooks' };
+    return labels[k] || href;
+  }
+  function pageGlossary(focus) {
+    var h = '<div class="eyebrow"><a href="#/">Home</a> / Glossary</div><h1>Glossary</h1>' +
+      '<p class="lede">' + A.glossary.length + ' terms you meet when you build AI systems on Google Cloud, in plain language, with why each one matters and where to go deeper.</p>' +
+      '<p class="fine">The "why it matters" notes are Atlas guidance, not official Google recommendations. Product behaviour changes, so confirm details in the linked service pages and the Google Cloud documentation.</p>' +
+      '<nav class="toc" aria-label="Glossary groups"><b>Jump to</b>' + A.glossaryGroups.map(function (g) { return '<a href="#/glossary/' + g.id + '">' + esc(g.name) + '</a>'; }).join('') + '</nav>';
+    A.glossaryGroups.forEach(function (g) {
+      h += '<h2 id="g-' + g.id + '">' + esc(g.name) + '</h2><dl class="gloss">';
+      A.glossary.filter(function (t) { return t.group === g.id; }).forEach(function (t) {
+        h += '<div id="g-' + t.id + '"' + (focus === t.id ? ' class="hit"' : '') + '><dt>' + esc(t.term) + '</dt><dd><p>' + fmt(t.def) + '</p><p class="why"><b>Why it matters.</b> ' + fmt(t.why) + '</p>' +
+          '<p class="see">' + t.see.map(function (l) { return '<a href="' + l + '">' + esc(glossaryLinkLabel(l)) + '</a>'; }).join('') + '</p></dd></div>';
+      });
+      h += '</dl>';
+    });
+    return h;
+  }
+
+  function pageStart() {
+    var h = '<div class="eyebrow"><a href="#/">Home</a> / Start here</div><h1>Start here: reading paths by role</h1>' +
+      '<p class="lede">Pick your role and follow the steps in order. Each path takes a few hours and ends with something you can use in a real project.</p>' +
+      '<nav class="toc" aria-label="Roles"><b>Roles</b>' + A.paths.map(function (p) { return '<a href="#/start/' + p.id + '">' + esc(p.role) + '</a>'; }).join('') + '</nav>';
+    A.paths.forEach(function (p) {
+      h += '<section class="path" id="g-' + p.id + '"><h2>' + esc(p.role) + '</h2><p class="fine">' + esc(p.time) + ' · ' + p.steps.length + ' steps</p><p>' + esc(p.goal) + '</p><ol class="pathsteps">' +
+        p.steps.map(function (s) { return '<li><a href="' + s[0] + '">' + esc(s[1]) + '</a><span>' + esc(s[2]) + '</span></li>'; }).join('') + '</ol></section>';
+    });
     return h;
   }
 
@@ -2336,68 +2383,75 @@
   function notFound() { return '<h1>Not found</h1><p class="lede">That page does not exist. <a href="#/">Back to the atlas</a>.</p>'; }
 
   /* ---------- sidebar ---------- */
-  function nl(href, label, cur) { return '<a class="nl" href="' + href + '"' + (cur ? ' aria-current="page"' : '') + '>' + label + '</a>'; }
+  function nl(href, label, cur, n) { return '<a class="nl" href="' + href + '"' + (cur ? ' aria-current="page"' : '') + '>' + label + (n != null ? '<small>' + n + '</small>' : '') + '</a>'; }
+  function sub(href, label, cur) { return '<li><a href="' + href + '"' + (cur ? ' aria-current="page"' : '') + '>' + esc(label) + '</a></li>'; }
+  function group(label, hue, open, count, inner, headHref, headCur) {
+    var head = headHref ? '<a href="' + headHref + '"' + (headCur ? ' aria-current="page"' : '') + '>' + esc(label) + '</a>' : '<span style="flex:1">' + esc(label) + '</span>';
+    return '<details' + (open ? ' open' : '') + '><summary style="--h:' + hue + '"><span class="dot"></span>' + head + '<span class="n">' + count + '</span></summary><ul>' + inner + '</ul></details>';
+  }
+  /* The children of the current section only. Showing every list at once made the sidebar hundreds of links long. */
+  function subNav(key, kind, id) {
+    if (key === 's') {
+      var cur = kind === 's' && byId[id] ? byId[id].cat : (kind === 'c' ? id : null);
+      return A.categories.map(function (c) {
+        return group(c.name, c.hue, cur === c.id, c.items.length, c.items.map(function (s) { return sub('#/s/' + s.id, s.name, kind === 's' && id === s.id); }).join(''), '#/c/' + c.id, kind === 'c' && id === c.id);
+      }).join('');
+    }
+    if (key === 'a') {
+      return [['Foundation ML', 'foundation-ml'], ['GenAI systems', 'genai'], ['RAG', 'rag'], ['Multi-agent systems', 'agents'], ['Production and MLOps', 'production']].map(function (g) {
+        var list = A.architectures.filter(function (a) { return a.cat === g[1]; });
+        return group(g[0], 215, id && list.some(function (a) { return a.id === id; }), list.length, list.map(function (a) { return sub('#/a/' + a.id, a.name, id === a.id); }).join(''));
+      }).join('');
+    }
+    if (key === 'd') {
+      var curTheme = decById[id] ? decById[id].theme : null;
+      return '<ul>' + sub('#/d/em', 'For engineering managers', id === 'em') + sub('#/d/pe', 'For principal engineers', id === 'pe') + '</ul>' +
+        A.decisionThemes.map(function (t) {
+          var list = A.decisions.filter(function (d) { return d.theme === t.id; });
+          return group(t.name, THEME_HUE[t.id], curTheme === t.id, list.length, list.map(function (d) { return sub('#/d/' + d.id, d.title, id === d.id); }).join(''));
+        }).join('');
+    }
+    if (key === 'tools') return '<ul>' + TOOLS.map(function (t) { return sub(t[0], t[1], location.hash === t[0]); }).join('') + '</ul>';
+    if (key === 'p') return '<ul>' + A.engineeringPlaybooks.map(function (p) { return sub('#/p/' + p.id, p.title.replace(/ Playbook$/, ''), id === p.id); }).join('') + '</ul>';
+    if (key === 'glossary') return '<ul>' + A.glossaryGroups.map(function (g) { return sub('#/glossary/' + g.id, g.name, id === g.id); }).join('') + '</ul>';
+    if (key === 'start') return '<ul>' + A.paths.map(function (p) { return sub('#/start/' + p.id, p.role, id === p.id); }).join('') + '</ul>';
+    return '';
+  }
   function renderSide(kind, id) {
-    var cur = kind === 's' && byId[id] ? byId[id].cat : (kind === 'c' ? id : null);
-    var curTheme = kind === 'd' && decById[id] ? decById[id].theme : null;
-    var h = '<h3>Explore</h3>' +
-      nl('#/', 'Home', !kind) +
-      nl('#/tools', 'Engineering Tools (9)', kind === 'tools' && !id) +
-      nl('#/a', 'Architectures (' + A.architectures.length + ')', kind === 'a' && !id) +
-      nl('#/d', 'Decision Centre (' + A.decisions.length + ')', kind === 'd' && !id) +
-      nl('#/p', 'Engineering Playbooks (' + A.engineeringPlaybooks.length + ')', kind === 'p' && !id) +
-      nl('#/gov', 'Security & Governance', kind === 'gov') +
-      nl('#/ops', 'Production Operations', kind === 'ops') +
-      nl('#/toolkit', 'Manager Toolkit (' + (A.toolkit.templates ? A.toolkit.templates.length : 8) + ' templates)', kind === 'toolkit') +
-      nl('#/labs', 'Labs & Projects (' + A.labs.exercises.length + ')', kind === 'labs');
-      nl('#/freshness', 'Content freshness', kind === 'freshness');
-
-    h += '<h3>Engineering Tools</h3>' +
-      nl('#/tools/compare', 'Service comparison engine', (kind === 'tools' || kind === 'd') && id === 'compare') +
-      nl('#/tools/rag-assistant', 'RAG design assistant', (kind === 'tools' || kind === 'd') && id === 'rag-assistant') +
-      nl('#/tools/agent-assistant', 'Agent design assistant', (kind === 'tools' || kind === 'd') && id === 'agent-assistant') +
-      nl('#/tools/risk-analyzer', 'Architecture risk analyzer', (kind === 'tools' || kind === 'd') && id === 'risk-analyzer') +
-      nl('#/tools/readiness-scorecard', 'Production readiness scorecard', (kind === 'tools' || kind === 'd') && id === 'readiness-scorecard') +
-      nl('#/tools/review-gen', 'Architecture review generator', (kind === 'tools' || kind === 'd') && id === 'review-gen') +
-      nl('#/d/shaper', 'Solution shaper', (kind === 'tools' || kind === 'd') && id === 'shaper') +
-      nl('#/d/calculator', 'Cost per task calculator', (kind === 'tools' || kind === 'd') && id === 'calculator') +
-      nl('#/d/checklists', 'Readiness checklists', (kind === 'tools' || kind === 'd') && id === 'checklists');
-
-    h += '<h3>Playbooks (' + A.engineeringPlaybooks.length + ')</h3>';
-    A.engineeringPlaybooks.forEach(function (p) {
-      var shortTitle = p.title.replace(' Playbook', '').replace(' Engineering & Orchestration', '').replace(' & Hardening', '');
-      h += nl('#/p/' + p.id, shortTitle, kind === 'p' && id === p.id);
+    var key = navKey(kind, id);
+    var h = nl('#/', 'Home', !kind);
+    navSections().forEach(function (sec) {
+      h += '<h3>' + esc(sec.name) + '</h3>';
+      sec.items.forEach(function (it) {
+        var on = key === it[0];
+        h += nl(it[1], esc(it[2]), on && !id, it[3]);
+        if (on) { var inner = subNav(key, kind, id); if (inner) h += '<div class="subnav">' + inner + '</div>'; }
+      });
     });
-
-    h += '<h3>Decision Guides (' + A.decisions.length + ')</h3>' +
-      nl('#/d/em', 'For engineering managers', kind === 'd' && id === 'em') +
-      nl('#/d/pe', 'For principal engineers', kind === 'd' && id === 'pe');
-
-    A.decisionThemes.forEach(function (t) {
-      var list = A.decisions.filter(function (d) { return d.theme === t.id; });
-      h += '<details' + (curTheme === t.id ? ' open' : '') + '><summary style="--h:' + THEME_HUE[t.id] + '"><span class="dot"></span><span style="flex:1">' + esc(t.name) + '</span><span class="n">' + list.length + '</span></summary><ul>' +
-        list.map(function (d) { return '<li><a href="#/d/' + d.id + '"' + (kind === 'd' && id === d.id ? ' aria-current="page"' : '') + '>' + esc(d.title) + '</a></li>'; }).join('') + '</ul></details>';
-    });
-
-    h += '<h3>Architectures (' + A.architectures.length + ')</h3>';
-    var catGroups = [
-      ['Foundation ML', A.architectures.filter(function(a){return a.cat==='foundation-ml';})],
-      ['GenAI Systems', A.architectures.filter(function(a){return a.cat==='genai';})],
-      ['RAG Architectures', A.architectures.filter(function(a){return a.cat==='rag';})],
-      ['Multi-Agent Systems', A.architectures.filter(function(a){return a.cat==='agents';})],
-      ['Production & MLOps', A.architectures.filter(function(a){return a.cat==='production';})]
-    ];
-    catGroups.forEach(function (g) {
-      h += '<details' + (kind === 'a' && id && archById[id] && g[1].some(function(a){return a.id===id;}) ? ' open' : '') + '><summary style="--h:215"><span class="dot"></span><span>' + esc(g[0]) + '</span><span class="n">' + g[1].length + '</span></summary><ul>' +
-        g[1].map(function (a) { return '<li><a href="#/a/' + a.id + '"' + (kind === 'a' && id === a.id ? ' aria-current="page"' : '') + '>' + esc(a.name) + '</a></li>'; }).join('') + '</ul></details>';
-    });
-
-    h += '<h3>Services (' + A.services.length + ')</h3>';
-    A.categories.forEach(function (c) {
-      h += '<details' + (cur === c.id ? ' open' : '') + '><summary style="--h:' + c.hue + '"><span class="dot"></span><a href="#/c/' + c.id + '"' + (kind === 'c' && id === c.id ? ' aria-current="page"' : '') + '>' + esc(c.name) + '</a><span class="n">' + c.items.length + '</span></summary><ul>' +
-        c.items.map(function (s) { return '<li><a href="#/s/' + s.id + '"' + (kind === 's' && id === s.id ? ' aria-current="page"' : '') + '>' + esc(s.name) + '</a></li>'; }).join('') + '</ul></details>';
-    });
+    h += '<div class="sec">' + nl('https://sadiqgpasha89.github.io/', 'Portfolio ↗') + '</div>';
     $('#side').innerHTML = h;
+    $$('.top-links a').forEach(function (a) {
+      var m = (a.getAttribute('href') || '').match(/^#\/([a-z]*)/);
+      if (!m) return;
+      if (m[1] === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+
+  /* Long pages get an "On this page" list built from their h2 headings. Buttons, not links: the hash is the router. */
+  function pageContents(main) {
+    if ($('.toc', main)) return;
+    var hs = $$('h2', main).filter(function (h) { return h.textContent.trim(); });
+    if (hs.length < 4) return;
+    hs.forEach(function (h, i) { if (!h.id) h.id = 'sec-' + i; });
+    var nav = document.createElement('nav');
+    nav.className = 'toc onpage'; nav.setAttribute('aria-label', 'On this page');
+    nav.innerHTML = '<b>On this page</b>' + hs.map(function (h) { return '<button type="button" data-jump="' + esc(h.id) + '">' + esc(h.textContent.trim()) + '</button>'; }).join('');
+    nav.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-jump]'); if (!b) return;
+      var t = document.getElementById(b.getAttribute('data-jump')); if (t) { t.scrollIntoView(); t.setAttribute('tabindex', '-1'); t.focus({ preventScroll: true }); }
+    });
+    var anchor = $('.lede', main) || $('h1', main);
+    if (anchor) anchor.parentNode.insertBefore(nav, anchor.nextSibling);
   }
 
   function render() {
@@ -2418,7 +2472,8 @@
       calculator: ['Cost per task calculator', pageCalculator]
     };
 
-    if (kind === 's' && byId[id]) { html = pageService(id); title = byId[id].name + ' — Google Cloud for AI Systems'; }
+    if (kind === 's' && !id) { html = pageServicesIndex(); title = 'Services — Google Cloud for AI Systems'; }
+    else if (kind === 's' && byId[id]) { html = pageService(id); title = byId[id].name + ' — Google Cloud for AI Systems'; }
     else if (kind === 'c' && catById[id]) { html = pageCategory(id); title = catById[id].name + ' — Google Cloud for AI Systems'; }
     else if (kind === 'a') { if (id && archById[id]) { html = pageArch(id); title = archById[id].name + ' — Google Cloud for AI Systems'; } else html = pageArchIndex(); }
     else if (kind === 'tools') {
@@ -2462,15 +2517,25 @@
       html = pageFreshness();
       title = 'Content freshness and sources — Google Cloud AI Atlas';
     }
+    else if (kind === 'glossary' && (!id || A.glossary.some(function (t) { return t.id === id; }) || A.glossaryGroups.some(function (g) { return g.id === id; }))) {
+      html = pageGlossary(id);
+      title = 'Glossary — Google Cloud AI Atlas';
+    }
+    else if (kind === 'start' && (!id || A.paths.some(function (p) { return p.id === id; }))) {
+      html = pageStart();
+      title = 'Start here: reading paths by role — Google Cloud AI Atlas';
+    }
     else if (!kind) html = pageHome();
     else html = notFound();
 
     var main = $('#main'); main.innerHTML = html;
     pendingSteppers.forEach(function (spec, i) { mountStepper($('[data-sp="' + i + '"]', main), spec); });
     if (afterRender) afterRender();
+    if (kind && !(kind === 's' && !id)) pageContents(main);
     renderSide(kind, id);
     document.title = title;
-    window.scrollTo(0, 0);
+    var target = id && (kind === 'glossary' || kind === 'start') ? document.getElementById('g-' + id) : null;
+    if (target && target.scrollIntoView) target.scrollIntoView(); else window.scrollTo(0, 0);
     document.body.classList.remove('nav-open');
     $('#menuBtn').setAttribute('aria-expanded', 'false');
     var cs = $('.side a[aria-current=page]'); if (cs && cs.scrollIntoView) cs.scrollIntoView({ block: 'nearest' });

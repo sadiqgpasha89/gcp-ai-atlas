@@ -6,7 +6,7 @@
 <title>Google Cloud for AI/ML Systems — an interactive atlas</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="Every Google Cloud service that matters for building AI and ML systems: what it is, how it works step by step, gotchas, edge cases, and how to combine it into larger systems.">
-<meta name="theme-color" content="#eef3fb">
+<meta name="theme-color" content="#ffffff">
 <meta property="og:title" content="Google Cloud for AI/ML Systems — an interactive atlas">
 <meta property="og:description" content="What each Google Cloud service is, how it works, where it bites, and how to compose it into production AI/ML systems.">
 <meta property="og:type" content="website">
@@ -23,21 +23,17 @@
   </button>
   <a class="brand" href="#/">
     <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 6.3v1.4L16 17 5 10.7V9.3z" class="b-top"/><path d="M5 10.7L16 17v12L5 22.7z" class="b-left"/><path d="M27 10.7L16 17v12l11-6.3z" class="b-right"/></svg>
-    <span>Google Cloud <em>for AI systems</em></span>
+    <span>GCP AI Atlas <em>· for AI systems</em></span>
   </a>
   <nav class="top-links" aria-label="Primary">
-    <a href="https://sadiqgpasha89.github.io/" title="Return to Sadiq G Pasha Portfolio" style="font-weight:700;">← Portfolio</a>
+    <a href="#/start">Start here</a>
+    <a href="#/s">Services</a>
     <a href="#/a">Architectures</a>
     <a href="#/d">Decisions</a>
     <a href="#/tools">Tools</a>
     <a href="#/p">Playbooks</a>
-    <a href="#/gov">Governance</a>
-    <a href="#/ops">Operations</a>
-    <a href="#/toolkit">Toolkit</a>
-    <a href="#/labs">Labs</a>
-    <a href="#/freshness">Freshness</a>
   </nav>
-  <button class="search-btn" id="searchBtn" aria-label="Search services">
+  <button class="search-btn" id="searchBtn" aria-label="Search the atlas">
     <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     <span>Search</span><kbd>/</kbd>
   </button>
@@ -53,13 +49,16 @@
 </div>
 
 <footer class="foot">
+  <nav aria-label="Footer">
+    <a href="#/s">Services</a><a href="#/a">Architectures</a><a href="#/d">Decisions</a><a href="#/tools">Tools</a><a href="#/p">Playbooks</a><a href="#/glossary">Glossary</a><a href="#/gov">Governance</a><a href="#/ops">Operations</a><a href="#/toolkit">Toolkit</a><a href="#/labs">Labs</a><a href="#/freshness">Freshness</a><a href="https://sadiqgpasha89.github.io/">Portfolio</a><a href="https://github.com/sadiqgpasha89/gcp-ai-atlas">Source on GitHub</a>
+  </nav>
   <p>Built to learn from, not to quote. Google Cloud limits, quotas, pricing, product names and feature availability change quickly (the Vertex AI platform is now called the Gemini Enterprise Agent Platform) — treat the numbers here as orientation and confirm against the linked Google Cloud documentation before you design around them.</p>
   <p>Independent educational project. Not affiliated with or endorsed by Google or Google Cloud.</p>
 </footer>
 
 <div class="overlay" id="overlay" hidden>
-  <div class="dialog" role="dialog" aria-modal="true" aria-label="Search services">
-    <input id="q" type="search" placeholder="Search services, concepts, gotchas…" autocomplete="off" spellcheck="false">
+  <div class="dialog" role="dialog" aria-modal="true" aria-label="Search the atlas">
+    <input id="q" type="search" placeholder="Search services, patterns, decisions, terms…" autocomplete="off" spellcheck="false">
     <div id="searchFilters" class="sfilters" role="group" aria-label="Filter results by type"></div>
     <p id="searchStatus" class="sr-only" role="status" aria-live="polite"></p>
     <ul id="results" role="listbox"></ul>
@@ -90,6 +89,8 @@
 <script src="data/templates-atlas.js"></script>
 <script src="data/labs.js"></script>
 <script src="data/locallabs.js"></script>
+<script src="data/glossary.js"></script>
+<script src="data/paths.js"></script>
 <script src="assets/search.js"></script>
 <script src="assets/logic.js"></script>
 <script src="assets/app.js"></script>

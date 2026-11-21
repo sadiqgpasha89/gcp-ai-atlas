@@ -6,7 +6,7 @@
   /* kind -> filter label. Order is the order of the filter chips. */
   var KINDS = [
     ['service', 'Services'], ['architecture', 'Architectures'], ['decision', 'Decisions'], ['playbook', 'Playbooks'],
-    ['runbook', 'Runbooks'], ['security', 'Security'], ['tool', 'Tools'], ['lab', 'Labs'], ['guide', 'Guides']
+    ['runbook', 'Runbooks'], ['security', 'Security'], ['tool', 'Tools'], ['lab', 'Labs'], ['guide', 'Guides'], ['glossary', 'Glossary']
   ];
 
   /* Acronyms and alternate terms. A query word that equals any member also matches every other member. */
@@ -113,6 +113,9 @@
       ['tool', '#/toolkit', 'AI Engineering Manager Toolkit', '8 production templates, 12 industry use cases, daily cockpit, RACI, RAID, quality gates', 'Toolkit', 'toolkit templates sdd adr prr threat model eval report finops incident runbook use cases industry daily cockpit assessment'],
       ['lab', '#/labs', 'Hands-on Labs & Learning Roadmaps', '12 production projects, 16-week curriculum, 3-tier competency model, capability radar', 'Labs', 'labs exercises tutorial roadmaps learn curriculum hands-on projects']
   ,
+    ['guide', '#/s', 'All services', 'Every Google Cloud service in the atlas, grouped by category', 'Services', 'catalogue catalog services index list'],
+    ['guide', '#/glossary', 'Glossary', 'Plain-language definitions of AI engineering terms, with links to go deeper', 'Glossary', 'glossary terms definitions vocabulary meaning'],
+    ['guide', '#/start', 'Start here: reading paths by role', 'Ordered routes through the atlas for managers, architects, engineers and security', 'Guide', 'start onboarding learning path role manager architect engineer security'],
     ['guide', '#/freshness', 'Content freshness and sources', 'What has been verified against Google Cloud documentation, when, and what has not', 'Guide', 'verified verification freshness lifecycle deprecated stale review sources accuracy']
   ];
 
@@ -138,6 +141,8 @@
     A.engineeringPlaybooks.forEach(function (p) { add('playbook', 'Playbook', '#/p/' + p.id, p.title, p.tag, 'Playbook', p, p.id); });
     (A.labs.localLabs || []).forEach(function (l) { add('lab', 'Local lab', '#/labs', 'Local lab: ' + l.title, l.objective, 'Runnable local lab', l, l.id); });
     (A.toolkit.templates || []).forEach(function (t) { add('tool', 'Template', '#/toolkit', String(t.title).replace(/^\d+\.\s*/, ''), t.desc, 'Template', t, t.id); });
+    (A.glossary || []).forEach(function (t) { add('glossary', 'Glossary', '#/glossary/' + t.id, t.term, t.def, 'Glossary', t, t.id); });
+    (A.paths || []).forEach(function (p) { add('guide', 'Reading path', '#/start/' + p.id, 'Reading path: ' + p.role, p.goal, 'Start here', p, p.id); });
     PAGES.forEach(function (t) { add(t[0], 'Page', t[1], t[2], t[3], t[4], null, t[5]); });
 
     /* Individual items inside modules. They link to the module page. */
